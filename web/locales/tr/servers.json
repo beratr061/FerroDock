@@ -1,0 +1,59 @@
+{
+  "title": "Sunucular",
+  "subtitle": "FerroDock'un yönettiği sunuculardaki konteynerler.",
+  "local": {
+    "title": "Bu sunucu",
+    "engine": "Docker {{version}} · {{os}}/{{arch}}"
+  },
+  "showStopped": "Durdurulanları göster",
+  "standalone": "Bağımsız",
+  "managed": "FerroDock yönetiyor",
+  "adminOnly": "Sunucudaki konteynerleri yalnızca sahip ve yöneticiler yönetebilir.",
+  "empty": {
+    "title": "Çalışan konteyner yok",
+    "description": "Bu sunucuda başlatılan konteynerler burada görünür."
+  },
+  "actions": {
+    "start": "Başlat",
+    "stop": "Durdur",
+    "restart": "Yeniden başlat"
+  },
+  "state": {
+    "running": "Çalışıyor",
+    "restarting": "Yeniden başlıyor",
+    "paused": "Duraklatıldı",
+    "created": "Oluşturuldu",
+    "exited": "Durduruldu",
+    "dead": "Çöktü",
+    "removing": "Kaldırılıyor"
+  },
+  "errors": {
+    "UNKNOWN": "Bir şeyler ters gitti. Tekrar deneyin.",
+    "NETWORK": "Sunucuya ulaşılamadı. Bağlantınızı kontrol edin.",
+    "RATE_LIMITED": "Çok fazla deneme yapıldı. Bir dakika bekleyip tekrar deneyin.",
+    "INVALID_CREDENTIALS": "E-posta veya parola hatalı.",
+    "UNAUTHORIZED": "Oturumunuz sona erdi. Tekrar giriş yapın.",
+    "FORBIDDEN": "Bu işlem için yetkiniz yok.",
+    "CSRF_ORIGIN_MISMATCH": "İstek güvenilmeyen bir kaynaktan geldiği için engellendi.",
+    "ROLE_EXCEEDS_MEMBERSHIP": "Bir anahtar kendi rolünüzden fazla yetkiye sahip olamaz.",
+    "PASSWORD_TOO_SHORT": "Parola en az {{min}} karakter olmalı.",
+    "PASSWORD_TOO_LONG": "Parola en fazla {{max}} karakter olabilir.",
+    "EMAIL_INVALID": "Geçerli bir e-posta adresi girin.",
+    "NAME_INVALID": "En fazla {{max}} karakterlik bir ad girin.",
+    "ORGANIZATION_NAME_INVALID": "En fazla {{max}} karakterlik bir organizasyon adı girin.",
+    "API_KEY_NAME_INVALID": "En fazla {{max}} karakterlik bir anahtar adı girin.",
+    "API_KEY_EXPIRY_INVALID": "Geçerli bir süre seçin.",
+    "API_KEY_NOT_FOUND": "Bu anahtar artık mevcut değil.",
+    "SETUP_ALREADY_COMPLETED": "Kurulum zaten tamamlanmış. Giriş yapın.",
+    "DATABASE_UNAVAILABLE": "Veritabanına ulaşılamıyor. Birazdan tekrar deneyin.",
+    "INTERNAL": "Beklenmeyen bir hata oluştu. Tekrar deneyin.",
+    "SETUP_TOKEN_INVALID": "Kurulum anahtarı eksik veya hatalı. Sunucuda /etc/ferrodock/setup-token dosyasında bulabilirsiniz.",
+    "CONTAINER_NOT_FOUND": "Bu konteyner artık mevcut değil.",
+    "CONTAINER_REFERENCE_INVALID": "Konteyner referansı geçersiz.",
+    "CONTAINER_STATE_CONFLICT": "Konteyner başka bir işlemle meşgul. Tekrar deneyin.",
+    "DOCKER_UNAVAILABLE": "Bu sunucudaki Docker'a ulaşılamıyor.",
+    "CONTAINER_PROTECTED": "FerroDock'un kendi konteynerleri panelden değiştirilemez."
+  },
+  "protected": "Panel",
+  "protectedHint": "FerroDock kontrol düzleminin parçası; kurulum betiğiyle yönetilir."
+}

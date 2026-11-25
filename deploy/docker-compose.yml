@@ -48,6 +48,9 @@ services:
     volumes:
       - /etc/ferrodock/panel:/etc/ferrodock
       - ferrodock-data:/var/lib/ferrodock
+      - /var/run/docker.sock:/var/run/docker.sock
+    group_add:
+      - "${FERRODOCK_DOCKER_GID:?run deploy/install.sh to generate /etc/ferrodock/.env}"
     ports:
       - "${FERRODOCK_PANEL_BIND:-0.0.0.0}:${FERRODOCK_PANEL_PORT:-3000}:3000"
     networks:

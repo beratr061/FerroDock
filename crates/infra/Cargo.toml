@@ -1,0 +1,18 @@
+[package]
+name = "ferrodock-infra"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+bollard = "0.21.1"
+ferrodock-core = { workspace = true }
+futures-util = { version = "0.3", default-features = false, features = ["std"] }
+serde = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }
+
+[lints]
+workspace = true

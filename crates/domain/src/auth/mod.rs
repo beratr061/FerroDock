@@ -1,4 +1,5 @@
 mod api_keys;
+mod audit;
 mod input;
 mod model;
 mod password;
@@ -8,6 +9,7 @@ mod throttle;
 mod tokens;
 
 pub use api_keys::{ApiKeySummary, CreatedApiKey, NewApiKeyInput};
+pub use audit::AuditRecord;
 pub use input::{SetupInput, SignInInput};
 pub use model::{CurrentUser, Membership, Principal, Role};
 pub use service::{AuthRepos, AuthService};

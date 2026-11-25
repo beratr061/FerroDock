@@ -1,4 +1,5 @@
 mod healthcheck;
+mod jobs;
 mod serve;
 mod telemetry;
 mod update;

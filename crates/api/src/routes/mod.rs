@@ -1,5 +1,6 @@
 mod api_keys;
 mod auth;
+mod docker;
 mod health;
 mod setup;
 
@@ -12,6 +13,7 @@ use crate::state::AppState;
 
 pub(crate) use api_keys::{__path_create, __path_list, __path_revoke};
 pub(crate) use auth::{__path_me, __path_sign_in, __path_sign_out};
+pub(crate) use docker::{__path_container_action, __path_docker_info, __path_list_containers};
 pub(crate) use health::__path_check;
 pub(crate) use setup::{__path_complete, __path_status};
 
@@ -42,4 +44,10 @@ pub fn api_routes(trust_forwarded: bool) -> Router<AppState> {
         .route("/auth/me", get(auth::me))
         .route("/api-keys", get(api_keys::list).post(api_keys::create))
         .route("/api-keys/{id}", delete(api_keys::revoke))
+        .route("/docker/info", get(docker::docker_info))
+        .route("/docker/containers", get(docker::list_containers))
+        .route(
+            "/docker/containers/{reference}/actions",
+            post(docker::container_action),
+        )
 }

@@ -16,10 +16,6 @@
     "cancel": "Vazgeç",
     "signOut": "Çıkış yap"
   },
-  "servers": {
-    "title": "Uzak sunucular sonraki bir sürümde geliyor",
-    "description": "Şimdilik uygulamalar bu sunucuda çalışır. SSH ile başka sunucular bağlamak planlanıyor."
-  },
   "errors": {
     "UNKNOWN": "Bir şeyler ters gitti. Tekrar deneyin.",
     "NETWORK": "Sunucuya ulaşılamadı. Bağlantınızı kontrol edin.",
@@ -40,6 +36,11 @@
     "SETUP_ALREADY_COMPLETED": "Kurulum zaten tamamlanmış. Giriş yapın.",
     "DATABASE_UNAVAILABLE": "Veritabanına ulaşılamıyor. Birazdan tekrar deneyin.",
     "INTERNAL": "Beklenmeyen bir hata oluştu. Tekrar deneyin.",
-    "SETUP_TOKEN_INVALID": "Kurulum anahtarı eksik veya hatalı. Sunucuda /etc/ferrodock/setup-token dosyasında bulabilirsiniz."
+    "SETUP_TOKEN_INVALID": "Kurulum anahtarı eksik veya hatalı. Sunucuda /etc/ferrodock/setup-token dosyasında bulabilirsiniz.",
+    "CONTAINER_NOT_FOUND": "Bu konteyner artık mevcut değil.",
+    "CONTAINER_REFERENCE_INVALID": "Konteyner referansı geçersiz.",
+    "CONTAINER_STATE_CONFLICT": "Konteyner başka bir işlemle meşgul. Tekrar deneyin.",
+    "DOCKER_UNAVAILABLE": "Bu sunucudaki Docker'a ulaşılamıyor.",
+    "CONTAINER_PROTECTED": "FerroDock'un kendi konteynerleri panelden değiştirilemez."
   }
 }

@@ -11,6 +11,7 @@ axum = { workspace = true }
 axum-extra = { workspace = true }
 ferrodock-core = { workspace = true }
 ferrodock-domain = { workspace = true }
+ferrodock-infra = { workspace = true }
 mime_guess = { workspace = true }
 rust-embed = { workspace = true }
 serde = { workspace = true }

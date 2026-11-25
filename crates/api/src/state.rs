@@ -3,6 +3,7 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use ferrodock_core::AppResult;
 use ferrodock_domain::auth::AuthService;
+use ferrodock_infra::docker::DockerEngine;
 
 #[async_trait]
 pub trait HealthProbe: Send + Sync + 'static {
@@ -20,6 +21,7 @@ pub struct ApiSettings {
 #[derive(Clone)]
 pub struct AppState {
     pub auth: AuthService,
+    pub docker: DockerEngine,
     pub health: Arc<dyn HealthProbe>,
     pub settings: Arc<ApiSettings>,
 }

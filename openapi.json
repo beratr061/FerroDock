@@ -213,6 +213,137 @@
         }
       }
     },
+    "/api/v1/docker/containers": {
+      "get": {
+        "tags": [
+          "docker"
+        ],
+        "description": "Containers on this server, running only unless all=true; requires the admin role",
+        "operationId": "list_containers",
+        "parameters": [
+          {
+            "name": "all",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContainerDto"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/docker/containers/{reference}/actions": {
+      "post": {
+        "tags": [
+          "docker"
+        ],
+        "description": "Starts, stops or restarts a container by id or name; requires the admin role",
+        "operationId": "container_action",
+        "parameters": [
+          {
+            "name": "reference",
+            "in": "path",
+            "description": "Container id or name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContainerActionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {},
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/docker/info": {
+      "get": {
+        "tags": [
+          "docker"
+        ],
+        "description": "Docker engine version on this server; requires the admin role",
+        "operationId": "docker_info",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EngineInfoDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/health": {
       "get": {
         "tags": [
@@ -354,6 +485,75 @@
           }
         }
       },
+      "ContainerActionDto": {
+        "type": "string",
+        "enum": [
+          "start",
+          "stop",
+          "restart"
+        ]
+      },
+      "ContainerActionRequest": {
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/ContainerActionDto"
+          }
+        }
+      },
+      "ContainerDto": {
+        "type": "object",
+        "required": [
+          "id",
+          "short_id",
+          "name",
+          "image",
+          "state",
+          "status",
+          "created",
+          "managed",
+          "protected"
+        ],
+        "properties": {
+          "compose_project": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "created": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "id": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "managed": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string"
+          },
+          "protected": {
+            "type": "boolean"
+          },
+          "short_id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
       "CreateApiKeyRequest": {
         "type": "object",
         "required": [
@@ -388,6 +588,29 @@
             "$ref": "#/components/schemas/ApiKeyDto"
           },
           "key": {
+            "type": "string"
+          }
+        }
+      },
+      "EngineInfoDto": {
+        "type": "object",
+        "required": [
+          "version",
+          "api_version",
+          "os",
+          "arch"
+        ],
+        "properties": {
+          "api_version": {
+            "type": "string"
+          },
+          "arch": {
+            "type": "string"
+          },
+          "os": {
+            "type": "string"
+          },
+          "version": {
             "type": "string"
           }
         }

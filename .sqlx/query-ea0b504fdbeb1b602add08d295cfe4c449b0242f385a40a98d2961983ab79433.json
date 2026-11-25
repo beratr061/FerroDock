@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE jobs SET status = 'failed', error_code = 'JOB_INTERRUPTED',\n                    finished_at = now(), locked_by = NULL\n             WHERE queue = $1 AND status = 'running'",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "ea0b504fdbeb1b602add08d295cfe4c449b0242f385a40a98d2961983ab79433"
+}

@@ -76,7 +76,7 @@ const projectsRoute = createRoute({
 const serversRoute = createRoute({
   getParentRoute: () => appRoute,
   path: "/servers",
-  component: lazyRouteComponent(() => import("./ServersPlaceholder"), "ServersPlaceholder"),
+  component: lazyRouteComponent(() => import("@/features/servers"), "ServersPage"),
 });
 
 const settingsRoute = createRoute({

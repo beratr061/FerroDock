@@ -1,6 +1,7 @@
 mod api_keys;
 mod audit;
 mod identity;
+mod jobs;
 mod login_attempts;
 mod sessions;
 
@@ -10,6 +11,8 @@ use ferrodock_core::{AppError, AppResult};
 use sqlx::PgPool;
 use sqlx::migrate::Migrator;
 use sqlx::postgres::PgPoolOptions;
+
+pub use jobs::JobSignals;
 
 pub static MIGRATOR: Migrator = sqlx::migrate!("./migrations/postgres");
 

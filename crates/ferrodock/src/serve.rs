@@ -6,7 +6,9 @@ use ferrodock_core::{AppError, AppResult};
 use ferrodock_domain::auth::AuthService;
 use tokio::net::TcpListener;
 
-use crate::wiring;
+use tokio_util::sync::CancellationToken;
+
+use crate::{jobs, wiring};
 
 const SESSION_PURGE_INTERVAL: Duration = Duration::from_secs(3600);
 
@@ -19,11 +21,15 @@ pub fn print_openapi() -> AppResult<()> {
 pub async fn run(config: AppConfig) -> AppResult<()> {
     let wired = wiring::build(&config).await?;
     spawn_session_purger(wired.state.auth.clone());
+    let background = CancellationToken::new();
+    jobs::start(&wired.store, config.job_concurrency, &background);
     let listener = TcpListener::bind(config.bind_addr)
         .await
         .map_err(AppError::internal)?;
-    serve_http(listener, wired.state).await?;
+    let served = serve_http(listener, wired.state).await;
+    background.cancel();
     wired.store.close().await;
+    served?;
     Ok(())
 }
 

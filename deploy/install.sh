@@ -141,9 +141,12 @@ write_traefik_config() {
     fi
 }
 
-start_stack() {
-    docker network inspect ferrodock-network >/dev/null 2>&1 || docker network create ferrodock-network >/dev/null
-    say "Starting FerroDock ${FERRODOCK_VERSION}"
+docker_socket_gid() {
+    [ -S /var/run/docker.sock ] || fail "/var/run/docker.sock not found; FerroDock manages containers through it"
+    stat -c %g /var/run/docker.sock
+}
+
+write_compose_env() {
     panel_bind=0.0.0.0
     if [ -n "$PANEL_DOMAIN" ]; then
         panel_bind=127.0.0.1
@@ -152,8 +155,20 @@ start_stack() {
     if [ "$PROXY_MODE" = traefik ]; then
         profiles=proxy
     fi
-    FERRODOCK_IMAGE="$FERRODOCK_IMAGE" FERRODOCK_PANEL_PORT="$PANEL_PORT" FERRODOCK_PANEL_BIND="$panel_bind" \
-        COMPOSE_PROFILES="$profiles" docker compose -f "$CONFIG_DIR/docker-compose.yml" up -d --pull missing
+    umask 077
+    {
+        echo "FERRODOCK_IMAGE=${FERRODOCK_IMAGE}"
+        echo "FERRODOCK_PANEL_PORT=${PANEL_PORT}"
+        echo "FERRODOCK_PANEL_BIND=${panel_bind}"
+        echo "FERRODOCK_DOCKER_GID=$(docker_socket_gid)"
+        echo "COMPOSE_PROFILES=${profiles}"
+    } > "$CONFIG_DIR/.env"
+}
+
+start_stack() {
+    docker network inspect ferrodock-network >/dev/null 2>&1 || docker network create ferrodock-network >/dev/null
+    say "Starting FerroDock ${FERRODOCK_VERSION}"
+    docker compose -f "$CONFIG_DIR/docker-compose.yml" up -d --pull missing
 }
 
 wait_until_healthy() {
@@ -191,6 +206,7 @@ main() {
     write_secrets
     write_panel_env
     write_traefik_config
+    write_compose_env
     start_stack
     wait_until_healthy
     print_summary

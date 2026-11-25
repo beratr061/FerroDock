@@ -19,6 +19,7 @@ pub struct AppConfig {
     pub log_json: bool,
     pub session_ttl_hours: u32,
     pub trust_forwarded_for: bool,
+    pub job_concurrency: u32,
     pub setup_token: Option<Secret<String>>,
 }
 
@@ -32,6 +33,7 @@ struct Defaults {
     log_json: bool,
     session_ttl_hours: u32,
     trust_forwarded_for: bool,
+    job_concurrency: u32,
 }
 
 const DEFAULTS: Defaults = Defaults {
@@ -43,6 +45,7 @@ const DEFAULTS: Defaults = Defaults {
     log_json: true,
     session_ttl_hours: 168,
     trust_forwarded_for: false,
+    job_concurrency: 2,
 };
 
 impl AppConfig {

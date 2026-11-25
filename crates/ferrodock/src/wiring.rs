@@ -74,6 +74,7 @@ pub async fn build(config: &AppConfig) -> AppResult<Wired> {
     };
     let state = AppState {
         auth,
+        docker: ferrodock_infra::docker::DockerEngine::connect_local()?,
         health: Arc::new(DatabaseProbe(store.clone())),
         settings: Arc::new(settings),
     };
