@@ -13,6 +13,7 @@ use ferrodock_domain::auth::{AuthRepos, AuthService};
 use ferrodock_domain::deployments::{DeploymentRepos, DeploymentService};
 use ferrodock_domain::domains::{DomainService, DomainSettings};
 use ferrodock_domain::projects::ProjectService;
+use ferrodock_domain::terminal::TerminalService;
 use ferrodock_domain::variables::VariableService;
 use ferrodock_engine::deploy::DeployContext;
 use ferrodock_infra::deploy_log::DeployLogs;
@@ -171,7 +172,12 @@ pub async fn build(config: &AppConfig) -> AppResult<Wired> {
             deploy.secrets.clone(),
             audit.clone(),
         ),
-        deployments: deployment_service(&store, &deploy, audit),
+        deployments: deployment_service(&store, &deploy, audit.clone()),
+        terminal: TerminalService::new(
+            deploy.docker.clone(),
+            Arc::new(store.clone()),
+            audit.clone(),
+        ),
         health: Arc::new(DatabaseProbe(store.clone())),
         settings: Arc::new(api_settings(config)),
     };

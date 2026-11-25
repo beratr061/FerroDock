@@ -4,7 +4,7 @@ use axum::http::StatusCode;
 use uuid::Uuid;
 
 use super::actor;
-use crate::dto::{ApplicationDto, CreateApplicationRequest, UpdateApplicationRequest};
+use crate::dto::{ApplicationDto, CreateApplicationRequest, UpdateApplicationRequest, WorkloadDto};
 use crate::error::{ApiResult, ErrorEnvelope};
 use crate::extract::{Auth, ClientMeta};
 use crate::state::AppState;
@@ -149,4 +149,21 @@ pub async fn delete_application(
         .delete(actor(&principal, &client), id.into())
         .await?;
     Ok(StatusCode::NO_CONTENT)
+}
+
+#[utoipa::path(
+    get,
+    path = "/api/v1/applications/{id}/containers",
+    tag = "applications",
+    description = "Lists the containers currently running for an application",
+    params(("id" = Uuid, Path, description = "Application id")),
+    responses((status = 200, body = Vec<WorkloadDto>), (status = 404, body = ErrorEnvelope))
+)]
+pub async fn application_containers(
+    State(state): State<AppState>,
+    Auth(principal): Auth,
+    Path(id): Path<Uuid>,
+) -> ApiResult<Json<Vec<WorkloadDto>>> {
+    let containers = state.applications.containers(&principal, id.into()).await?;
+    Ok(Json(containers.into_iter().map(Into::into).collect()))
 }

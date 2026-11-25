@@ -18,6 +18,23 @@
   animation: breathe 1.2s ease-in-out infinite alternate;
 }
 
+.terminal-drawer {
+  animation: drawer-rise var(--dur-transition) var(--ease-out) both;
+}
+
+.terminal-host .xterm {
+  height: 100%;
+}
+
+@keyframes drawer-rise {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
 @keyframes settle {
   from {
     opacity: 0;
@@ -55,6 +72,10 @@
 
   .skeleton {
     animation: none;
+  }
+
+  .terminal-drawer {
+    animation: fade var(--dur-state) linear both;
   }
 
   ::view-transition-old(root),

@@ -16,7 +16,8 @@
   "actions": {
     "start": "Start",
     "stop": "Stop",
-    "restart": "Restart"
+    "restart": "Restart",
+    "terminal": "Open terminal"
   },
   "state": {
     "running": "Running",

@@ -117,5 +117,9 @@
     "empty": "No variables yet.",
     "hiddenKept": "{{count}} secret values are not shown here and stay unchanged unless you list the same name.",
     "invalidLines": "Skipped lines that are not NAME=value: {{lines}}"
+  },
+  "terminal": {
+    "open": "Terminal",
+    "unavailable": "Start a deployment first; the terminal needs a running container."
   }
 }

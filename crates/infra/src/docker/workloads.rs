@@ -32,6 +32,7 @@ pub struct WorkloadSpec {
 #[derive(Debug, Clone)]
 pub struct WorkloadContainer {
     pub id: String,
+    pub name: String,
     pub deployment_id: Option<String>,
     pub running: bool,
 }
@@ -126,6 +127,11 @@ impl DockerEngine {
             .into_iter()
             .map(|summary| WorkloadContainer {
                 id: summary.id.unwrap_or_default(),
+                name: summary
+                    .names
+                    .and_then(|names| names.into_iter().next())
+                    .map(|name| name.trim_start_matches('/').to_owned())
+                    .unwrap_or_default(),
                 deployment_id: summary
                     .labels
                     .and_then(|mut labels| labels.remove(DEPLOYMENT_LABEL)),

@@ -117,5 +117,9 @@
     "empty": "Henüz değişken yok.",
     "hiddenKept": "{{count}} gizli değer burada gösterilmez; aynı adı yazmadıkça değişmeden kalır.",
     "invalidLines": "AD=değer biçiminde olmayan satırlar atlandı: {{lines}}"
+  },
+  "terminal": {
+    "open": "Terminal",
+    "unavailable": "Önce dağıtın; terminal için çalışan bir konteyner gerekir."
   }
 }

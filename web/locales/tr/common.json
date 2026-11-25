@@ -89,6 +89,17 @@
     "VARIABLE_VALUE_REQUIRED": "{{key}} için bir değer girin.",
     "VARIABLE_LIMIT": "Bir uygulamada en fazla {{max}} değişken olabilir.",
     "VARIABLE_NOT_FOUND": "Bu değişken artık yok.",
-    "SECRET_CORRUPTED": "Kayıtlı bir gizli değer çözülemedi. Ana anahtarı kontrol edin."
+    "SECRET_CORRUPTED": "Kayıtlı bir gizli değer çözülemedi. Ana anahtarı kontrol edin.",
+    "CONTAINER_NOT_RUNNING": "Konteyner çalışmıyor.",
+    "SHELL_DETACHED": "Kabuğa bağlanılamadı."
+  },
+  "terminal": {
+    "label": "{{name}} terminali",
+    "connecting": "Bağlanıyor…",
+    "open": "Bağlı",
+    "ended": "Oturum bitti (çıkış kodu {{code}})",
+    "failed": "Bağlantı beklenmedik şekilde kapandı.",
+    "reconnect": "Yeniden bağlan",
+    "close": "Terminali kapat (Ctrl+Esc)"
   }
 }

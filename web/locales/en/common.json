@@ -89,6 +89,17 @@
     "VARIABLE_VALUE_REQUIRED": "Enter a value for {{key}}.",
     "VARIABLE_LIMIT": "An application can have at most {{max}} variables.",
     "VARIABLE_NOT_FOUND": "This variable no longer exists.",
-    "SECRET_CORRUPTED": "A stored secret could not be decrypted. Check the master key."
+    "SECRET_CORRUPTED": "A stored secret could not be decrypted. Check the master key.",
+    "CONTAINER_NOT_RUNNING": "The container is not running.",
+    "SHELL_DETACHED": "The shell could not be attached."
+  },
+  "terminal": {
+    "label": "Terminal for {{name}}",
+    "connecting": "Connecting…",
+    "open": "Connected",
+    "ended": "Session ended (exit code {{code}})",
+    "failed": "The connection closed unexpectedly.",
+    "reconnect": "Reconnect",
+    "close": "Close terminal (Ctrl+Esc)"
   }
 }

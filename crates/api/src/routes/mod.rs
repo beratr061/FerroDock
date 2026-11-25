@@ -9,6 +9,7 @@ mod health;
 mod projects;
 mod realtime;
 mod setup;
+mod terminal;
 mod variables;
 
 use axum::Router;
@@ -23,8 +24,9 @@ use crate::state::AppState;
 
 pub(crate) use api_keys::{__path_create, __path_list, __path_revoke};
 pub(crate) use applications::{
-    __path_create_application, __path_delete_application, __path_get_application,
-    __path_list_applications, __path_rotate_deploy_key, __path_update_application,
+    __path_application_containers, __path_create_application, __path_delete_application,
+    __path_get_application, __path_list_applications, __path_rotate_deploy_key,
+    __path_update_application,
 };
 pub(crate) use auth::{__path_me, __path_sign_in, __path_sign_out};
 pub(crate) use deployments::{
@@ -43,6 +45,7 @@ pub(crate) use projects::{
 };
 pub(crate) use realtime::__path_realtime;
 pub(crate) use setup::{__path_complete, __path_status};
+pub(crate) use terminal::__path_terminal;
 pub(crate) use variables::{
     __path_list_variables, __path_replace_variables, __path_reveal_variable,
 };
@@ -84,6 +87,11 @@ fn workload_routes() -> Router<AppState> {
             "/projects/{id}/environments/{environment_id}",
             delete(environments::delete_environment),
         )
+        .merge(application_routes())
+}
+
+fn application_routes() -> Router<AppState> {
+    Router::new()
         .route(
             "/projects/{id}/applications",
             get(applications::list_applications),
@@ -97,6 +105,10 @@ fn workload_routes() -> Router<AppState> {
             get(applications::get_application)
                 .patch(applications::update_application)
                 .delete(applications::delete_application),
+        )
+        .route(
+            "/applications/{id}/containers",
+            get(applications::application_containers),
         )
         .route(
             "/applications/{id}/deploy-key",
@@ -176,6 +188,7 @@ pub fn api_routes(trust_forwarded: bool) -> Router<AppState> {
         .route("/auth/sign-out", post(auth::sign_out))
         .route("/auth/me", get(auth::me))
         .route("/ws", get(realtime::realtime))
+        .route("/terminal", get(terminal::terminal))
         .route("/api-keys", get(api_keys::list).post(api_keys::create))
         .route("/api-keys/{id}", delete(api_keys::revoke))
         .merge(workload_routes())

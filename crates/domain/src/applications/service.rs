@@ -4,6 +4,7 @@ use ferrodock_core::crypto::SecretBox;
 use ferrodock_core::{AppError, AppResult, Id};
 use ferrodock_db::ApplicationRepo;
 use ferrodock_db::applications::{ApplicationFields, ApplicationRecord, NewApplication};
+use ferrodock_infra::docker::WorkloadContainer;
 use serde_json::{Value, json};
 
 use super::keys::{needs_deploy_key, new_deploy_key, settle_deploy_key};
@@ -57,6 +58,18 @@ impl ApplicationService {
             .list_for_project(principal.organization_id, project_id)
             .await?;
         records.into_iter().map(Application::try_from).collect()
+    }
+
+    pub async fn containers(
+        &self,
+        principal: &Principal,
+        id: Id,
+    ) -> AppResult<Vec<WorkloadContainer>> {
+        let record = self.owned(principal, id).await?;
+        self.runtime
+            .docker
+            .application_workloads(&record.id.to_string())
+            .await
     }
 
     pub async fn get(&self, principal: &Principal, id: Id) -> AppResult<Application> {

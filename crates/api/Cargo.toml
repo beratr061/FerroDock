@@ -9,6 +9,7 @@ rust-version.workspace = true
 async-trait = { workspace = true }
 axum = { workspace = true }
 axum-extra = { workspace = true }
+base64 = { workspace = true }
 ferrodock-core = { workspace = true }
 ferrodock-domain = { workspace = true }
 ferrodock-infra = { workspace = true }
@@ -22,6 +23,7 @@ tower = { workspace = true }
 tower-http = { workspace = true }
 tower_governor = "0.8.0"
 governor = "0.10"
+futures-util = { version = "0.3", default-features = false, features = ["std"] }
 tracing = { workspace = true }
 utoipa = { workspace = true }
 uuid = { workspace = true }

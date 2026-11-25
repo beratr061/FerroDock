@@ -1,4 +1,4 @@
-import { ArrowClockwiseIcon, PlayIcon, StopIcon } from "@phosphor-icons/react";
+import { ArrowClockwiseIcon, PlayIcon, StopIcon, TerminalWindowIcon } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 
 import { errorMessage } from "@/shared/lib/errors";
@@ -36,7 +36,7 @@ function ActionButton({ label, onClick, disabled, children }: {
   );
 }
 
-export function ContainerRow({ container }: { container: Container }) {
+export function ContainerRow({ container, onTerminal }: { container: Container; onTerminal: () => void }) {
   const { t } = useTranslation("servers");
   const action = useContainerAction();
   const running = container.state === "running";
@@ -73,6 +73,11 @@ export function ContainerRow({ container }: { container: Container }) {
         ) : (
           <ActionButton label={t("actions.start")} onClick={() => run("start")} disabled={busy}>
             <PlayIcon aria-hidden size={18} />
+          </ActionButton>
+        )}
+        {container.protected || !running ? null : (
+          <ActionButton label={t("actions.terminal")} onClick={onTerminal} disabled={false}>
+            <TerminalWindowIcon aria-hidden size={18} />
           </ActionButton>
         )}
         {container.protected ? null : (

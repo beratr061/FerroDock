@@ -7,6 +7,7 @@ mod rate_limit;
 mod routes;
 mod security;
 mod session_cookie;
+mod socket_auth;
 mod spa;
 mod state;
 

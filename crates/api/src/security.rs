@@ -11,9 +11,16 @@ use crate::error::ApiError;
 use crate::session_cookie;
 use crate::state::AppState;
 
-const CONTENT_SECURITY_POLICY: &str = "default-src 'self'; script-src 'self'; \
-    style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; \
+const CSP_DIRECTIVES: &str = "img-src 'self' data:; font-src 'self'; connect-src 'self'; \
     frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'";
+
+pub(crate) fn content_security_policy(style_nonce: Option<&str>) -> String {
+    let styles = style_nonce.map_or_else(
+        || "style-src 'self'".to_owned(),
+        |nonce| format!("style-src 'self' 'nonce-{nonce}'"),
+    );
+    format!("default-src 'self'; script-src 'self'; {styles}; {CSP_DIRECTIVES}")
+}
 
 type HeaderLayer = SetResponseHeaderLayer<HeaderValue>;
 
@@ -30,9 +37,10 @@ pub type SecurityHeaders = ServiceBuilder<
 
 pub fn headers() -> SecurityHeaders {
     ServiceBuilder::new()
-        .layer(static_header(
+        .layer(SetResponseHeaderLayer::if_not_present(
             header::CONTENT_SECURITY_POLICY,
-            CONTENT_SECURITY_POLICY,
+            HeaderValue::from_str(&content_security_policy(None))
+                .unwrap_or_else(|_| HeaderValue::from_static("default-src 'self'")),
         ))
         .layer(static_header(header::X_FRAME_OPTIONS, "DENY"))
         .layer(static_header(header::X_CONTENT_TYPE_OPTIONS, "nosniff"))

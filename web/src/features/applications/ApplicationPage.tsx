@@ -8,6 +8,7 @@ import { InlineAlert } from "@/shared/ui";
 
 import { applicationQuery } from "./api";
 import { ApplicationSettings } from "./ApplicationSettings";
+import { ContainerTerminal } from "./ContainerTerminal";
 import { DeploymentsPanel } from "./deployments/DeploymentsPanel";
 import { DeployKeyPanel } from "./DeployKeyPanel";
 import { DomainsPanel } from "./domains/DomainsPanel";
@@ -37,7 +38,10 @@ export function ApplicationPage() {
       {data ? (
         <>
           <header className="flex flex-col gap-1">
-            <h1 className="text-xl text-text">{data.name}</h1>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h1 className="text-xl text-text">{data.name}</h1>
+              <ContainerTerminal applicationId={data.id} />
+            </div>
             <p className="truncate font-mono text-[12px] text-subtle">{sourceSummary(data)}</p>
             {data.description ? <p className="max-w-2xl text-muted">{data.description}</p> : null}
           </header>

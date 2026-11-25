@@ -4,5 +4,6 @@ pub mod auth;
 pub mod deployments;
 pub mod domains;
 pub mod projects;
+pub mod terminal;
 pub mod text;
 pub mod variables;

@@ -21,6 +21,7 @@ export function RealtimeBridge() {
           break;
         case "containers_changed":
           void queryClient.invalidateQueries({ queryKey: ["docker", "containers"] });
+          void queryClient.invalidateQueries({ queryKey: ["application-containers"] });
           break;
         case "resync":
           void queryClient.invalidateQueries({ queryKey: ["deployments"] });

@@ -16,7 +16,8 @@
   "actions": {
     "start": "Başlat",
     "stop": "Durdur",
-    "restart": "Yeniden başlat"
+    "restart": "Yeniden başlat",
+    "terminal": "Terminal aç"
   },
   "state": {
     "running": "Çalışıyor",

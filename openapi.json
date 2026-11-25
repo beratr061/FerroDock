@@ -269,6 +269,50 @@
         }
       }
     },
+    "/api/v1/applications/{id}/containers": {
+      "get": {
+        "tags": [
+          "applications"
+        ],
+        "description": "Lists the containers currently running for an application",
+        "operationId": "application_containers",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkloadDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/applications/{id}/deploy-key": {
       "post": {
         "tags": [
@@ -1810,6 +1854,75 @@
         }
       }
     },
+    "/api/v1/terminal": {
+      "get": {
+        "tags": [
+          "terminal"
+        ],
+        "description": "Opens an interactive shell in a running container over WebSocket. Binary frames start with 0x00 for terminal bytes or 0x01 for JSON control messages (resize, exit)",
+        "operationId": "terminal",
+        "parameters": [
+          {
+            "name": "container",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cols",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "101": {},
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/ws": {
       "get": {
         "tags": [
@@ -2861,6 +2974,31 @@
               "string",
               "null"
             ]
+          }
+        }
+      },
+      "WorkloadDto": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "running"
+        ],
+        "properties": {
+          "deployment_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "running": {
+            "type": "boolean"
           }
         }
       }

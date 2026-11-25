@@ -1,6 +1,7 @@
 mod build;
 mod containers;
 mod events;
+mod exec;
 mod image;
 mod images;
 mod logs;
@@ -15,6 +16,7 @@ use serde::Serialize;
 pub use build::{ComposeUp, ImageBuild, build_image, compose_down, compose_up};
 pub use containers::{ContainerAction, ContainerInfo};
 pub use events::{ContainerEvent, EventStream};
+pub use exec::{ShellInput, ShellOutput, ShellSession, ShellSize, ShellTarget};
 pub use image::validate_image;
 pub use images::WORKLOAD_NETWORK;
 pub use logs::{LogLine, LogQuery, LogStream};

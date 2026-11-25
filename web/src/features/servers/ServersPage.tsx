@@ -5,9 +5,10 @@ import { useTranslation } from "react-i18next";
 
 import { ApiError } from "@/shared/api/client";
 import { errorMessage } from "@/shared/lib/errors";
+import { TerminalDrawer } from "@/shared/terminal";
 import { EmptyState, InlineAlert } from "@/shared/ui";
 
-import { containersQuery, engineInfoQuery } from "./api";
+import { containersQuery, engineInfoQuery, type Container } from "./api";
 import { ContainerRow } from "./ContainerRow";
 
 function ListSkeleton() {
@@ -23,6 +24,7 @@ function ListSkeleton() {
 export function ServersPage() {
   const { t } = useTranslation("servers");
   const [includeStopped, setIncludeStopped] = useState(false);
+  const [shell, setShell] = useState<Container | null>(null);
   const engine = useQuery(engineInfoQuery);
   const containers = useQuery(containersQuery(includeStopped));
   const forbidden = containers.error instanceof ApiError && containers.error.status === 403;
@@ -68,11 +70,12 @@ export function ServersPage() {
         {containers.data && containers.data.length > 0 ? (
           <ul className="rounded-panel border border-border bg-surface">
             {containers.data.map((container) => (
-              <ContainerRow key={container.id} container={container} />
+              <ContainerRow key={container.id} container={container} onTerminal={() => setShell(container)} />
             ))}
           </ul>
         ) : null}
       </section>
+      {shell ? <TerminalDrawer container={shell.id} title={shell.name} onClose={() => setShell(null)} /> : null}
     </div>
   );
 }

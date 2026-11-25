@@ -12,6 +12,7 @@ export default defineConfig({
     port: 5173,
     proxy: { "/api": { target: "http://127.0.0.1:3900", ws: true } },
   },
+  html: { cspNonce: "FERRODOCK_CSP_NONCE" },
   build: {
     target: "es2023",
     sourcemap: false,

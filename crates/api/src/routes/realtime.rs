@@ -2,16 +2,14 @@ use std::time::Duration;
 
 use axum::extract::State;
 use axum::extract::ws::{CloseFrame, Message, WebSocket, WebSocketUpgrade};
-use axum::http::{HeaderMap, header};
 use axum::response::Response;
-use ferrodock_core::{AppError, Id};
+use ferrodock_core::Id;
 use ferrodock_infra::realtime::{Envelope, Signal};
 use tokio::sync::broadcast::Receiver;
 use tokio::sync::broadcast::error::RecvError;
 
 use crate::error::{ApiResult, ErrorEnvelope};
-use crate::extract::Auth;
-use crate::security::origin_allowed;
+use crate::socket_auth::SocketAuth;
 use crate::state::AppState;
 
 const PING_INTERVAL: Duration = Duration::from_secs(20);
@@ -28,15 +26,8 @@ const SESSION_RENEW_CODE: u16 = 4000;
 pub async fn realtime(
     upgrade: WebSocketUpgrade,
     State(state): State<AppState>,
-    headers: HeaderMap,
-    Auth(principal): Auth,
+    SocketAuth(principal): SocketAuth,
 ) -> ApiResult<Response> {
-    let uses_key = headers.contains_key(header::AUTHORIZATION);
-    if !uses_key && !origin_allowed(&headers, state.settings.public_origin.as_deref()) {
-        return Err(AppError::forbidden()
-            .with_param("reason", "CSRF_ORIGIN_MISMATCH")
-            .into());
-    }
     let receiver = state.hub.subscribe();
     let organization_id = principal.organization_id;
     Ok(upgrade.on_upgrade(move |socket| serve(socket, receiver, organization_id)))

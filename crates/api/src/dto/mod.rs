@@ -7,6 +7,7 @@ mod domains;
 mod password;
 mod projects;
 mod variables;
+mod workloads;
 
 pub use api_keys::{ApiKeyDto, CreateApiKeyRequest, CreatedApiKeyResponse};
 pub use applications::{
@@ -29,3 +30,4 @@ pub use projects::{
     UpdateProjectRequest,
 };
 pub use variables::{ReplaceVariablesRequest, RevealedVariableDto, VariableDto, VariableInputDto};
+pub use workloads::WorkloadDto;

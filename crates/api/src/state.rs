@@ -8,6 +8,7 @@ use ferrodock_domain::auth::AuthService;
 use ferrodock_domain::deployments::DeploymentService;
 use ferrodock_domain::domains::DomainService;
 use ferrodock_domain::projects::ProjectService;
+use ferrodock_domain::terminal::TerminalService;
 use ferrodock_domain::variables::VariableService;
 use ferrodock_infra::docker::DockerEngine;
 use ferrodock_infra::realtime::Hub;
@@ -36,6 +37,7 @@ pub struct AppState {
     pub deployments: DeploymentService,
     pub domains: DomainService,
     pub variables: VariableService,
+    pub terminal: TerminalService,
     pub health: Arc<dyn HealthProbe>,
     pub settings: Arc<ApiSettings>,
 }
