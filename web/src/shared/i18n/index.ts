@@ -60,6 +60,7 @@ export async function setupI18n(): Promise<void> {
     lng: language,
     fallbackLng: FALLBACK,
     defaultNS: "common",
+    fallbackNS: "common",
     interpolation: { escapeValue: false },
     resources: {},
   });

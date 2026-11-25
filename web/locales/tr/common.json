@@ -41,6 +41,14 @@
     "CONTAINER_REFERENCE_INVALID": "Konteyner referansı geçersiz.",
     "CONTAINER_STATE_CONFLICT": "Konteyner başka bir işlemle meşgul. Tekrar deneyin.",
     "DOCKER_UNAVAILABLE": "Bu sunucudaki Docker'a ulaşılamıyor.",
-    "CONTAINER_PROTECTED": "FerroDock'un kendi konteynerleri panelden değiştirilemez."
+    "CONTAINER_PROTECTED": "FerroDock'un kendi konteynerleri panelden değiştirilemez.",
+    "PROJECT_NAME_INVALID": "En fazla {{max}} karakterlik bir proje adı girin.",
+    "DESCRIPTION_INVALID": "Açıklama {{max}} karakteri geçmemeli.",
+    "PROJECT_EXISTS": "Bu adda bir proje zaten var.",
+    "PROJECT_NOT_FOUND": "Bu proje yok ya da silinmiş.",
+    "ENVIRONMENT_NAME_INVALID": "En fazla {{max}} karakterlik bir ortam adı girin.",
+    "ENVIRONMENT_EXISTS": "Bu projede aynı adda bir ortam zaten var.",
+    "ENVIRONMENT_NOT_FOUND": "Bu ortam artık yok.",
+    "ENVIRONMENT_LAST": "Bir projede en az bir ortam olmalı."
   }
 }

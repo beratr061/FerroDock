@@ -1,8 +1,10 @@
 mod api_keys;
 mod audit;
+mod environments;
 mod identity;
 mod jobs;
 mod login_attempts;
+mod projects;
 mod sessions;
 
 use std::time::Duration;

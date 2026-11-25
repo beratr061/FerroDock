@@ -2,9 +2,35 @@
   "title": "Projects",
   "subtitle": "Group applications and databases by environment.",
   "create": "New project",
-  "comingSoon": "Available in the next release",
+  "createSubmit": "Create project",
+  "noDescription": "No description",
+  "back": "All projects",
+  "save": "Save changes",
+  "settings": "Project settings",
+  "fields": {
+    "name": "Name",
+    "namePlaceholder": "Storefront",
+    "description": "Description",
+    "descriptionPlaceholder": "What runs in this project"
+  },
   "empty": {
     "title": "No projects yet",
-    "description": "Projects hold your applications, databases and their environments. Creating projects is part of the next milestone."
+    "description": "Projects hold your applications, databases and their environments. Each new project starts with a production environment."
+  },
+  "environments": {
+    "title": "Environments",
+    "description": "Each environment keeps its own services, variables and domains.",
+    "new": "New environment",
+    "name": "Environment name",
+    "namePlaceholder": "staging",
+    "add": "Add environment",
+    "remove": "Delete",
+    "confirmRemove": "Delete environment"
+  },
+  "delete": {
+    "title": "Delete this project",
+    "description": "Removes the project and all of its environments. This cannot be undone.",
+    "action": "Delete project",
+    "confirm": "Yes, delete project"
   }
 }

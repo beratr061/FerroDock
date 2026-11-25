@@ -1,7 +1,8 @@
 use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::http::StatusCode;
-use ferrodock_domain::auth::{AuditRecord, Role};
+use ferrodock_domain::audit::AuditRecord;
+use ferrodock_domain::auth::Role;
 use ferrodock_infra::docker::ContainerAction;
 use serde_json::json;
 
@@ -75,9 +76,10 @@ pub async fn container_action(
     let record = AuditRecord {
         action: "container.action",
         resource_type: "container",
+        resource_id: None,
         metadata: json!({ "container": reference, "action": action }),
         ip_address: client.ip_address.as_deref(),
     };
-    state.auth.record_action(&principal, record).await;
+    state.audit.record(&principal, record).await;
     Ok(StatusCode::NO_CONTENT)
 }

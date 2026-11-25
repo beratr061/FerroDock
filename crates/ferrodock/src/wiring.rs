@@ -7,7 +7,9 @@ use ferrodock_core::config::AppConfig;
 use ferrodock_core::crypto::SecretBox;
 use ferrodock_core::events::{DomainEvent, EventBus};
 use ferrodock_db::pg::PgStore;
+use ferrodock_domain::audit::AuditLog;
 use ferrodock_domain::auth::{AuthRepos, AuthService};
+use ferrodock_domain::projects::ProjectService;
 use time::Duration;
 
 #[derive(Debug)]
@@ -72,9 +74,12 @@ pub async fn build(config: &AppConfig) -> AppResult<Wired> {
         trust_forwarded_for: config.trust_forwarded_for,
         version: env!("CARGO_PKG_VERSION"),
     };
+    let audit = AuditLog::new(Arc::new(store.clone()));
     let state = AppState {
         auth,
         docker: ferrodock_infra::docker::DockerEngine::connect_local()?,
+        audit: audit.clone(),
+        projects: ProjectService::new(Arc::new(store.clone()), audit),
         health: Arc::new(DatabaseProbe(store.clone())),
         settings: Arc::new(settings),
     };

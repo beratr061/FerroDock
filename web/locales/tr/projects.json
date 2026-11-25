@@ -2,9 +2,35 @@
   "title": "Projeler",
   "subtitle": "Uygulama ve veritabanlarını ortama göre gruplayın.",
   "create": "Yeni proje",
-  "comingSoon": "Bir sonraki sürümde",
+  "createSubmit": "Projeyi oluştur",
+  "noDescription": "Açıklama yok",
+  "back": "Tüm projeler",
+  "save": "Değişiklikleri kaydet",
+  "settings": "Proje ayarları",
+  "fields": {
+    "name": "Ad",
+    "namePlaceholder": "Mağaza",
+    "description": "Açıklama",
+    "descriptionPlaceholder": "Bu projede neler çalışıyor"
+  },
   "empty": {
     "title": "Henüz proje yok",
-    "description": "Projeler uygulamalarınızı, veritabanlarınızı ve ortamlarını bir arada tutar. Proje oluşturma bir sonraki aşamada geliyor."
+    "description": "Projeler uygulamalarınızı, veritabanlarınızı ve ortamlarını bir arada tutar. Her yeni proje bir production ortamıyla başlar."
+  },
+  "environments": {
+    "title": "Ortamlar",
+    "description": "Her ortamın kendi servisleri, değişkenleri ve domainleri olur.",
+    "new": "Yeni ortam",
+    "name": "Ortam adı",
+    "namePlaceholder": "staging",
+    "add": "Ortamı ekle",
+    "remove": "Sil",
+    "confirmRemove": "Ortamı sil"
+  },
+  "delete": {
+    "title": "Bu projeyi sil",
+    "description": "Projeyi ve tüm ortamlarını kaldırır. Bu işlem geri alınamaz.",
+    "action": "Projeyi sil",
+    "confirm": "Evet, projeyi sil"
   }
 }

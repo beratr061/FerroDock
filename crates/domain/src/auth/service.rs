@@ -9,10 +9,11 @@ use serde_json::Value;
 use subtle::ConstantTimeEq;
 use time::Duration;
 
-use super::input::{SetupInput, clean_locale, clean_name, normalize_email, slugify};
+use super::input::{SetupInput, clean_locale, normalize_email};
 use super::model::{CurrentUser, Membership, Principal, Role};
 use super::password;
 use super::sessions::SignedIn;
+use crate::text::{clean_name, slugify};
 
 #[derive(Clone)]
 pub struct AuthRepos {

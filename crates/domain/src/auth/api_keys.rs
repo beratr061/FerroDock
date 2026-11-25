@@ -7,10 +7,10 @@ use serde::Serialize;
 use time::{Duration, OffsetDateTime};
 use zeroize::Zeroizing;
 
-use super::input::clean_name;
 use super::model::{Principal, Role};
 use super::service::{AuditContext, AuthService};
 use super::tokens;
+use crate::text::clean_name;
 
 const MAX_EXPIRY_DAYS: u32 = 3650;
 const USAGE_WRITE_INTERVAL: Duration = Duration::minutes(5);

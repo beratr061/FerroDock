@@ -3,14 +3,17 @@ use utoipa::OpenApi;
 
 use crate::dto::{
     ApiKeyDto, ContainerActionDto, ContainerActionRequest, ContainerDto, CreateApiKeyRequest,
-    CreatedApiKeyResponse, EngineInfoDto, HealthResponse, MeResponse, MembershipDto, RoleDto,
-    SetupRequest, SetupStatus, SignInRequest,
+    CreateEnvironmentRequest, CreateProjectRequest, CreatedApiKeyResponse, EngineInfoDto,
+    EnvironmentDto, HealthResponse, MeResponse, MembershipDto, ProjectDto, RoleDto, SetupRequest,
+    SetupStatus, SignInRequest, UpdateProjectRequest,
 };
 use crate::error::{ErrorBody, ErrorEnvelope};
 use crate::routes::{
-    __path_check, __path_complete, __path_container_action, __path_create, __path_docker_info,
-    __path_list, __path_list_containers, __path_me, __path_revoke, __path_sign_in, __path_sign_out,
-    __path_status,
+    __path_check, __path_complete, __path_container_action, __path_create,
+    __path_create_environment, __path_create_project, __path_delete_environment,
+    __path_delete_project, __path_docker_info, __path_get_project, __path_list,
+    __path_list_containers, __path_list_projects, __path_me, __path_revoke, __path_sign_in,
+    __path_sign_out, __path_status, __path_update_project,
 };
 
 #[derive(OpenApi)]
@@ -29,6 +32,13 @@ use crate::routes::{
         list,
         create,
         revoke,
+        list_projects,
+        create_project,
+        get_project,
+        update_project,
+        delete_project,
+        create_environment,
+        delete_environment,
         docker_info,
         list_containers,
         container_action
@@ -41,6 +51,11 @@ use crate::routes::{
         EngineInfoDto,
         CreateApiKeyRequest,
         CreatedApiKeyResponse,
+        CreateEnvironmentRequest,
+        CreateProjectRequest,
+        EnvironmentDto,
+        ProjectDto,
+        UpdateProjectRequest,
         ErrorBody,
         ErrorEnvelope,
         HealthResponse,

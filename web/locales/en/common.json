@@ -41,6 +41,14 @@
     "CONTAINER_REFERENCE_INVALID": "The container reference is not valid.",
     "CONTAINER_STATE_CONFLICT": "The container is busy with another operation. Try again.",
     "DOCKER_UNAVAILABLE": "Docker on this server is not reachable.",
-    "CONTAINER_PROTECTED": "FerroDock's own containers cannot be changed from the panel."
+    "CONTAINER_PROTECTED": "FerroDock's own containers cannot be changed from the panel.",
+    "PROJECT_NAME_INVALID": "Enter a project name up to {{max}} characters.",
+    "DESCRIPTION_INVALID": "Keep the description under {{max}} characters.",
+    "PROJECT_EXISTS": "A project with this name already exists.",
+    "PROJECT_NOT_FOUND": "This project does not exist or was deleted.",
+    "ENVIRONMENT_NAME_INVALID": "Enter an environment name up to {{max}} characters.",
+    "ENVIRONMENT_EXISTS": "This project already has an environment with that name.",
+    "ENVIRONMENT_NOT_FOUND": "This environment no longer exists.",
+    "ENVIRONMENT_LAST": "A project needs at least one environment."
   }
 }
