@@ -63,6 +63,7 @@ services:
 
   traefik:
     image: traefik:v3.8.0
+    profiles: ["proxy"]
     restart: unless-stopped
     command:
       - --configFile=/etc/traefik/traefik.yml

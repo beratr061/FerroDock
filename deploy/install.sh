@@ -7,6 +7,7 @@ FERRODOCK_ASSETS_URL="${FERRODOCK_ASSETS_URL:-https://github.com/beratr061/Ferro
 PANEL_DOMAIN="${FERRODOCK_DOMAIN:-}"
 ACME_EMAIL="${FERRODOCK_ACME_EMAIL:-}"
 PANEL_PORT="${FERRODOCK_PANEL_PORT:-3000}"
+PROXY_MODE="${FERRODOCK_PROXY:-traefik}"
 CONFIG_DIR=/etc/ferrodock
 LOCAL_ASSETS="${FERRODOCK_LOCAL_ASSETS:-}"
 
@@ -29,9 +30,27 @@ port_in_use() {
     ss -ltnH "sport = :$1" 2>/dev/null | grep -q . && ! docker ps --format '{{.Names}}' 2>/dev/null | grep -q '^ferrodock-'
 }
 
+check_options() {
+    case "$PROXY_MODE" in
+        traefik | none) ;;
+        *) fail "FERRODOCK_PROXY must be 'traefik' or 'none'" ;;
+    esac
+    if [ "$PROXY_MODE" = none ] && [ -n "$PANEL_DOMAIN" ]; then
+        fail "FERRODOCK_DOMAIN needs the bundled proxy; unset it or drop FERRODOCK_PROXY=none"
+    fi
+}
+
+required_ports() {
+    if [ "$PROXY_MODE" = traefik ]; then
+        echo 80 443 "$PANEL_PORT"
+    else
+        echo "$PANEL_PORT"
+    fi
+}
+
 check_ports() {
     command -v ss >/dev/null 2>&1 || return 0
-    for port in 80 443 "$PANEL_PORT"; do
+    for port in $(required_ports); do
         if port_in_use "$port"; then
             fail "port $port is already in use; stop the service using it and retry"
         fi
@@ -111,6 +130,7 @@ write_panel_env() {
 }
 
 write_traefik_config() {
+    [ "$PROXY_MODE" = traefik ] || return 0
     fetch_asset traefik/traefik.yml "$CONFIG_DIR/traefik/traefik.yml"
     sed -i "s|__ACME_EMAIL__|${ACME_EMAIL:-admin@${PANEL_DOMAIN:-localhost}}|" "$CONFIG_DIR/traefik/traefik.yml"
     touch "$CONFIG_DIR/traefik/acme/acme.json"
@@ -128,8 +148,12 @@ start_stack() {
     if [ -n "$PANEL_DOMAIN" ]; then
         panel_bind=127.0.0.1
     fi
+    profiles=""
+    if [ "$PROXY_MODE" = traefik ]; then
+        profiles=proxy
+    fi
     FERRODOCK_IMAGE="$FERRODOCK_IMAGE" FERRODOCK_PANEL_PORT="$PANEL_PORT" FERRODOCK_PANEL_BIND="$panel_bind" \
-        docker compose -f "$CONFIG_DIR/docker-compose.yml" up -d --pull always
+        COMPOSE_PROFILES="$profiles" docker compose -f "$CONFIG_DIR/docker-compose.yml" up -d --pull missing
 }
 
 wait_until_healthy() {
@@ -160,6 +184,7 @@ print_summary() {
 main() {
     require_root
     check_platform
+    check_options
     install_docker
     check_ports
     prepare_directories
