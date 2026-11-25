@@ -24,7 +24,7 @@ jobs:
         run: |
           [ -n "$PUBLIC_KEY" ] || { echo "set the FERRODOCK_RELEASE_PUBLIC_KEY repository variable"; exit 1; }
           [ -n "$SIGNING_KEY" ] || { echo "set the FERRODOCK_RELEASE_SIGNING_KEY repository secret"; exit 1; }
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - id: meta
         name: Check tag matches the crate version
         run: |
@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: image
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.99.1"
