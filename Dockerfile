@@ -9,7 +9,7 @@ COPY openapi.json /src/openapi.json
 COPY web/ ./
 RUN pnpm build
 
-FROM rust:1.99.0-slim-bookworm AS backend
+FROM rust:1.99.1-slim-bookworm AS backend
 ARG FERRODOCK_RELEASE_PUBLIC_KEY=""
 WORKDIR /src
 ENV SQLX_OFFLINE=true \
