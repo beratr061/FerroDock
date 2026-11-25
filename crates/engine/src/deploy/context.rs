@@ -1,9 +1,10 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
+use ferrodock_core::AppResult;
 use ferrodock_core::Id;
 use ferrodock_core::crypto::SecretBox;
-use ferrodock_db::{ApplicationRepo, DeploymentRepo};
+use ferrodock_db::{ApplicationRepo, DeploymentRepo, VariableRepo};
 use ferrodock_infra::deploy_log::DeployLogs;
 use ferrodock_infra::docker::{
     DockerEngine, application_key, compose_project, network_alias, short_key,
@@ -16,6 +17,7 @@ pub struct DeployContext {
     pub docker: DockerEngine,
     pub applications: Arc<dyn ApplicationRepo>,
     pub deployments: Arc<dyn DeploymentRepo>,
+    pub variables: Arc<dyn VariableRepo>,
     pub secrets: SecretBox,
     pub logs: DeployLogs,
     pub data_dir: PathBuf,
@@ -68,6 +70,19 @@ impl Names {
 }
 
 impl DeployContext {
+    pub async fn variables(&self, application_id: Id) -> AppResult<Vec<(String, String)>> {
+        let records = self.variables.list(application_id).await?;
+        records
+            .into_iter()
+            .map(|record| {
+                let bytes = self.secrets.decrypt(&record.value_enc)?;
+                let value = String::from_utf8(bytes.to_vec())
+                    .map_err(|_| ferrodock_core::AppError::validation("SECRET_CORRUPTED"))?;
+                Ok((record.key, value))
+            })
+            .collect()
+    }
+
     pub fn build_dir(&self, deployment_id: Id) -> PathBuf {
         self.data_dir.join("builds").join(deployment_id.to_string())
     }

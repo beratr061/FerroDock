@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { errorMessage } from "@/shared/lib/errors";
 import { Button, StatusBadge, type StatusTone } from "@/shared/ui";
 
-import { useCheckDns, useRemoveDomain, type DnsVerdict, type Domain } from "./domains";
+import { useCheckDns, useRemoveDomain, type DnsVerdict, type Domain } from "./api";
 
 const VERDICT_TONES: Record<DnsVerdict, StatusTone> = {
   points_here: "success",

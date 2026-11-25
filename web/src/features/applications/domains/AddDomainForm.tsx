@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { errorMessage } from "@/shared/lib/errors";
 import { Button, InlineAlert, TextField } from "@/shared/ui";
 
-import { useAddDomain } from "./domains";
+import { useAddDomain } from "./api";
 
 interface FormValues {
   host: string;

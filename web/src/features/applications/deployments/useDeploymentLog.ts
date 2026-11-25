@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { fetchDeploymentLog, isActive, type DeploymentStatus } from "./deployments";
+import { fetchDeploymentLog, isActive, type DeploymentStatus } from "./api";
 
 const FOLLOW_INTERVAL_MS = 1_200;
 const MAX_KEPT_CHARS = 400_000;

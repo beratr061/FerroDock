@@ -18,6 +18,7 @@ pub struct Job<'a> {
     pub application: &'a ApplicationRecord,
     pub deployment: &'a DeploymentRecord,
     pub names: &'a Names,
+    pub variables: &'a [(String, String)],
     pub log: &'a DeployLog,
     pub cancel: &'a CancellationToken,
 }
@@ -141,6 +142,7 @@ impl Job<'_> {
         let project = self.names.compose_project();
         let compose = ComposeUp {
             project: &project,
+            variables: self.variables,
             file: &contained_path(&directory, &git.build_path)?,
             directory: &directory,
         };

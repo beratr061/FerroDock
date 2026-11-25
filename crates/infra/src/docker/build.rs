@@ -5,7 +5,7 @@ use tokio::process::Command;
 use tokio_util::sync::CancellationToken;
 
 use crate::deploy_log::DeployLog;
-use crate::process::{capture, run_logged};
+use crate::process::{capture, isolated, run_logged};
 
 const COMPOSE_WAIT_SECONDS: &str = "300";
 
@@ -20,12 +20,13 @@ pub struct ImageBuild<'a> {
 #[derive(Debug)]
 pub struct ComposeUp<'a> {
     pub project: &'a str,
+    pub variables: &'a [(String, String)],
     pub file: &'a Path,
     pub directory: &'a Path,
 }
 
 fn docker() -> Command {
-    let mut command = Command::new("docker");
+    let mut command = isolated("docker");
     command
         .env("DOCKER_BUILDKIT", "1")
         .env("BUILDKIT_PROGRESS", "plain");
@@ -62,7 +63,8 @@ pub async fn compose_up(
         .arg("--project-directory")
         .arg(compose.directory)
         .args(["up", "-d", "--build", "--remove-orphans", "--wait"])
-        .args(["--wait-timeout", COMPOSE_WAIT_SECONDS]);
+        .args(["--wait-timeout", COMPOSE_WAIT_SECONDS])
+        .envs(compose.variables.iter().map(|(key, value)| (key, value)));
     log.step(&format!("Starting compose project {}", compose.project))
         .await;
     run_logged(command, log, cancel, "COMPOSE_UP_FAILED").await

@@ -9,6 +9,34 @@ use crate::deploy_log::DeployLog;
 
 pub const CANCELLED: &str = "DEPLOYMENT_CANCELLED";
 
+const INHERITED_VARIABLES: [&str; 14] = [
+    "PATH",
+    "HOME",
+    "DOCKER_HOST",
+    "DOCKER_CONFIG",
+    "DOCKER_CERT_PATH",
+    "DOCKER_TLS_VERIFY",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "APPDATA",
+    "LOCALAPPDATA",
+    "PROGRAMDATA",
+    "PROGRAMFILES",
+];
+
+pub fn isolated(program: &str) -> Command {
+    let mut command = Command::new(program);
+    command.env_clear();
+    for name in INHERITED_VARIABLES {
+        if let Some(value) = std::env::var_os(name) {
+            command.env(name, value);
+        }
+    }
+    command
+}
+
 async fn pump(stream: impl AsyncRead + Unpin, log: DeployLog) {
     let mut lines = BufReader::new(stream).lines();
     while let Ok(Some(line)) = lines.next_line().await {

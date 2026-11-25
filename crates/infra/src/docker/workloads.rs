@@ -26,6 +26,7 @@ pub struct WorkloadSpec {
     pub application_id: String,
     pub deployment_id: String,
     pub alias: String,
+    pub env: Vec<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -50,6 +51,7 @@ fn container_body(spec: &WorkloadSpec) -> ContainerCreateBody {
     };
     ContainerCreateBody {
         image: Some(spec.image.clone()),
+        env: Some(spec.env.clone()),
         labels: Some(labels(spec)),
         host_config: Some(HostConfig {
             restart_policy: Some(RestartPolicy {

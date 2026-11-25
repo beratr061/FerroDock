@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { errorMessage } from "@/shared/lib/errors";
 import { Button, StatusBadge, type StatusTone } from "@/shared/ui";
 
-import { isActive, useCancelDeployment, useRollback, type Deployment, type DeploymentStatus } from "./deployments";
+import { isActive, useCancelDeployment, useRollback, type Deployment, type DeploymentStatus } from "./api";
 
 const TONES: Record<DeploymentStatus, StatusTone> = {
   queued: "info",

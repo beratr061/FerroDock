@@ -97,5 +97,25 @@
       "points_elsewhere": "The record points to another address. Update the A or AAAA record before expecting HTTPS.",
       "unresolved": "No A or AAAA record yet. Create one that points to this server."
     }
+  },
+  "variables": {
+    "title": "Environment variables",
+    "description": "Encrypted at rest and passed to the container and to Docker Compose. Changes apply on the next deployment.",
+    "mode": "Editor",
+    "modeList": "List",
+    "modeFile": ".env file",
+    "key": "Name",
+    "value": "Value",
+    "secret": "Secret: hide the value after saving",
+    "remove": "Remove",
+    "hidden": "secret, unchanged",
+    "reveal": "Reveal",
+    "replace": "Replace",
+    "add": "Add variable",
+    "save": "Save variables",
+    "applyFile": "Apply to list",
+    "empty": "No variables yet.",
+    "hiddenKept": "{{count}} secret values are not shown here and stay unchanged unless you list the same name.",
+    "invalidLines": "Skipped lines that are not NAME=value: {{lines}}"
   }
 }

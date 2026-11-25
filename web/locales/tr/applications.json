@@ -97,5 +97,25 @@
       "points_elsewhere": "Kayıt başka bir adresi gösteriyor. HTTPS beklemeden önce A veya AAAA kaydını güncelleyin.",
       "unresolved": "Henüz A veya AAAA kaydı yok. Bu sunucuyu gösteren bir kayıt oluşturun."
     }
+  },
+  "variables": {
+    "title": "Ortam değişkenleri",
+    "description": "Şifreli saklanır, konteynere ve Docker Compose'a aktarılır. Değişiklikler bir sonraki dağıtımda geçerli olur.",
+    "mode": "Düzenleyici",
+    "modeList": "Liste",
+    "modeFile": ".env dosyası",
+    "key": "Ad",
+    "value": "Değer",
+    "secret": "Gizli: kaydettikten sonra değeri gizle",
+    "remove": "Kaldır",
+    "hidden": "gizli, değişmedi",
+    "reveal": "Göster",
+    "replace": "Değiştir",
+    "add": "Değişken ekle",
+    "save": "Değişkenleri kaydet",
+    "applyFile": "Listeye uygula",
+    "empty": "Henüz değişken yok.",
+    "hiddenKept": "{{count}} gizli değer burada gösterilmez; aynı adı yazmadıkça değişmeden kalır.",
+    "invalidLines": "AD=değer biçiminde olmayan satırlar atlandı: {{lines}}"
   }
 }

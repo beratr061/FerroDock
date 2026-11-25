@@ -6,10 +6,10 @@ import { useTranslation } from "react-i18next";
 import { errorMessage } from "@/shared/lib/errors";
 import { Button, InlineAlert } from "@/shared/ui";
 
-import type { Application } from "./api";
+import type { Application } from "../api";
 import { DeploymentLog } from "./DeploymentLog";
 import { DeploymentRow } from "./DeploymentRow";
-import { deploymentsQuery, useDeploy, type Deployment } from "./deployments";
+import { deploymentsQuery, useDeploy, type Deployment } from "./api";
 
 function rollbackTargets(deployments: Deployment[], application: Application): Set<string> {
   if (application.source.kind === "git" && application.source.build_kind === "compose") {

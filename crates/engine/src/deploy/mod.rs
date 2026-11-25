@@ -57,11 +57,13 @@ impl DeployHandler {
             .await?
             .ok_or_else(|| AppError::not_found("APPLICATION_NOT_FOUND"))?;
         let names = Names::new(application.id, deployment.id, &application.slug);
+        let variables = ctx.variables(application.id).await?;
         let run = Job {
             ctx,
             application: &application,
             deployment: &deployment,
             names: &names,
+            variables: &variables,
             log,
             cancel,
         };

@@ -6,6 +6,7 @@ mod docker;
 mod domains;
 mod password;
 mod projects;
+mod variables;
 
 pub use api_keys::{ApiKeyDto, CreateApiKeyRequest, CreatedApiKeyResponse};
 pub use applications::{
@@ -27,3 +28,4 @@ pub use projects::{
     CreateEnvironmentRequest, CreateProjectRequest, EnvironmentDto, ProjectDto,
     UpdateProjectRequest,
 };
+pub use variables::{ReplaceVariablesRequest, RevealedVariableDto, VariableDto, VariableInputDto};

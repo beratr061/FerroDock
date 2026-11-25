@@ -7,7 +7,7 @@ use tokio_util::sync::CancellationToken;
 
 use super::source::{parse_repository_url, validate_branch};
 use crate::deploy_log::DeployLog;
-use crate::process::{capture, run_logged};
+use crate::process::{capture, isolated, run_logged};
 
 #[derive(Debug)]
 pub struct CheckoutSpec<'a> {
@@ -55,7 +55,7 @@ fn ssh_command(key: &Path, known_hosts: &Path) -> AppResult<String> {
 }
 
 fn git() -> Command {
-    let mut command = Command::new("git");
+    let mut command = isolated("git");
     command
         .env("GIT_TERMINAL_PROMPT", "0")
         .env("GIT_ALLOW_PROTOCOL", "https:ssh")

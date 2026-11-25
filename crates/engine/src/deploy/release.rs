@@ -24,6 +24,11 @@ impl Job<'_> {
             application_id: self.application.id.to_string(),
             deployment_id: self.deployment.id.to_string(),
             alias: self.names.alias(),
+            env: self
+                .variables
+                .iter()
+                .map(|(key, value)| format!("{key}={value}"))
+                .collect(),
         };
         self.log
             .step(&format!("Starting container {}", spec.name))

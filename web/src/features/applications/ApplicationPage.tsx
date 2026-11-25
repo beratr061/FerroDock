@@ -8,9 +8,10 @@ import { InlineAlert } from "@/shared/ui";
 
 import { applicationQuery } from "./api";
 import { ApplicationSettings } from "./ApplicationSettings";
-import { DeploymentsPanel } from "./DeploymentsPanel";
+import { DeploymentsPanel } from "./deployments/DeploymentsPanel";
 import { DeployKeyPanel } from "./DeployKeyPanel";
-import { DomainsPanel } from "./DomainsPanel";
+import { DomainsPanel } from "./domains/DomainsPanel";
+import { VariablesPanel } from "./variables/VariablesPanel";
 import { sourceSummary } from "./sourceForm";
 
 export function ApplicationPage() {
@@ -41,6 +42,7 @@ export function ApplicationPage() {
             {data.description ? <p className="max-w-2xl text-muted">{data.description}</p> : null}
           </header>
           <DeploymentsPanel application={data} />
+          <VariablesPanel applicationId={data.id} />
           <DomainsPanel applicationId={data.id} />
           <DeployKeyPanel application={data} />
           <ApplicationSettings application={data} />

@@ -8,6 +8,7 @@ mod environments;
 mod health;
 mod projects;
 mod setup;
+mod variables;
 
 use axum::Router;
 use axum::routing::{MethodRouter, delete, get, post};
@@ -40,6 +41,9 @@ pub(crate) use projects::{
     __path_update_project,
 };
 pub(crate) use setup::{__path_complete, __path_status};
+pub(crate) use variables::{
+    __path_list_variables, __path_replace_variables, __path_reveal_variable,
+};
 
 pub(crate) fn actor<'a>(principal: &'a Principal, client: &'a ClientMeta) -> Actor<'a> {
     Actor {
@@ -132,6 +136,18 @@ fn domain_routes() -> Router<AppState> {
         )
 }
 
+fn variable_routes() -> Router<AppState> {
+    Router::new()
+        .route(
+            "/applications/{id}/variables",
+            get(variables::list_variables).put(variables::replace_variables),
+        )
+        .route(
+            "/applications/{id}/variables/{key}/reveal",
+            post(variables::reveal_variable),
+        )
+}
+
 fn docker_routes() -> Router<AppState> {
     Router::new()
         .route("/docker/info", get(docker::docker_info))
@@ -162,5 +178,6 @@ pub fn api_routes(trust_forwarded: bool) -> Router<AppState> {
         .merge(workload_routes())
         .merge(deployment_routes())
         .merge(domain_routes())
+        .merge(variable_routes())
         .merge(docker_routes())
 }

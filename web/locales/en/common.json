@@ -82,6 +82,13 @@
     "DOMAIN_RESERVED": "This host name is used by the FerroDock panel.",
     "DOMAIN_NOT_FOUND": "This domain no longer exists.",
     "PROXY_WRITE_FAILED": "The domain was saved but the proxy configuration could not be written.",
-    "COMPOSE_DOWN_FAILED": "The Compose project could not be stopped."
+    "COMPOSE_DOWN_FAILED": "The Compose project could not be stopped.",
+    "VARIABLE_KEY_INVALID": "Variable names use letters, digits and underscores and cannot start with a digit ({{key}}).",
+    "VARIABLE_KEY_DUPLICATE": "{{key}} is listed more than once.",
+    "VARIABLE_VALUE_INVALID": "The value of {{key}} is too long or contains a null byte.",
+    "VARIABLE_VALUE_REQUIRED": "Enter a value for {{key}}.",
+    "VARIABLE_LIMIT": "An application can have at most {{max}} variables.",
+    "VARIABLE_NOT_FOUND": "This variable no longer exists.",
+    "SECRET_CORRUPTED": "A stored secret could not be decrypted. Check the master key."
   }
 }

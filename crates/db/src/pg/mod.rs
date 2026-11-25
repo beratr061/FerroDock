@@ -10,6 +10,7 @@ mod jobs;
 mod login_attempts;
 mod projects;
 mod sessions;
+mod variables;
 
 use std::time::Duration;
 

@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO application_variables (application_id, key, value_enc, secret)\n                 VALUES ($1, $2, $3, $4)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Text",
+        "Bool"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "3413bc2189c3cee8a6225075cd3ca24a50c2a2629f8c2f2e3526fbbe7bf4f43d"
+}

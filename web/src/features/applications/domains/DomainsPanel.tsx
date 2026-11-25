@@ -8,7 +8,7 @@ import { Button, InlineAlert } from "@/shared/ui";
 
 import { AddDomainForm } from "./AddDomainForm";
 import { DomainRow } from "./DomainRow";
-import { domainsQuery } from "./domains";
+import { domainsQuery } from "./api";
 
 export function DomainsPanel({ applicationId }: { applicationId: string }) {
   const { t } = useTranslation("applications");
