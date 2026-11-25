@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 
+import { useTranslation } from "@/shared/i18n";
 import { Logo } from "@/shared/ui";
 
 import { NAV_ITEMS } from "./navigation";

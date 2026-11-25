@@ -1,5 +1,5 @@
 import { Link, Outlet } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/shared/i18n";
 
 const SECTIONS = [
   { to: "/settings/api-keys", key: "apiKeys" },

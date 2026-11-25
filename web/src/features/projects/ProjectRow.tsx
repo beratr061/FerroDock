@@ -1,7 +1,7 @@
 import { CaretRightIcon } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 
+import { useTranslation } from "@/shared/i18n";
 import type { Project } from "./api";
 
 export function ProjectRow({ project }: { project: Project }) {

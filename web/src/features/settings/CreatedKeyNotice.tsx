@@ -1,5 +1,5 @@
-import { useTranslation } from "react-i18next";
 
+import { useTranslation } from "@/shared/i18n";
 import { Button, CopyButton, InlineAlert } from "@/shared/ui";
 
 interface CreatedKeyNoticeProps {

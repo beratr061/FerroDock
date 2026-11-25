@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { CheckCircleIcon, InfoIcon, WarningCircleIcon, WarningIcon } from "@phosphor-icons/react";
+import { CheckCircleIcon, InfoIcon, WarningCircleIcon, WarningIcon } from "../icons";
 
 import { cx } from "../lib/cx";
 

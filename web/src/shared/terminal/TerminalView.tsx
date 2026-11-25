@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { ArrowClockwiseIcon } from "@phosphor-icons/react";
-import { useTranslation } from "react-i18next";
 
+import { useTranslation } from "../i18n";
 import { Button } from "../ui";
 
 import { useTerminalSession, type Phase } from "./useTerminalSession";

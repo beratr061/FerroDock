@@ -1,6 +1,6 @@
-import { DesktopIcon, MoonIcon, SunIcon } from "@phosphor-icons/react";
-import { useTranslation } from "react-i18next";
+import { DesktopIcon, MoonIcon, SunIcon } from "../icons";
 
+import { useTranslation } from "../i18n";
 import { useTheme, type ThemePreference } from "../hooks/useTheme";
 import { cx } from "../lib/cx";
 

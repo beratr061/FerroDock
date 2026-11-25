@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { TerminalWindowIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
 
+import { useTranslation } from "@/shared/i18n";
 import { api, unwrap } from "@/shared/api/client";
 import { TerminalDrawer } from "@/shared/terminal";
 import { Button } from "@/shared/ui";

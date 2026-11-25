@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
-import { useTranslation } from "react-i18next";
+import { CheckIcon, CopyIcon } from "../icons";
 
+import { useTranslation } from "../i18n";
 import { Button } from "./Button";
 
 export function CopyButton({ value }: { value: string }) {

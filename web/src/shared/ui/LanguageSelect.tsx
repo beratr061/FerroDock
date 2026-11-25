@@ -1,5 +1,5 @@
-import { useTranslation } from "react-i18next";
 
+import { useTranslation } from "../i18n";
 import { changeLanguage, languages } from "../i18n";
 import { SelectField } from "./SelectField";
 

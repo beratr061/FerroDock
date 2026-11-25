@@ -1,8 +1,8 @@
-import { SignOutIcon } from "@phosphor-icons/react";
+import { SignOutIcon } from "@/shared/icons";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 
+import { useTranslation } from "@/shared/i18n";
 import { meQuery, useSignOut } from "@/features/auth";
 
 function initials(name: string): string {

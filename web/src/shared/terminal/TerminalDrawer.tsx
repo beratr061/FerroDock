@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect } from "react";
 import { TerminalWindowIcon, XIcon } from "@phosphor-icons/react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../i18n";
 
 const TerminalView = lazy(() => import("./TerminalView"));
 

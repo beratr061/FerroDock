@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 
+import { useTranslation } from "@/shared/i18n";
 import { Button } from "@/shared/ui";
 
 import { useRevokeApiKey, type ApiKey } from "./api";

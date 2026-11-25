@@ -1,5 +1,5 @@
-import { useTranslation } from "react-i18next";
 
+import { useTranslation } from "@/shared/i18n";
 import { LanguageSelect, ThemeSwitcher } from "@/shared/ui";
 
 export function AppearancePage() {

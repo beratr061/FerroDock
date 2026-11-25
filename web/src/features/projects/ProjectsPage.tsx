@@ -2,8 +2,8 @@ import { useState } from "react";
 import { CubeIcon, PlusIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 
+import { useTranslation } from "@/shared/i18n";
 import { errorMessage } from "@/shared/lib/errors";
 import { Button, EmptyState, InlineAlert } from "@/shared/ui";
 

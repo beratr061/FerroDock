@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { ArrowDownIcon } from "@phosphor-icons/react";
-import { useTranslation } from "react-i18next";
 
+import { useTranslation } from "@/shared/i18n";
 import { useDeploymentLog } from "./useDeploymentLog";
 
 const STICK_THRESHOLD_PX = 24;

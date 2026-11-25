@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { useTranslation } from "react-i18next";
 
+import { useTranslation } from "@/shared/i18n";
 import { LanguageSelect, Logo, ThemeSwitcher } from "@/shared/ui";
 
 interface AuthLayoutProps {

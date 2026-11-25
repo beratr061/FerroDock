@@ -2,8 +2,8 @@ import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
 
+import { useTranslation } from "@/shared/i18n";
 import { errorMessage } from "@/shared/lib/errors";
 import { Button, InlineAlert, TextField } from "@/shared/ui";
 

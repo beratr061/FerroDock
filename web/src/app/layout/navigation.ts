@@ -1,4 +1,4 @@
-import { CubeIcon, GearSixIcon, HardDrivesIcon } from "@phosphor-icons/react";
+import { CubeIcon, GearSixIcon, HardDrivesIcon } from "@/shared/icons";
 
 export const NAV_ITEMS = [
   { to: "/projects", key: "projects", Icon: CubeIcon },

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { HardDrivesIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
 
+import { useTranslation } from "@/shared/i18n";
 import { ApiError } from "@/shared/api/client";
 import { errorMessage } from "@/shared/lib/errors";
 import { TerminalDrawer } from "@/shared/terminal";

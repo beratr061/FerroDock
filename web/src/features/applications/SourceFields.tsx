@@ -1,6 +1,6 @@
 import type { UseFormReturn } from "react-hook-form";
-import { useTranslation } from "react-i18next";
 
+import { useTranslation } from "@/shared/i18n";
 import { SegmentedControl, SelectField, TextField } from "@/shared/ui";
 
 import type { SourceFormValues, SourceKind } from "./sourceForm";

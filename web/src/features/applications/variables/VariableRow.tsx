@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { EyeIcon, LockKeyIcon, TrashIcon } from "@phosphor-icons/react";
-import { useTranslation } from "react-i18next";
 
+import { useTranslation } from "@/shared/i18n";
 import { errorMessage } from "@/shared/lib/errors";
 
 import { revealVariable } from "./api";
