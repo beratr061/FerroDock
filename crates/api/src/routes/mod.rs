@@ -1,6 +1,7 @@
 mod api_keys;
 mod applications;
 mod auth;
+mod deployments;
 mod docker;
 mod environments;
 mod health;
@@ -23,6 +24,10 @@ pub(crate) use applications::{
     __path_list_applications, __path_rotate_deploy_key, __path_update_application,
 };
 pub(crate) use auth::{__path_me, __path_sign_in, __path_sign_out};
+pub(crate) use deployments::{
+    __path_cancel_deployment, __path_create_deployment, __path_deployment_log,
+    __path_get_deployment, __path_list_deployments, __path_rollback_deployment,
+};
 pub(crate) use docker::{__path_container_action, __path_docker_info, __path_list_containers};
 pub(crate) use environments::{__path_create_environment, __path_delete_environment};
 pub(crate) use health::__path_check;
@@ -89,6 +94,24 @@ fn workload_routes() -> Router<AppState> {
         )
 }
 
+fn deployment_routes() -> Router<AppState> {
+    Router::new()
+        .route(
+            "/applications/{id}/deployments",
+            get(deployments::list_deployments).post(deployments::create_deployment),
+        )
+        .route("/deployments/{id}", get(deployments::get_deployment))
+        .route("/deployments/{id}/log", get(deployments::deployment_log))
+        .route(
+            "/deployments/{id}/rollback",
+            post(deployments::rollback_deployment),
+        )
+        .route(
+            "/deployments/{id}/cancel",
+            post(deployments::cancel_deployment),
+        )
+}
+
 fn docker_routes() -> Router<AppState> {
     Router::new()
         .route("/docker/info", get(docker::docker_info))
@@ -117,5 +140,6 @@ pub fn api_routes(trust_forwarded: bool) -> Router<AppState> {
         .route("/api-keys", get(api_keys::list).post(api_keys::create))
         .route("/api-keys/{id}", delete(api_keys::revoke))
         .merge(workload_routes())
+        .merge(deployment_routes())
         .merge(docker_routes())
 }

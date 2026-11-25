@@ -938,6 +938,7 @@ dependencies = [
  "ed25519-dalek",
  "ferrodock-core",
  "ferrodock-db",
+ "ferrodock-infra",
  "reqwest",
  "rustls",
  "semver",
@@ -948,6 +949,8 @@ dependencies = [
  "tokio",
  "tokio-util",
  "tracing",
+ "uuid",
+ "zeroize",
 ]
 
 [[package]]
@@ -961,6 +964,8 @@ dependencies = [
  "futures-util",
  "serde",
  "tokio",
+ "tokio-util",
+ "tracing",
  "zeroize",
 ]
 

@@ -2,6 +2,7 @@ mod api_keys;
 mod application_rows;
 mod applications;
 mod audit;
+mod deployments;
 mod environments;
 mod identity;
 mod jobs;

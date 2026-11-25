@@ -59,6 +59,20 @@
     "GIT_BRANCH_INVALID": "Enter a valid branch name.",
     "BUILD_PATH_INVALID": "Use a relative path inside the repository.",
     "IMAGE_INVALID": "Enter a valid image reference, for example nginx:1.29-alpine.",
-    "DEPLOY_KEY_NOT_APPLICABLE": "Deploy keys are only used with SSH repositories."
+    "DEPLOY_KEY_NOT_APPLICABLE": "Deploy keys are only used with SSH repositories.",
+    "DEPLOYMENT_NOT_FOUND": "This deployment no longer exists.",
+    "DEPLOYMENT_NOT_CANCELLABLE": "This deployment has already finished.",
+    "ROLLBACK_TARGET_UNAVAILABLE": "That deployment can no longer be restored; its image was removed or it did not succeed.",
+    "GIT_CLONE_FAILED": "The repository could not be cloned",
+    "IMAGE_BUILD_FAILED": "The image build failed",
+    "IMAGE_PULL_FAILED": "The image could not be pulled",
+    "IMAGE_NOT_FOUND": "The image was not found",
+    "CONTAINER_EXITED": "The container exited during startup",
+    "CONTAINER_CRASHING": "The container kept restarting",
+    "HEALTHCHECK_FAILED": "The health check failed",
+    "READINESS_TIMEOUT": "The container did not become ready in time",
+    "COMPOSE_UP_FAILED": "Docker Compose could not start the project",
+    "JOB_INTERRUPTED": "Interrupted by a panel restart",
+    "DEPLOYMENT_CANCELLED": "Cancelled"
   }
 }

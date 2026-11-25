@@ -49,26 +49,33 @@ fn outcome_parts(outcome: &JobOutcome) -> (&'static str, Option<&str>) {
     }
 }
 
+pub(super) async fn insert_job<'e>(
+    executor: impl sqlx::Executor<'e, Database = sqlx::Postgres>,
+    job: NewJob,
+) -> AppResult<JobRecord> {
+    sqlx::query_as!(
+        JobRow,
+        "INSERT INTO jobs (id, organization_id, kind, queue, group_key, payload, status)
+         VALUES ($1, $2, $3, $4, $5, $6, 'queued')
+         RETURNING id, organization_id, kind, queue, group_key, payload, status, attempts,
+                   error_code, created_at, started_at, finished_at",
+        Id::new().as_uuid(),
+        job.organization_id.map(|id| id.as_uuid()),
+        job.kind,
+        job.queue,
+        job.group_key,
+        job.payload
+    )
+    .fetch_one(executor)
+    .await
+    .map(JobRecord::from)
+    .map_err(db_error)
+}
+
 #[async_trait]
 impl JobQueue for PgStore {
     async fn enqueue(&self, job: NewJob) -> AppResult<JobRecord> {
-        sqlx::query_as!(
-            JobRow,
-            "INSERT INTO jobs (id, organization_id, kind, queue, group_key, payload, status)
-             VALUES ($1, $2, $3, $4, $5, $6, 'queued')
-             RETURNING id, organization_id, kind, queue, group_key, payload, status, attempts,
-                       error_code, created_at, started_at, finished_at",
-            Id::new().as_uuid(),
-            job.organization_id.map(|id| id.as_uuid()),
-            job.kind,
-            job.queue,
-            job.group_key,
-            job.payload
-        )
-        .fetch_one(&self.pool)
-        .await
-        .map(JobRecord::from)
-        .map_err(db_error)
+        insert_job(&self.pool, job).await
     }
 
     async fn claim(

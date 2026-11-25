@@ -2,13 +2,19 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use ferrodock_db::pg::{JobSignals, PgStore};
+use ferrodock_engine::deploy::{DeployContext, DeployHandler};
 use ferrodock_engine::jobs::{JobRunner, JobSignal, RunnerConfig};
 use tokio_util::sync::CancellationToken;
 
-pub const LOCAL_QUEUE: &str = "server:local";
+use ferrodock_db::jobs::LOCAL_QUEUE;
 const RECONNECT_DELAY: Duration = Duration::from_secs(5);
 
-pub fn start(store: &PgStore, concurrency: u32, shutdown: &CancellationToken) {
+pub fn start(
+    store: &PgStore,
+    deploy: DeployContext,
+    concurrency: u32,
+    shutdown: &CancellationToken,
+) {
     let signal = JobSignal::default();
     let config = RunnerConfig {
         queue: LOCAL_QUEUE.to_owned(),
@@ -18,7 +24,8 @@ pub fn start(store: &PgStore, concurrency: u32, shutdown: &CancellationToken) {
         cancel_check_interval: Duration::from_secs(2),
         cancel_grace: Duration::from_secs(15),
     };
-    let runner = JobRunner::new(Arc::new(store.clone()), config, signal.clone());
+    let runner = JobRunner::new(Arc::new(store.clone()), config, signal.clone())
+        .register(Arc::new(DeployHandler::new(deploy)));
     let runner_shutdown = shutdown.clone();
     tokio::spawn(async move {
         if let Err(error) = runner.run(runner_shutdown).await {

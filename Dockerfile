@@ -24,13 +24,18 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
     cargo build --release --locked -p ferrodock \
     && cp target/release/ferrodock /usr/local/bin/ferrodock
 
+FROM docker:29.8-cli AS docker-cli
+
 FROM debian:bookworm-slim AS runtime
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates \
+    && apt-get install -y --no-install-recommends ca-certificates git openssh-client \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --system --uid 10001 --home-dir /var/lib/ferrodock ferrodock \
     && mkdir -p /var/lib/ferrodock /etc/ferrodock \
     && chown ferrodock:ferrodock /var/lib/ferrodock /etc/ferrodock
+COPY --from=docker-cli /usr/local/bin/docker /usr/local/bin/docker
+COPY --from=docker-cli /usr/local/libexec/docker/cli-plugins/docker-buildx /usr/local/libexec/docker/cli-plugins/docker-buildx
+COPY --from=docker-cli /usr/local/libexec/docker/cli-plugins/docker-compose /usr/local/libexec/docker/cli-plugins/docker-compose
 COPY --from=backend /usr/local/bin/ferrodock /usr/local/bin/ferrodock
 USER ferrodock
 ENV FERRODOCK_BIND_ADDR=0.0.0.0:3000

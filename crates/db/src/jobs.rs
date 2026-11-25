@@ -3,6 +3,8 @@ use ferrodock_core::{AppResult, Id};
 use serde_json::Value;
 use time::OffsetDateTime;
 
+pub const LOCAL_QUEUE: &str = "server:local";
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum JobStatus {
     Queued,

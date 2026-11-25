@@ -22,7 +22,12 @@ pub async fn run(config: AppConfig) -> AppResult<()> {
     let wired = wiring::build(&config).await?;
     spawn_session_purger(wired.state.auth.clone());
     let background = CancellationToken::new();
-    jobs::start(&wired.store, config.job_concurrency, &background);
+    jobs::start(
+        &wired.store,
+        wired.deploy.clone(),
+        config.job_concurrency,
+        &background,
+    );
     let listener = TcpListener::bind(config.bind_addr)
         .await
         .map_err(AppError::internal)?;

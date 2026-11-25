@@ -59,6 +59,20 @@
     "GIT_BRANCH_INVALID": "Geçerli bir dal adı girin.",
     "BUILD_PATH_INVALID": "Depo içinde göreli bir yol kullanın.",
     "IMAGE_INVALID": "Geçerli bir imaj adı girin, örneğin nginx:1.29-alpine.",
-    "DEPLOY_KEY_NOT_APPLICABLE": "Deploy key yalnızca SSH depolarıyla kullanılır."
+    "DEPLOY_KEY_NOT_APPLICABLE": "Deploy key yalnızca SSH depolarıyla kullanılır.",
+    "DEPLOYMENT_NOT_FOUND": "Bu dağıtım artık yok.",
+    "DEPLOYMENT_NOT_CANCELLABLE": "Bu dağıtım zaten tamamlandı.",
+    "ROLLBACK_TARGET_UNAVAILABLE": "Bu dağıtıma geri dönülemez; imajı silinmiş ya da dağıtım başarısız olmuş.",
+    "GIT_CLONE_FAILED": "Depo klonlanamadı",
+    "IMAGE_BUILD_FAILED": "İmaj derlemesi başarısız oldu",
+    "IMAGE_PULL_FAILED": "İmaj çekilemedi",
+    "IMAGE_NOT_FOUND": "İmaj bulunamadı",
+    "CONTAINER_EXITED": "Konteyner başlarken kapandı",
+    "CONTAINER_CRASHING": "Konteyner sürekli yeniden başladı",
+    "HEALTHCHECK_FAILED": "Sağlık kontrolü başarısız oldu",
+    "READINESS_TIMEOUT": "Konteyner zamanında hazır olmadı",
+    "COMPOSE_UP_FAILED": "Docker Compose projeyi başlatamadı",
+    "JOB_INTERRUPTED": "Panel yeniden başladığı için yarıda kaldı",
+    "DEPLOYMENT_CANCELLED": "İptal edildi"
   }
 }

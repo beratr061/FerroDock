@@ -42,5 +42,28 @@
     "description": "Removes the application and its settings. This cannot be undone.",
     "action": "Delete application",
     "confirm": "Yes, delete application"
+  },
+  "deployments": {
+    "title": "Deployments",
+    "description": "Each deployment builds or pulls the source and replaces the running container once it is ready.",
+    "deploy": "Deploy",
+    "empty": "Nothing deployed yet. Deploy to start the first container.",
+    "cancel": "Cancel",
+    "rollback": "Roll back",
+    "follow": "Follow output",
+    "logWaiting": "Waiting for output…",
+    "logUnavailable": "The log could not be loaded. Retrying…",
+    "status": {
+      "queued": "Queued",
+      "running": "Running",
+      "succeeded": "Succeeded",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "live": "Live"
+    },
+    "kind": {
+      "deploy": "Deployment",
+      "rollback": "Rollback"
+    }
   }
 }

@@ -8,6 +8,7 @@ import { InlineAlert } from "@/shared/ui";
 
 import { applicationQuery } from "./api";
 import { ApplicationSettings } from "./ApplicationSettings";
+import { DeploymentsPanel } from "./DeploymentsPanel";
 import { DeployKeyPanel } from "./DeployKeyPanel";
 import { sourceSummary } from "./sourceForm";
 
@@ -38,6 +39,7 @@ export function ApplicationPage() {
             <p className="truncate font-mono text-[12px] text-subtle">{sourceSummary(data)}</p>
             {data.description ? <p className="max-w-2xl text-muted">{data.description}</p> : null}
           </header>
+          <DeploymentsPanel application={data} />
           <DeployKeyPanel application={data} />
           <ApplicationSettings application={data} />
         </>

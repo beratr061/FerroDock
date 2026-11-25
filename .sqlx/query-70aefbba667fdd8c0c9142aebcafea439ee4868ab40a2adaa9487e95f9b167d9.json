@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "INSERT INTO jobs (id, organization_id, kind, queue, group_key, payload, status)\n             VALUES ($1, $2, $3, $4, $5, $6, 'queued')\n             RETURNING id, organization_id, kind, queue, group_key, payload, status, attempts,\n                       error_code, created_at, started_at, finished_at",
+  "query": "SELECT d.id, d.application_id, d.job_id, d.kind, d.rollback_of, d.commit_sha,\n             d.image_ref, d.image_id, d.created_by, d.created_at, j.status, j.error_code,\n             j.started_at, j.finished_at\n             FROM deployments d JOIN jobs j ON j.id = d.job_id\n             WHERE d.application_id = $1 ORDER BY d.created_at DESC, d.id DESC LIMIT $2",
   "describe": {
     "columns": [
       {
@@ -9,68 +9,112 @@
         "type_info": "Uuid",
         "origin": {
           "Table": {
-            "table": "jobs",
+            "table": "deployments",
             "name": "id"
           }
         }
       },
       {
         "ordinal": 1,
-        "name": "organization_id",
+        "name": "application_id",
         "type_info": "Uuid",
         "origin": {
           "Table": {
-            "table": "jobs",
-            "name": "organization_id"
+            "table": "deployments",
+            "name": "application_id"
           }
         }
       },
       {
         "ordinal": 2,
-        "name": "kind",
-        "type_info": "Text",
+        "name": "job_id",
+        "type_info": "Uuid",
         "origin": {
           "Table": {
-            "table": "jobs",
-            "name": "kind"
+            "table": "deployments",
+            "name": "job_id"
           }
         }
       },
       {
         "ordinal": 3,
-        "name": "queue",
+        "name": "kind",
         "type_info": "Text",
         "origin": {
           "Table": {
-            "table": "jobs",
-            "name": "queue"
+            "table": "deployments",
+            "name": "kind"
           }
         }
       },
       {
         "ordinal": 4,
-        "name": "group_key",
-        "type_info": "Text",
+        "name": "rollback_of",
+        "type_info": "Uuid",
         "origin": {
           "Table": {
-            "table": "jobs",
-            "name": "group_key"
+            "table": "deployments",
+            "name": "rollback_of"
           }
         }
       },
       {
         "ordinal": 5,
-        "name": "payload",
-        "type_info": "Jsonb",
+        "name": "commit_sha",
+        "type_info": "Text",
         "origin": {
           "Table": {
-            "table": "jobs",
-            "name": "payload"
+            "table": "deployments",
+            "name": "commit_sha"
           }
         }
       },
       {
         "ordinal": 6,
+        "name": "image_ref",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "deployments",
+            "name": "image_ref"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "image_id",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "deployments",
+            "name": "image_id"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "created_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "deployments",
+            "name": "created_by"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "deployments",
+            "name": "created_at"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
         "name": "status",
         "type_info": "Text",
         "origin": {
@@ -81,18 +125,7 @@
         }
       },
       {
-        "ordinal": 7,
-        "name": "attempts",
-        "type_info": "Int4",
-        "origin": {
-          "Table": {
-            "table": "jobs",
-            "name": "attempts"
-          }
-        }
-      },
-      {
-        "ordinal": 8,
+        "ordinal": 11,
         "name": "error_code",
         "type_info": "Text",
         "origin": {
@@ -103,18 +136,7 @@
         }
       },
       {
-        "ordinal": 9,
-        "name": "created_at",
-        "type_info": "Timestamptz",
-        "origin": {
-          "Table": {
-            "table": "jobs",
-            "name": "created_at"
-          }
-        }
-      },
-      {
-        "ordinal": 10,
+        "ordinal": 12,
         "name": "started_at",
         "type_info": "Timestamptz",
         "origin": {
@@ -125,7 +147,7 @@
         }
       },
       {
-        "ordinal": 11,
+        "ordinal": 13,
         "name": "finished_at",
         "type_info": "Timestamptz",
         "origin": {
@@ -139,27 +161,25 @@
     "parameters": {
       "Left": [
         "Uuid",
-        "Uuid",
-        "Text",
-        "Text",
-        "Text",
-        "Jsonb"
+        "Int8"
       ]
     },
     "nullable": [
       false,
-      true,
-      false,
-      false,
-      true,
       false,
       false,
       false,
       true,
+      true,
+      true,
+      true,
+      true,
       false,
+      false,
+      true,
       true,
       true
     ]
   },
-  "hash": "e187b7f3f291352fa5c8918384a07f9f735ab92367594ec20b9900ac7baecff9"
+  "hash": "70aefbba667fdd8c0c9142aebcafea439ee4868ab40a2adaa9487e95f9b167d9"
 }

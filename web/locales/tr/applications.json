@@ -42,5 +42,28 @@
     "description": "Uygulamayı ve ayarlarını kaldırır. Bu işlem geri alınamaz.",
     "action": "Uygulamayı sil",
     "confirm": "Evet, uygulamayı sil"
+  },
+  "deployments": {
+    "title": "Dağıtımlar",
+    "description": "Her dağıtım kaynağı derler ya da çeker ve hazır olunca çalışan konteyneri değiştirir.",
+    "deploy": "Dağıt",
+    "empty": "Henüz dağıtım yok. İlk konteyneri başlatmak için dağıtın.",
+    "cancel": "İptal et",
+    "rollback": "Geri al",
+    "follow": "Çıktıyı takip et",
+    "logWaiting": "Çıktı bekleniyor…",
+    "logUnavailable": "Kayıt yüklenemedi. Yeniden deneniyor…",
+    "status": {
+      "queued": "Sırada",
+      "running": "Çalışıyor",
+      "succeeded": "Başarılı",
+      "failed": "Başarısız",
+      "cancelled": "İptal edildi",
+      "live": "Yayında"
+    },
+    "kind": {
+      "deploy": "Dağıtım",
+      "rollback": "Geri alma"
+    }
   }
 }

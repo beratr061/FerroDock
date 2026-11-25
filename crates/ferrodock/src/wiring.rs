@@ -10,7 +10,11 @@ use ferrodock_db::pg::PgStore;
 use ferrodock_domain::applications::ApplicationService;
 use ferrodock_domain::audit::AuditLog;
 use ferrodock_domain::auth::{AuthRepos, AuthService};
+use ferrodock_domain::deployments::{DeploymentRepos, DeploymentService};
 use ferrodock_domain::projects::ProjectService;
+use ferrodock_engine::deploy::DeployContext;
+use ferrodock_infra::deploy_log::DeployLogs;
+use ferrodock_infra::docker::DockerEngine;
 use time::Duration;
 
 #[derive(Debug)]
@@ -36,6 +40,7 @@ impl HealthProbe for DatabaseProbe {
 pub struct Wired {
     pub state: AppState,
     pub store: PgStore,
+    pub deploy: DeployContext,
 }
 
 pub async fn connect(config: &AppConfig) -> AppResult<PgStore> {
@@ -55,9 +60,7 @@ pub async fn migrate_only(config: &AppConfig) -> AppResult<()> {
     Ok(())
 }
 
-pub async fn build(config: &AppConfig) -> AppResult<Wired> {
-    let secrets = SecretBox::load_or_create(&config.master_key_path)?;
-    let store = connect(config).await?;
+fn auth_service(config: &AppConfig, store: &PgStore) -> AuthService {
     let shared = Arc::new(store.clone());
     let repos = AuthRepos {
         identity: shared.clone(),
@@ -67,23 +70,65 @@ pub async fn build(config: &AppConfig) -> AppResult<Wired> {
         login_attempts: shared,
     };
     let session_ttl = Duration::hours(i64::from(config.session_ttl_hours));
-    let auth = AuthService::new(repos, Arc::new(TracingEventBus), session_ttl)
-        .with_setup_token(config.setup_token.clone());
-    let settings = ApiSettings {
+    AuthService::new(repos, Arc::new(TracingEventBus), session_ttl)
+        .with_setup_token(config.setup_token.clone())
+}
+
+fn api_settings(config: &AppConfig) -> ApiSettings {
+    ApiSettings {
         secure_cookies: config.secure_cookies,
         public_origin: config.public_url.clone(),
         trust_forwarded_for: config.trust_forwarded_for,
         version: env!("CARGO_PKG_VERSION"),
+    }
+}
+
+fn deploy_context(
+    config: &AppConfig,
+    store: &PgStore,
+    secrets: SecretBox,
+) -> AppResult<DeployContext> {
+    Ok(DeployContext {
+        docker: DockerEngine::connect_local()?,
+        applications: Arc::new(store.clone()),
+        deployments: Arc::new(store.clone()),
+        secrets,
+        logs: DeployLogs::new(config.data_dir.join("deployments")),
+        data_dir: config.data_dir.clone(),
+    })
+}
+
+fn deployment_service(
+    store: &PgStore,
+    deploy: &DeployContext,
+    audit: AuditLog,
+) -> DeploymentService {
+    let repos = DeploymentRepos {
+        deployments: Arc::new(store.clone()),
+        applications: Arc::new(store.clone()),
+        jobs: Arc::new(store.clone()),
     };
+    DeploymentService::new(repos, deploy.logs.clone(), audit)
+}
+
+pub async fn build(config: &AppConfig) -> AppResult<Wired> {
+    let secrets = SecretBox::load_or_create(&config.master_key_path)?;
+    let store = connect(config).await?;
+    let deploy = deploy_context(config, &store, secrets.clone())?;
     let audit = AuditLog::new(Arc::new(store.clone()));
     let state = AppState {
-        auth,
-        docker: ferrodock_infra::docker::DockerEngine::connect_local()?,
+        auth: auth_service(config, &store),
+        docker: deploy.docker.clone(),
         audit: audit.clone(),
         projects: ProjectService::new(Arc::new(store.clone()), audit.clone()),
-        applications: ApplicationService::new(Arc::new(store.clone()), secrets, audit),
+        applications: ApplicationService::new(Arc::new(store.clone()), secrets, audit.clone()),
+        deployments: deployment_service(&store, &deploy, audit),
         health: Arc::new(DatabaseProbe(store.clone())),
-        settings: Arc::new(settings),
+        settings: Arc::new(api_settings(config)),
     };
-    Ok(Wired { state, store })
+    Ok(Wired {
+        state,
+        store,
+        deploy,
+    })
 }

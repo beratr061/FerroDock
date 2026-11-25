@@ -47,7 +47,7 @@ services:
       FERRODOCK_DATA_DIR: /var/lib/ferrodock
     volumes:
       - /etc/ferrodock/panel:/etc/ferrodock
-      - ferrodock-data:/var/lib/ferrodock
+      - /var/lib/ferrodock:/var/lib/ferrodock
       - /var/run/docker.sock:/var/run/docker.sock
     group_add:
       - "${FERRODOCK_DOCKER_GID:?run deploy/install.sh to generate /etc/ferrodock/.env}"
@@ -87,7 +87,6 @@ secrets:
 
 volumes:
   postgres-data:
-  ferrodock-data:
 
 networks:
   internal:

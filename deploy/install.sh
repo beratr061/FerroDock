@@ -9,6 +9,7 @@ ACME_EMAIL="${FERRODOCK_ACME_EMAIL:-}"
 PANEL_PORT="${FERRODOCK_PANEL_PORT:-3000}"
 PROXY_MODE="${FERRODOCK_PROXY:-traefik}"
 CONFIG_DIR=/etc/ferrodock
+DATA_DIR=/var/lib/ferrodock
 LOCAL_ASSETS="${FERRODOCK_LOCAL_ASSETS:-}"
 
 say() { printf '\033[1m==>\033[0m %s\n' "$1"; }
@@ -85,6 +86,9 @@ prepare_directories() {
     chmod 700 "$CONFIG_DIR/secrets" "$CONFIG_DIR/traefik/acme"
     chown 10001:10001 "$CONFIG_DIR/panel"
     chmod 700 "$CONFIG_DIR/panel"
+    mkdir -p "$DATA_DIR"
+    chown 10001:10001 "$DATA_DIR"
+    chmod 750 "$DATA_DIR"
     fetch_asset docker-compose.yml "$CONFIG_DIR/docker-compose.yml"
 }
 

@@ -1,6 +1,7 @@
 mod api_keys;
 mod applications;
 mod auth;
+mod deployments;
 mod docker;
 mod password;
 mod projects;
@@ -12,6 +13,9 @@ pub use applications::{
 };
 pub use auth::{
     HealthResponse, MeResponse, MembershipDto, RoleDto, SetupRequest, SetupStatus, SignInRequest,
+};
+pub use deployments::{
+    DeploymentDto, DeploymentKindDto, DeploymentLogDto, DeploymentLogQuery, DeploymentStatusDto,
 };
 pub use docker::{
     ContainerActionDto, ContainerActionRequest, ContainerDto, ContainerListQuery, EngineInfoDto,

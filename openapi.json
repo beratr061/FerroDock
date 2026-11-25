@@ -328,6 +328,98 @@
         }
       }
     },
+    "/api/v1/applications/{id}/deployments": {
+      "get": {
+        "tags": [
+          "deployments"
+        ],
+        "description": "Lists the most recent deployments of an application, newest first",
+        "operationId": "list_deployments",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DeploymentDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "deployments"
+        ],
+        "description": "Queues a deployment of the application's current source; requires the developer role",
+        "operationId": "create_deployment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeploymentDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/auth/me": {
       "get": {
         "tags": [
@@ -409,6 +501,207 @@
         "responses": {
           "204": {},
           "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/deployments/{id}": {
+      "get": {
+        "tags": [
+          "deployments"
+        ],
+        "description": "Returns one deployment with its current status",
+        "operationId": "get_deployment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Deployment id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeploymentDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/deployments/{id}/cancel": {
+      "post": {
+        "tags": [
+          "deployments"
+        ],
+        "description": "Cancels a queued deployment immediately or stops a running one",
+        "operationId": "cancel_deployment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Deployment id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeploymentDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/deployments/{id}/log": {
+      "get": {
+        "tags": [
+          "deployments"
+        ],
+        "description": "Returns deployment output from a byte offset; call again with next_offset to follow",
+        "operationId": "deployment_log",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Deployment id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeploymentLogDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/deployments/{id}/rollback": {
+      "post": {
+        "tags": [
+          "deployments"
+        ],
+        "description": "Queues a new deployment that runs the image of this earlier successful deployment",
+        "operationId": "rollback_deployment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Deployment to roll back to",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeploymentDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
             "content": {
               "application/json": {
                 "schema": {
@@ -1418,6 +1711,113 @@
             "type": "string"
           }
         }
+      },
+      "DeploymentDto": {
+        "type": "object",
+        "required": [
+          "id",
+          "application_id",
+          "kind",
+          "status",
+          "created_at"
+        ],
+        "properties": {
+          "application_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "commit_sha": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "error_code": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "finished_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "image_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "kind": {
+            "$ref": "#/components/schemas/DeploymentKindDto"
+          },
+          "rollback_of": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "started_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DeploymentStatusDto"
+          }
+        }
+      },
+      "DeploymentKindDto": {
+        "type": "string",
+        "enum": [
+          "deploy",
+          "rollback"
+        ]
+      },
+      "DeploymentLogDto": {
+        "type": "object",
+        "required": [
+          "text",
+          "next_offset",
+          "status"
+        ],
+        "properties": {
+          "next_offset": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "status": {
+            "$ref": "#/components/schemas/DeploymentStatusDto"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "DeploymentStatusDto": {
+        "type": "string",
+        "enum": [
+          "queued",
+          "running",
+          "succeeded",
+          "failed",
+          "cancelled"
+        ]
       },
       "EngineInfoDto": {
         "type": "object",
