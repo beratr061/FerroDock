@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-FERRODOCK_VERSION="${FERRODOCK_VERSION:-0.1.1}"
+FERRODOCK_VERSION="${FERRODOCK_VERSION:-0.2.0}"
 FERRODOCK_IMAGE="${FERRODOCK_IMAGE:-ghcr.io/beratr061/ferrodock:${FERRODOCK_VERSION}}"
 FERRODOCK_ASSETS_URL="${FERRODOCK_ASSETS_URL:-https://github.com/beratr061/FerroDock/releases/download/v${FERRODOCK_VERSION}}"
 PANEL_DOMAIN="${FERRODOCK_DOMAIN:-}"
@@ -41,6 +41,29 @@ check_options() {
     fi
 }
 
+previous_setting() {
+    [ -f "$CONFIG_DIR/.env" ] || return 0
+    sed -n "s/^$1=//p" "$CONFIG_DIR/.env" | head -n 1
+}
+
+load_previous_settings() {
+    if [ -z "${FERRODOCK_PROXY:-}" ] && [ -f "$CONFIG_DIR/.env" ]; then
+        if [ "$(previous_setting COMPOSE_PROFILES)" = proxy ]; then
+            PROXY_MODE=traefik
+        else
+            PROXY_MODE=none
+        fi
+    fi
+    previous_url=$(sed -n "s/^FERRODOCK_PUBLIC_URL=https:\/\///p" "$CONFIG_DIR/ferrodock.env" 2>/dev/null | head -n 1)
+    if [ -z "${FERRODOCK_DOMAIN:-}" ] && [ -n "$previous_url" ]; then
+        PANEL_DOMAIN="$previous_url"
+    fi
+    previous_port=$(previous_setting FERRODOCK_PANEL_PORT)
+    if [ -z "${FERRODOCK_PANEL_PORT:-}" ] && [ -n "$previous_port" ]; then
+        PANEL_PORT="$previous_port"
+    fi
+}
+
 required_ports() {
     if [ "$PROXY_MODE" = traefik ]; then
         echo 80 443 "$PANEL_PORT"
@@ -49,8 +72,17 @@ required_ports() {
     fi
 }
 
+already_installed() {
+    [ -f "$CONFIG_DIR/docker-compose.yml" ] || return 1
+    docker compose -f "$CONFIG_DIR/docker-compose.yml" ps -q ferrodock 2>/dev/null | grep -q .
+}
+
 check_ports() {
     command -v ss >/dev/null 2>&1 || return 0
+    if already_installed; then
+        say "Existing installation found; upgrading in place"
+        return 0
+    fi
     for port in $(required_ports); do
         if port_in_use "$port"; then
             fail "port $port is already in use; stop the service using it and retry"
@@ -211,6 +243,7 @@ print_summary() {
 
 main() {
     require_root
+    load_previous_settings
     check_platform
     check_options
     install_docker
