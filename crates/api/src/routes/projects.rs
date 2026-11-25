@@ -1,9 +1,10 @@
 use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
-use ferrodock_domain::projects::{Actor, NewProjectInput, ProjectUpdate};
+use ferrodock_domain::projects::{NewProjectInput, ProjectUpdate};
 use uuid::Uuid;
 
+use super::actor;
 use crate::dto::{CreateProjectRequest, ProjectDto, UpdateProjectRequest};
 use crate::error::{ApiResult, ErrorEnvelope};
 use crate::extract::{Auth, ClientMeta};
@@ -43,10 +44,7 @@ pub async fn create_project(
     client: ClientMeta,
     Json(request): Json<CreateProjectRequest>,
 ) -> ApiResult<(StatusCode, Json<ProjectDto>)> {
-    let actor = Actor {
-        principal: &principal,
-        ip_address: client.ip_address.as_deref(),
-    };
+    let actor = actor(&principal, &client);
     let input = NewProjectInput {
         name: request.name,
         description: request.description,
@@ -93,10 +91,7 @@ pub async fn update_project(
     Path(id): Path<Uuid>,
     Json(request): Json<UpdateProjectRequest>,
 ) -> ApiResult<Json<ProjectDto>> {
-    let actor = Actor {
-        principal: &principal,
-        ip_address: client.ip_address.as_deref(),
-    };
+    let actor = actor(&principal, &client);
     let update = ProjectUpdate {
         name: request.name,
         description: request.description,
@@ -123,10 +118,7 @@ pub async fn delete_project(
     client: ClientMeta,
     Path(id): Path<Uuid>,
 ) -> ApiResult<StatusCode> {
-    let actor = Actor {
-        principal: &principal,
-        ip_address: client.ip_address.as_deref(),
-    };
+    let actor = actor(&principal, &client);
     state.projects.delete(actor, id.into()).await?;
     Ok(StatusCode::NO_CONTENT)
 }

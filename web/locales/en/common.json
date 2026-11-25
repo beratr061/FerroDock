@@ -14,7 +14,9 @@
   },
   "actions": {
     "cancel": "Cancel",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "copy": "Copy",
+    "copied": "Copied"
   },
   "errors": {
     "UNKNOWN": "Something went wrong. Try again.",
@@ -49,6 +51,14 @@
     "ENVIRONMENT_NAME_INVALID": "Enter an environment name up to {{max}} characters.",
     "ENVIRONMENT_EXISTS": "This project already has an environment with that name.",
     "ENVIRONMENT_NOT_FOUND": "This environment no longer exists.",
-    "ENVIRONMENT_LAST": "A project needs at least one environment."
+    "ENVIRONMENT_LAST": "A project needs at least one environment.",
+    "APPLICATION_NAME_INVALID": "Enter an application name up to {{max}} characters.",
+    "APPLICATION_EXISTS": "This environment already has an application with that name.",
+    "APPLICATION_NOT_FOUND": "This application does not exist or was deleted.",
+    "GIT_URL_INVALID": "Use an https:// or SSH repository address without credentials in it.",
+    "GIT_BRANCH_INVALID": "Enter a valid branch name.",
+    "BUILD_PATH_INVALID": "Use a relative path inside the repository.",
+    "IMAGE_INVALID": "Enter a valid image reference, for example nginx:1.29-alpine.",
+    "DEPLOY_KEY_NOT_APPLICABLE": "Deploy keys are only used with SSH repositories."
   }
 }

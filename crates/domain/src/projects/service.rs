@@ -7,17 +7,11 @@ use ferrodock_db::projects::{NewEnvironment, NewProject, ProjectChanges, Project
 use serde_json::{Value, json};
 
 use super::model::{NewProjectInput, Project, ProjectUpdate};
-use crate::audit::{AuditLog, AuditRecord};
+use crate::audit::{Actor, AuditLog};
 use crate::auth::{Principal, Role};
 use crate::text::{clean_description, clean_name, slugify};
 
 pub(super) const DEFAULT_ENVIRONMENT: &str = "production";
-
-#[derive(Debug, Clone, Copy)]
-pub struct Actor<'a> {
-    pub principal: &'a Principal,
-    pub ip_address: Option<&'a str>,
-}
 
 #[derive(Clone)]
 pub struct ProjectService {
@@ -156,14 +150,8 @@ impl ProjectService {
         resource_id: Id,
         metadata: Value,
     ) {
-        let resource_type = action.split_once('.').map_or(action, |(kind, _)| kind);
-        let record = AuditRecord {
-            action,
-            resource_type,
-            resource_id: Some(resource_id),
-            metadata,
-            ip_address: actor.ip_address,
-        };
-        self.audit.record(actor.principal, record).await;
+        self.audit
+            .change(actor, action, resource_id, metadata)
+            .await;
     }
 }

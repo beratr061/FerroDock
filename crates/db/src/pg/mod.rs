@@ -1,4 +1,6 @@
 mod api_keys;
+mod application_rows;
+mod applications;
 mod audit;
 mod environments;
 mod identity;

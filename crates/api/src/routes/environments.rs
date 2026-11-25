@@ -1,9 +1,9 @@
 use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
-use ferrodock_domain::projects::Actor;
 use uuid::Uuid;
 
+use super::actor;
 use crate::dto::{CreateEnvironmentRequest, EnvironmentDto};
 use crate::error::{ApiResult, ErrorEnvelope};
 use crate::extract::{Auth, ClientMeta};
@@ -31,10 +31,7 @@ pub async fn create_environment(
     Path(id): Path<Uuid>,
     Json(request): Json<CreateEnvironmentRequest>,
 ) -> ApiResult<(StatusCode, Json<EnvironmentDto>)> {
-    let actor = Actor {
-        principal: &principal,
-        ip_address: client.ip_address.as_deref(),
-    };
+    let actor = actor(&principal, &client);
     let environment = state
         .projects
         .add_environment(actor, id.into(), &request.name)
@@ -64,10 +61,7 @@ pub async fn delete_environment(
     client: ClientMeta,
     Path((id, environment_id)): Path<(Uuid, Uuid)>,
 ) -> ApiResult<StatusCode> {
-    let actor = Actor {
-        principal: &principal,
-        ip_address: client.ip_address.as_deref(),
-    };
+    let actor = actor(&principal, &client);
     state
         .projects
         .remove_environment(actor, id.into(), environment_id.into())

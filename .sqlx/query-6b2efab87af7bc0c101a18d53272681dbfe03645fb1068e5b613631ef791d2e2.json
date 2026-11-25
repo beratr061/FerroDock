@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE applications SET name = $2, description = $3, source_kind = $4, git_url = $5,\n             git_branch = $6, build_kind = $7, build_path = $8, build_context = $9, image = $10,\n             deploy_key_public = $11, deploy_key_private_enc = $12, strategy = $13,\n             updated_at = now()\n             WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "6b2efab87af7bc0c101a18d53272681dbfe03645fb1068e5b613631ef791d2e2"
+}

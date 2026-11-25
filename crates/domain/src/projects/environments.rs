@@ -3,7 +3,8 @@ use ferrodock_db::projects::{EnvironmentRemoval, NewEnvironment};
 use serde_json::json;
 
 use super::model::Environment;
-use super::service::{Actor, ProjectService, conflict_as};
+use super::service::{ProjectService, conflict_as};
+use crate::audit::Actor;
 use crate::auth::Role;
 use crate::text::{clean_name, slugify};
 

@@ -1,0 +1,46 @@
+{
+  "title": "Applications",
+  "new": "New application",
+  "create": "Create application",
+  "empty": "No applications in this environment yet.",
+  "back": "Back to project",
+  "save": "Save changes",
+  "settings": "Application settings",
+  "fields": {
+    "name": "Name",
+    "namePlaceholder": "web",
+    "description": "Description",
+    "image": "Image",
+    "url": "Repository URL",
+    "urlHint": "HTTPS for public repositories, SSH for private ones with a deploy key.",
+    "branch": "Branch",
+    "buildKind": "Build",
+    "buildPath": "File path",
+    "strategy": "Deployment strategy"
+  },
+  "source": {
+    "label": "Source",
+    "git": "Git repository",
+    "image": "Docker image"
+  },
+  "build": {
+    "dockerfile": "Dockerfile",
+    "compose": "Docker Compose"
+  },
+  "strategy": {
+    "recreate": "Recreate: stop old, start new",
+    "blue_green": "Blue-green: switch traffic after health check"
+  },
+  "deployKey": {
+    "title": "Deploy key",
+    "description": "Add this public key to the repository as a read-only deploy key. The private half stays encrypted on the server and is never shown.",
+    "rotate": "Replace key",
+    "confirmRotate": "Yes, replace key"
+  },
+  "delete": {
+    "title": "Delete this application",
+    "description": "Removes the application and its settings. This cannot be undone.",
+    "action": "Delete application",
+    "confirm": "Yes, delete application"
+  }
+}

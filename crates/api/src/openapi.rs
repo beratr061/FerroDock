@@ -2,18 +2,21 @@ use axum::Json;
 use utoipa::OpenApi;
 
 use crate::dto::{
-    ApiKeyDto, ContainerActionDto, ContainerActionRequest, ContainerDto, CreateApiKeyRequest,
-    CreateEnvironmentRequest, CreateProjectRequest, CreatedApiKeyResponse, EngineInfoDto,
-    EnvironmentDto, HealthResponse, MeResponse, MembershipDto, ProjectDto, RoleDto, SetupRequest,
-    SetupStatus, SignInRequest, UpdateProjectRequest,
+    ApiKeyDto, ApplicationDto, BuildKindDto, ContainerActionDto, ContainerActionRequest,
+    ContainerDto, CreateApiKeyRequest, CreateApplicationRequest, CreateEnvironmentRequest,
+    CreateProjectRequest, CreatedApiKeyResponse, EngineInfoDto, EnvironmentDto, HealthResponse,
+    MeResponse, MembershipDto, ProjectDto, RoleDto, SetupRequest, SetupStatus, SignInRequest,
+    SourceDto, SourceRequest, StrategyDto, UpdateApplicationRequest, UpdateProjectRequest,
 };
 use crate::error::{ErrorBody, ErrorEnvelope};
 use crate::routes::{
     __path_check, __path_complete, __path_container_action, __path_create,
-    __path_create_environment, __path_create_project, __path_delete_environment,
-    __path_delete_project, __path_docker_info, __path_get_project, __path_list,
-    __path_list_containers, __path_list_projects, __path_me, __path_revoke, __path_sign_in,
-    __path_sign_out, __path_status, __path_update_project,
+    __path_create_application, __path_create_environment, __path_create_project,
+    __path_delete_application, __path_delete_environment, __path_delete_project,
+    __path_docker_info, __path_get_application, __path_get_project, __path_list,
+    __path_list_applications, __path_list_containers, __path_list_projects, __path_me,
+    __path_revoke, __path_rotate_deploy_key, __path_sign_in, __path_sign_out, __path_status,
+    __path_update_application, __path_update_project,
 };
 
 #[derive(OpenApi)]
@@ -38,6 +41,12 @@ use crate::routes::{
         update_project,
         delete_project,
         create_environment,
+        list_applications,
+        create_application,
+        get_application,
+        update_application,
+        rotate_deploy_key,
+        delete_application,
         delete_environment,
         docker_info,
         list_containers,
@@ -45,6 +54,13 @@ use crate::routes::{
     ),
     components(schemas(
         ApiKeyDto,
+        ApplicationDto,
+        BuildKindDto,
+        CreateApplicationRequest,
+        SourceDto,
+        SourceRequest,
+        StrategyDto,
+        UpdateApplicationRequest,
         ContainerActionDto,
         ContainerActionRequest,
         ContainerDto,

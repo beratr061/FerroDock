@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use ferrodock_core::AppResult;
+use ferrodock_domain::applications::ApplicationService;
 use ferrodock_domain::audit::AuditLog;
 use ferrodock_domain::auth::AuthService;
 use ferrodock_domain::projects::ProjectService;
@@ -26,6 +27,7 @@ pub struct AppState {
     pub docker: DockerEngine,
     pub audit: AuditLog,
     pub projects: ProjectService,
+    pub applications: ApplicationService,
     pub health: Arc<dyn HealthProbe>,
     pub settings: Arc<ApiSettings>,
 }

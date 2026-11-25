@@ -1,0 +1,46 @@
+{
+  "title": "Uygulamalar",
+  "new": "Yeni uygulama",
+  "create": "Uygulamayı oluştur",
+  "empty": "Bu ortamda henüz uygulama yok.",
+  "back": "Projeye dön",
+  "save": "Değişiklikleri kaydet",
+  "settings": "Uygulama ayarları",
+  "fields": {
+    "name": "Ad",
+    "namePlaceholder": "web",
+    "description": "Açıklama",
+    "image": "İmaj",
+    "url": "Depo adresi",
+    "urlHint": "Açık depolar için HTTPS, özel depolar için deploy key ile SSH kullanın.",
+    "branch": "Dal",
+    "buildKind": "Derleme",
+    "buildPath": "Dosya yolu",
+    "strategy": "Dağıtım stratejisi"
+  },
+  "source": {
+    "label": "Kaynak",
+    "git": "Git deposu",
+    "image": "Docker imajı"
+  },
+  "build": {
+    "dockerfile": "Dockerfile",
+    "compose": "Docker Compose"
+  },
+  "strategy": {
+    "recreate": "Yeniden oluştur: eskiyi durdur, yeniyi başlat",
+    "blue_green": "Blue-green: sağlık kontrolünden sonra trafiği çevir"
+  },
+  "deployKey": {
+    "title": "Deploy key",
+    "description": "Bu açık anahtarı depoya salt okunur deploy key olarak ekleyin. Özel yarısı sunucuda şifreli durur ve hiç gösterilmez.",
+    "rotate": "Anahtarı değiştir",
+    "confirmRotate": "Evet, anahtarı değiştir"
+  },
+  "delete": {
+    "title": "Bu uygulamayı sil",
+    "description": "Uygulamayı ve ayarlarını kaldırır. Bu işlem geri alınamaz.",
+    "action": "Uygulamayı sil",
+    "confirm": "Evet, uygulamayı sil"
+  }
+}

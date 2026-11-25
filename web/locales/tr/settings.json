@@ -29,8 +29,6 @@
     "created": {
       "title": "Anahtar oluşturuldu",
       "body": "Şimdi kopyalayın. Güvenliğiniz için tekrar gösterilmeyecek.",
-      "copy": "Anahtarı kopyala",
-      "copied": "Kopyalandı",
       "done": "Tamam"
     },
     "empty": {

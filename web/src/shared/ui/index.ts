@@ -1,8 +1,10 @@
 export { Button } from "./Button";
+export { CopyButton } from "./CopyButton";
 export { EmptyState } from "./EmptyState";
 export { InlineAlert } from "./InlineAlert";
 export { LanguageSelect } from "./LanguageSelect";
 export { Logo } from "./Logo";
+export { type Segment, SegmentedControl } from "./SegmentedControl";
 export { SelectField, type SelectOption } from "./SelectField";
 export { StatusBadge, type StatusTone } from "./StatusBadge";
 export { TextField } from "./TextField";

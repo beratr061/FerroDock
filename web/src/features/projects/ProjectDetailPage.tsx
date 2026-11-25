@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "@tanstack/react-router";
@@ -6,11 +7,11 @@ import { useTranslation } from "react-i18next";
 import { errorMessage } from "@/shared/lib/errors";
 import { InlineAlert } from "@/shared/ui";
 
-import { projectQuery } from "./api";
+import { projectQuery, type Project } from "./api";
 import { EnvironmentList } from "./EnvironmentList";
 import { ProjectSettings } from "./ProjectSettings";
 
-export function ProjectDetailPage() {
+export function ProjectDetailPage({ renderWorkloads }: { renderWorkloads?: (project: Project) => ReactNode }) {
   const { t } = useTranslation("projects");
   const { projectId } = useParams({ from: "/app/projects/$projectId" });
   const project = useQuery(projectQuery(projectId));
@@ -33,6 +34,7 @@ export function ProjectDetailPage() {
             <p className="font-mono text-[12px] text-subtle">{project.data.slug}</p>
             {project.data.description ? <p className="max-w-2xl text-muted">{project.data.description}</p> : null}
           </header>
+          {renderWorkloads?.(project.data)}
           <EnvironmentList project={project.data} />
           <ProjectSettings project={project.data} />
         </>

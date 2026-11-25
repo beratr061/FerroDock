@@ -1,4 +1,5 @@
 mod api_keys;
+mod applications;
 mod auth;
 mod docker;
 mod environments;
@@ -8,12 +9,19 @@ mod setup;
 
 use axum::Router;
 use axum::routing::{MethodRouter, delete, get, post};
+use ferrodock_domain::audit::Actor;
+use ferrodock_domain::auth::Principal;
 
+use crate::extract::ClientMeta;
 use crate::openapi;
 use crate::rate_limit::{CredentialLimiter, credential_limiter};
 use crate::state::AppState;
 
 pub(crate) use api_keys::{__path_create, __path_list, __path_revoke};
+pub(crate) use applications::{
+    __path_create_application, __path_delete_application, __path_get_application,
+    __path_list_applications, __path_rotate_deploy_key, __path_update_application,
+};
 pub(crate) use auth::{__path_me, __path_sign_in, __path_sign_out};
 pub(crate) use docker::{__path_container_action, __path_docker_info, __path_list_containers};
 pub(crate) use environments::{__path_create_environment, __path_delete_environment};
@@ -24,6 +32,13 @@ pub(crate) use projects::{
 };
 pub(crate) use setup::{__path_complete, __path_status};
 
+pub(crate) fn actor<'a>(principal: &'a Principal, client: &'a ClientMeta) -> Actor<'a> {
+    Actor {
+        principal,
+        ip_address: client.ip_address.as_deref(),
+    }
+}
+
 fn limited(
     route: MethodRouter<AppState>,
     limiter: Option<&CredentialLimiter>,
@@ -32,6 +47,56 @@ fn limited(
         Some(layer) => route.layer(layer.clone()),
         None => route,
     }
+}
+
+fn workload_routes() -> Router<AppState> {
+    Router::new()
+        .route(
+            "/projects",
+            get(projects::list_projects).post(projects::create_project),
+        )
+        .route(
+            "/projects/{id}",
+            get(projects::get_project)
+                .patch(projects::update_project)
+                .delete(projects::delete_project),
+        )
+        .route(
+            "/projects/{id}/environments",
+            post(environments::create_environment),
+        )
+        .route(
+            "/projects/{id}/environments/{environment_id}",
+            delete(environments::delete_environment),
+        )
+        .route(
+            "/projects/{id}/applications",
+            get(applications::list_applications),
+        )
+        .route(
+            "/environments/{id}/applications",
+            post(applications::create_application),
+        )
+        .route(
+            "/applications/{id}",
+            get(applications::get_application)
+                .patch(applications::update_application)
+                .delete(applications::delete_application),
+        )
+        .route(
+            "/applications/{id}/deploy-key",
+            post(applications::rotate_deploy_key),
+        )
+}
+
+fn docker_routes() -> Router<AppState> {
+    Router::new()
+        .route("/docker/info", get(docker::docker_info))
+        .route("/docker/containers", get(docker::list_containers))
+        .route(
+            "/docker/containers/{reference}/actions",
+            post(docker::container_action),
+        )
 }
 
 pub fn api_routes(trust_forwarded: bool) -> Router<AppState> {
@@ -51,28 +116,6 @@ pub fn api_routes(trust_forwarded: bool) -> Router<AppState> {
         .route("/auth/me", get(auth::me))
         .route("/api-keys", get(api_keys::list).post(api_keys::create))
         .route("/api-keys/{id}", delete(api_keys::revoke))
-        .route(
-            "/projects",
-            get(projects::list_projects).post(projects::create_project),
-        )
-        .route(
-            "/projects/{id}",
-            get(projects::get_project)
-                .patch(projects::update_project)
-                .delete(projects::delete_project),
-        )
-        .route(
-            "/projects/{id}/environments",
-            post(environments::create_environment),
-        )
-        .route(
-            "/projects/{id}/environments/{environment_id}",
-            delete(environments::delete_environment),
-        )
-        .route("/docker/info", get(docker::docker_info))
-        .route("/docker/containers", get(docker::list_containers))
-        .route(
-            "/docker/containers/{reference}/actions",
-            post(docker::container_action),
-        )
+        .merge(workload_routes())
+        .merge(docker_routes())
 }

@@ -1,5 +1,6 @@
 mod containers;
 mod events;
+mod image;
 mod logs;
 
 use bollard::Docker;
@@ -8,6 +9,7 @@ use serde::Serialize;
 
 pub use containers::{ContainerAction, ContainerInfo};
 pub use events::{ContainerEvent, EventStream};
+pub use image::validate_image;
 pub use logs::{LogLine, LogQuery, LogStream};
 
 const MAX_REFERENCE_LEN: usize = 128;

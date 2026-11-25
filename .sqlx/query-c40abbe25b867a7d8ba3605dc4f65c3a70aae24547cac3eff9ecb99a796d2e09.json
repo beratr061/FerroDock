@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO applications (id, environment_id, name, slug, description, source_kind,\n             git_url, git_branch, build_kind, build_path, build_context, image,\n             deploy_key_public, deploy_key_private_enc, strategy)\n             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "c40abbe25b867a7d8ba3605dc4f65c3a70aae24547cac3eff9ecb99a796d2e09"
+}

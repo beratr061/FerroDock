@@ -1,10 +1,15 @@
 mod api_keys;
+mod applications;
 mod auth;
 mod docker;
 mod password;
 mod projects;
 
 pub use api_keys::{ApiKeyDto, CreateApiKeyRequest, CreatedApiKeyResponse};
+pub use applications::{
+    ApplicationDto, BuildKindDto, CreateApplicationRequest, SourceDto, SourceRequest, StrategyDto,
+    UpdateApplicationRequest,
+};
 pub use auth::{
     HealthResponse, MeResponse, MembershipDto, RoleDto, SetupRequest, SetupStatus, SignInRequest,
 };

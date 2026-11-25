@@ -121,6 +121,213 @@
         }
       }
     },
+    "/api/v1/applications/{id}": {
+      "get": {
+        "tags": [
+          "applications"
+        ],
+        "description": "Returns one application; the deploy key is shown as its public half only",
+        "operationId": "get_application",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "applications"
+        ],
+        "description": "Deletes an application; requires the admin role",
+        "operationId": "delete_application",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "applications"
+        ],
+        "description": "Changes name, description, source or deployment strategy; requires the developer role",
+        "operationId": "update_application",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateApplicationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications/{id}/deploy-key": {
+      "post": {
+        "tags": [
+          "applications"
+        ],
+        "description": "Replaces the deploy key of an SSH Git source; the old key stops working once removed from the repository",
+        "operationId": "rotate_deploy_key",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/auth/me": {
       "get": {
         "tags": [
@@ -333,6 +540,84 @@
             }
           },
           "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/environments/{id}/applications": {
+      "post": {
+        "tags": [
+          "applications"
+        ],
+        "description": "Creates an application from a Git repository or an image; requires the developer role. SSH repositories get a generated deploy key",
+        "operationId": "create_application",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Environment id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateApplicationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
             "content": {
               "application/json": {
                 "schema": {
@@ -608,6 +893,50 @@
         }
       }
     },
+    "/api/v1/projects/{id}/applications": {
+      "get": {
+        "tags": [
+          "applications"
+        ],
+        "description": "Lists applications in every environment of a project",
+        "operationId": "list_applications",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Project id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/projects/{id}/environments": {
       "post": {
         "tags": [
@@ -859,6 +1188,71 @@
           }
         }
       },
+      "ApplicationDto": {
+        "type": "object",
+        "required": [
+          "id",
+          "environment_id",
+          "project_id",
+          "name",
+          "slug",
+          "description",
+          "source",
+          "strategy",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deploy_key": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "environment_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceDto"
+          },
+          "strategy": {
+            "$ref": "#/components/schemas/StrategyDto"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "BuildKindDto": {
+        "type": "string",
+        "enum": [
+          "dockerfile",
+          "compose"
+        ]
+      },
       "ContainerActionDto": {
         "type": "string",
         "enum": [
@@ -948,6 +1342,37 @@
           },
           "role": {
             "$ref": "#/components/schemas/RoleDto"
+          }
+        }
+      },
+      "CreateApplicationRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "source"
+        ],
+        "properties": {
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceRequest"
+          },
+          "strategy": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/StrategyDto"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },
@@ -1270,6 +1695,168 @@
           "password": {
             "type": "string",
             "format": "password"
+          }
+        }
+      },
+      "SourceDto": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "url",
+              "branch",
+              "build_kind",
+              "build_path",
+              "build_context",
+              "kind"
+            ],
+            "properties": {
+              "branch": {
+                "type": "string"
+              },
+              "build_context": {
+                "type": "string"
+              },
+              "build_kind": {
+                "$ref": "#/components/schemas/BuildKindDto"
+              },
+              "build_path": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "git"
+                ]
+              },
+              "url": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "image",
+              "kind"
+            ],
+            "properties": {
+              "image": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "image"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "SourceRequest": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "url",
+              "build_kind",
+              "kind"
+            ],
+            "properties": {
+              "branch": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "build_context": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "build_kind": {
+                "$ref": "#/components/schemas/BuildKindDto"
+              },
+              "build_path": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "git"
+                ]
+              },
+              "url": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "image",
+              "kind"
+            ],
+            "properties": {
+              "image": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "image"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "StrategyDto": {
+        "type": "string",
+        "enum": [
+          "recreate",
+          "blue_green"
+        ]
+      },
+      "UpdateApplicationRequest": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SourceRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "strategy": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/StrategyDto"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },

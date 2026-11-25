@@ -6,10 +6,13 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+base64 = { workspace = true }
 bollard = "0.21.1"
+ed25519-dalek = "3.0.0"
 ferrodock-core = { workspace = true }
 futures-util = { version = "0.3", default-features = false, features = ["std"] }
 serde = { workspace = true }
+zeroize = "1.8"
 
 [dev-dependencies]
 tokio = { workspace = true }

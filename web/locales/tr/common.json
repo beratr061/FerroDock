@@ -14,7 +14,9 @@
   },
   "actions": {
     "cancel": "Vazgeç",
-    "signOut": "Çıkış yap"
+    "signOut": "Çıkış yap",
+    "copy": "Kopyala",
+    "copied": "Kopyalandı"
   },
   "errors": {
     "UNKNOWN": "Bir şeyler ters gitti. Tekrar deneyin.",
@@ -49,6 +51,14 @@
     "ENVIRONMENT_NAME_INVALID": "En fazla {{max}} karakterlik bir ortam adı girin.",
     "ENVIRONMENT_EXISTS": "Bu projede aynı adda bir ortam zaten var.",
     "ENVIRONMENT_NOT_FOUND": "Bu ortam artık yok.",
-    "ENVIRONMENT_LAST": "Bir projede en az bir ortam olmalı."
+    "ENVIRONMENT_LAST": "Bir projede en az bir ortam olmalı.",
+    "APPLICATION_NAME_INVALID": "En fazla {{max}} karakterlik bir uygulama adı girin.",
+    "APPLICATION_EXISTS": "Bu ortamda aynı adda bir uygulama zaten var.",
+    "APPLICATION_NOT_FOUND": "Bu uygulama yok ya da silinmiş.",
+    "GIT_URL_INVALID": "İçinde kimlik bilgisi olmayan https:// veya SSH depo adresi kullanın.",
+    "GIT_BRANCH_INVALID": "Geçerli bir dal adı girin.",
+    "BUILD_PATH_INVALID": "Depo içinde göreli bir yol kullanın.",
+    "IMAGE_INVALID": "Geçerli bir imaj adı girin, örneğin nginx:1.29-alpine.",
+    "DEPLOY_KEY_NOT_APPLICABLE": "Deploy key yalnızca SSH depolarıyla kullanılır."
   }
 }

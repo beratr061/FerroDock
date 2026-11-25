@@ -7,6 +7,7 @@ use ferrodock_core::config::AppConfig;
 use ferrodock_core::crypto::SecretBox;
 use ferrodock_core::events::{DomainEvent, EventBus};
 use ferrodock_db::pg::PgStore;
+use ferrodock_domain::applications::ApplicationService;
 use ferrodock_domain::audit::AuditLog;
 use ferrodock_domain::auth::{AuthRepos, AuthService};
 use ferrodock_domain::projects::ProjectService;
@@ -55,7 +56,7 @@ pub async fn migrate_only(config: &AppConfig) -> AppResult<()> {
 }
 
 pub async fn build(config: &AppConfig) -> AppResult<Wired> {
-    SecretBox::load_or_create(&config.master_key_path)?;
+    let secrets = SecretBox::load_or_create(&config.master_key_path)?;
     let store = connect(config).await?;
     let shared = Arc::new(store.clone());
     let repos = AuthRepos {
@@ -79,7 +80,8 @@ pub async fn build(config: &AppConfig) -> AppResult<Wired> {
         auth,
         docker: ferrodock_infra::docker::DockerEngine::connect_local()?,
         audit: audit.clone(),
-        projects: ProjectService::new(Arc::new(store.clone()), audit),
+        projects: ProjectService::new(Arc::new(store.clone()), audit.clone()),
+        applications: ApplicationService::new(Arc::new(store.clone()), secrets, audit),
         health: Arc::new(DatabaseProbe(store.clone())),
         settings: Arc::new(settings),
     };

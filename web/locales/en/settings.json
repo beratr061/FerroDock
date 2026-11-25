@@ -29,8 +29,6 @@
     "created": {
       "title": "Key created",
       "body": "Copy it now. For your security it will not be shown again.",
-      "copy": "Copy key",
-      "copied": "Copied",
       "done": "Done"
     },
     "empty": {

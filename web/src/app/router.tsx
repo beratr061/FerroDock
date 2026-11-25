@@ -76,7 +76,13 @@ const projectsRoute = createRoute({
 const projectDetailRoute = createRoute({
   getParentRoute: () => appRoute,
   path: "/projects/$projectId",
-  component: lazyRouteComponent(() => import("@/features/projects"), "ProjectDetailPage"),
+  component: lazyRouteComponent(() => import("./pages/ProjectWorkspace"), "ProjectWorkspace"),
+});
+
+const applicationRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: "/applications/$applicationId",
+  component: lazyRouteComponent(() => import("@/features/applications"), "ApplicationPage"),
 });
 
 const serversRoute = createRoute({
@@ -118,6 +124,7 @@ const routeTree = rootRoute.addChildren([
     indexRoute,
     projectsRoute,
     projectDetailRoute,
+    applicationRoute,
     serversRoute,
     settingsRoute.addChildren([settingsIndexRoute, apiKeysRoute, appearanceRoute]),
   ]),

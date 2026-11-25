@@ -1,0 +1,232 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT a.id, a.environment_id, e.project_id, a.name, a.slug, a.description,\n             a.source_kind, a.git_url, a.git_branch, a.build_kind, a.build_path, a.build_context,\n             a.image, a.deploy_key_public, a.deploy_key_private_enc, a.strategy,\n             a.created_at, a.updated_at\n             FROM applications a JOIN environments e ON e.id = a.environment_id\n             WHERE a.id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "environment_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "environment_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "project_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "environments",
+            "name": "project_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "slug",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "slug"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "description",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "description"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "source_kind",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "source_kind"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "git_url",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "git_url"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "git_branch",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "git_branch"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "build_kind",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "build_kind"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "build_path",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "build_path"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "build_context",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "build_context"
+          }
+        }
+      },
+      {
+        "ordinal": 12,
+        "name": "image",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "image"
+          }
+        }
+      },
+      {
+        "ordinal": 13,
+        "name": "deploy_key_public",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "deploy_key_public"
+          }
+        }
+      },
+      {
+        "ordinal": 14,
+        "name": "deploy_key_private_enc",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "deploy_key_private_enc"
+          }
+        }
+      },
+      {
+        "ordinal": 15,
+        "name": "strategy",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "strategy"
+          }
+        }
+      },
+      {
+        "ordinal": 16,
+        "name": "created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "created_at"
+          }
+        }
+      },
+      {
+        "ordinal": 17,
+        "name": "updated_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "updated_at"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "bb8baad99a12f56753f50f33eabcc11d4f3f07799003d09eefbc115f7ef6a6cc"
+}
