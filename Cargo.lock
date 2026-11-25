@@ -791,7 +791,7 @@ checksum = "da7c62ceae207dd37ea5b845da6a0696c799f85e97da1ab5b7910be3c1c80223"
 
 [[package]]
 name = "ferrodock"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-trait",
  "axum",
@@ -811,7 +811,7 @@ dependencies = [
 
 [[package]]
 name = "ferrodock-api"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-trait",
  "axum",
@@ -836,7 +836,7 @@ dependencies = [
 
 [[package]]
 name = "ferrodock-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "aes-gcm",
  "base64 0.23.1",
@@ -852,7 +852,7 @@ dependencies = [
 
 [[package]]
 name = "ferrodock-db"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-trait",
  "ferrodock-core",
@@ -864,7 +864,7 @@ dependencies = [
 
 [[package]]
 name = "ferrodock-domain"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "argon2",
  "async-trait",
@@ -884,7 +884,7 @@ dependencies = [
 
 [[package]]
 name = "ferrodock-engine"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "base64 0.23.1",
  "ed25519-dalek",
@@ -3630,7 +3630,7 @@ checksum = "3ad82d2a33cdc9674dc7465672f271e096168fcdbe0f799d9e6db8c5892679dc"
 
 [[package]]
 name = "xtask"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "base64 0.23.1",
  "ed25519-dalek",
