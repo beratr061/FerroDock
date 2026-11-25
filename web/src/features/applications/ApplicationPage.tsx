@@ -10,6 +10,7 @@ import { applicationQuery } from "./api";
 import { ApplicationSettings } from "./ApplicationSettings";
 import { DeploymentsPanel } from "./DeploymentsPanel";
 import { DeployKeyPanel } from "./DeployKeyPanel";
+import { DomainsPanel } from "./DomainsPanel";
 import { sourceSummary } from "./sourceForm";
 
 export function ApplicationPage() {
@@ -40,6 +41,7 @@ export function ApplicationPage() {
             {data.description ? <p className="max-w-2xl text-muted">{data.description}</p> : null}
           </header>
           <DeploymentsPanel application={data} />
+          <DomainsPanel applicationId={data.id} />
           <DeployKeyPanel application={data} />
           <ApplicationSettings application={data} />
         </>

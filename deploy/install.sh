@@ -84,7 +84,7 @@ fetch_asset() {
 prepare_directories() {
     mkdir -p "$CONFIG_DIR/secrets" "$CONFIG_DIR/panel" "$CONFIG_DIR/traefik/dynamic" "$CONFIG_DIR/traefik/acme"
     chmod 700 "$CONFIG_DIR/secrets" "$CONFIG_DIR/traefik/acme"
-    chown 10001:10001 "$CONFIG_DIR/panel"
+    chown 10001:10001 "$CONFIG_DIR/panel" "$CONFIG_DIR/traefik/dynamic"
     chmod 700 "$CONFIG_DIR/panel"
     mkdir -p "$DATA_DIR"
     chown 10001:10001 "$DATA_DIR"
@@ -112,6 +112,10 @@ write_secrets() {
     fi
 }
 
+detect_public_ip() {
+    ip -4 route get 1.1.1.1 2>/dev/null | awk '{ for (i = 1; i < NF; i++) if ($i == "src") { print $(i + 1); exit } }'
+}
+
 write_panel_env() {
     password=$(cat "$CONFIG_DIR/secrets/postgres_password")
     secure=false
@@ -127,6 +131,11 @@ write_panel_env() {
         echo "FERRODOCK_TRUST_FORWARDED_FOR=${trust_forwarded}"
         echo "FERRODOCK_SETUP_TOKEN=$(cat "$CONFIG_DIR/setup-token")"
         echo "FERRODOCK_LOG_JSON=true"
+        echo "FERRODOCK_PROXY=${PROXY_MODE}"
+        public_ip=$(detect_public_ip)
+        if [ -n "$public_ip" ]; then
+            echo "FERRODOCK_PUBLIC_IP=${public_ip}"
+        fi
         if [ -n "$PANEL_DOMAIN" ]; then
             echo "FERRODOCK_PUBLIC_URL=https://${PANEL_DOMAIN}"
         fi

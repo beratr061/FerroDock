@@ -65,5 +65,37 @@
       "deploy": "Deployment",
       "rollback": "Rollback"
     }
+  },
+  "domains": {
+    "title": "Domains",
+    "description": "Route a host name to this application. HTTPS certificates come from Let's Encrypt and plain HTTP is redirected.",
+    "new": "Add domain",
+    "add": "Add domain",
+    "empty": "No domains yet. The application is reachable only inside the server network.",
+    "host": "Host name",
+    "port": "Container port",
+    "portHint": "The port your app listens on inside the container.",
+    "portInvalid": "Enter a port between 1 and 65535.",
+    "path": "Path prefix",
+    "https": "HTTPS with automatic certificate",
+    "portLabel": "container port {{port}}",
+    "checkDns": "Check DNS",
+    "remove": "Remove",
+    "confirmRemove": "Yes, remove",
+    "proxyDisabled": "This server runs FerroDock without its own proxy, so domains are saved but not routed. Reinstall with FERRODOCK_PROXY=traefik when ports 80 and 443 are free.",
+    "verdict": {
+      "points_here": "Points here",
+      "proxied": "Behind Cloudflare",
+      "unverified": "Resolved",
+      "points_elsewhere": "Points elsewhere",
+      "unresolved": "Not found"
+    },
+    "verdictHint": {
+      "points_here": "Traffic will reach this server and the certificate can be issued.",
+      "proxied": "Cloudflare proxies this record. Keep SSL mode at Full (strict) so the certificate challenge can pass.",
+      "unverified": "The record resolves, but this server's public address is not configured to compare.",
+      "points_elsewhere": "The record points to another address. Update the A or AAAA record before expecting HTTPS.",
+      "unresolved": "No A or AAAA record yet. Create one that points to this server."
+    }
   }
 }

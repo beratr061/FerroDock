@@ -3,21 +3,23 @@ use utoipa::OpenApi;
 
 use crate::dto::{
     ApiKeyDto, ApplicationDto, BuildKindDto, ContainerActionDto, ContainerActionRequest,
-    ContainerDto, CreateApiKeyRequest, CreateApplicationRequest, CreateEnvironmentRequest,
-    CreateProjectRequest, CreatedApiKeyResponse, DeploymentDto, DeploymentKindDto,
-    DeploymentLogDto, DeploymentStatusDto, EngineInfoDto, EnvironmentDto, HealthResponse,
-    MeResponse, MembershipDto, ProjectDto, RoleDto, SetupRequest, SetupStatus, SignInRequest,
-    SourceDto, SourceRequest, StrategyDto, UpdateApplicationRequest, UpdateProjectRequest,
+    ContainerDto, CreateApiKeyRequest, CreateApplicationRequest, CreateDomainRequest,
+    CreateEnvironmentRequest, CreateProjectRequest, CreatedApiKeyResponse, DeploymentDto,
+    DeploymentKindDto, DeploymentLogDto, DeploymentStatusDto, DnsCheckDto, DnsVerdictDto,
+    DomainDto, DomainListDto, EngineInfoDto, EnvironmentDto, HealthResponse, MeResponse,
+    MembershipDto, ProjectDto, RoleDto, SetupRequest, SetupStatus, SignInRequest, SourceDto,
+    SourceRequest, StrategyDto, UpdateApplicationRequest, UpdateProjectRequest,
 };
 use crate::error::{ErrorBody, ErrorEnvelope};
 use crate::routes::{
-    __path_cancel_deployment, __path_check, __path_complete, __path_container_action,
-    __path_create, __path_create_application, __path_create_deployment, __path_create_environment,
-    __path_create_project, __path_delete_application, __path_delete_environment,
+    __path_cancel_deployment, __path_check, __path_check_domain_dns, __path_complete,
+    __path_container_action, __path_create, __path_create_application, __path_create_deployment,
+    __path_create_domain, __path_create_environment, __path_create_project,
+    __path_delete_application, __path_delete_domain, __path_delete_environment,
     __path_delete_project, __path_deployment_log, __path_docker_info, __path_get_application,
     __path_get_deployment, __path_get_project, __path_list, __path_list_applications,
-    __path_list_containers, __path_list_deployments, __path_list_projects, __path_me,
-    __path_revoke, __path_rollback_deployment, __path_rotate_deploy_key, __path_sign_in,
+    __path_list_containers, __path_list_deployments, __path_list_domains, __path_list_projects,
+    __path_me, __path_revoke, __path_rollback_deployment, __path_rotate_deploy_key, __path_sign_in,
     __path_sign_out, __path_status, __path_update_application, __path_update_project,
 };
 
@@ -55,6 +57,10 @@ use crate::routes::{
         deployment_log,
         rollback_deployment,
         cancel_deployment,
+        list_domains,
+        create_domain,
+        delete_domain,
+        check_domain_dns,
         delete_environment,
         docker_info,
         list_containers,
@@ -62,6 +68,11 @@ use crate::routes::{
     ),
     components(schemas(
         ApiKeyDto,
+        CreateDomainRequest,
+        DnsCheckDto,
+        DnsVerdictDto,
+        DomainDto,
+        DomainListDto,
         DeploymentDto,
         DeploymentKindDto,
         DeploymentLogDto,

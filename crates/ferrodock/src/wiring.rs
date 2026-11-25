@@ -3,18 +3,20 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use ferrodock_api::{ApiSettings, AppState, HealthProbe};
 use ferrodock_core::AppResult;
-use ferrodock_core::config::AppConfig;
+use ferrodock_core::config::{AppConfig, ProxyMode};
 use ferrodock_core::crypto::SecretBox;
 use ferrodock_core::events::{DomainEvent, EventBus};
 use ferrodock_db::pg::PgStore;
-use ferrodock_domain::applications::ApplicationService;
+use ferrodock_domain::applications::{ApplicationService, Runtime};
 use ferrodock_domain::audit::AuditLog;
 use ferrodock_domain::auth::{AuthRepos, AuthService};
 use ferrodock_domain::deployments::{DeploymentRepos, DeploymentService};
+use ferrodock_domain::domains::{DomainService, DomainSettings};
 use ferrodock_domain::projects::ProjectService;
 use ferrodock_engine::deploy::DeployContext;
 use ferrodock_infra::deploy_log::DeployLogs;
 use ferrodock_infra::docker::DockerEngine;
+use ferrodock_infra::proxy::ProxyRoutes;
 use time::Duration;
 
 #[derive(Debug)]
@@ -98,6 +100,37 @@ fn deploy_context(
     })
 }
 
+fn proxy_routes(config: &AppConfig) -> ProxyRoutes {
+    let enabled = config.proxy == ProxyMode::Traefik;
+    ProxyRoutes::new(enabled.then(|| config.proxy_dir.clone()))
+}
+
+fn runtime(config: &AppConfig, deploy: &DeployContext) -> Runtime {
+    Runtime {
+        docker: deploy.docker.clone(),
+        proxy: proxy_routes(config),
+    }
+}
+
+fn panel_host(config: &AppConfig) -> Option<String> {
+    let url = config.public_url.as_deref()?;
+    let rest = url.split_once("://").map_or(url, |(_, rest)| rest);
+    let host = rest.split(['/', ':']).next()?;
+    Some(host.to_ascii_lowercase())
+}
+
+fn domain_service(config: &AppConfig, store: &PgStore, audit: AuditLog) -> DomainService {
+    let settings = DomainSettings {
+        public_ip: config.public_ip,
+        panel_host: panel_host(config),
+    };
+    let repos = (
+        Arc::new(store.clone()) as Arc<dyn ferrodock_db::DomainRepo>,
+        Arc::new(store.clone()) as Arc<dyn ferrodock_db::ApplicationRepo>,
+    );
+    DomainService::new(repos, proxy_routes(config), settings, audit)
+}
+
 fn deployment_service(
     store: &PgStore,
     deploy: &DeployContext,
@@ -121,7 +154,13 @@ pub async fn build(config: &AppConfig) -> AppResult<Wired> {
         docker: deploy.docker.clone(),
         audit: audit.clone(),
         projects: ProjectService::new(Arc::new(store.clone()), audit.clone()),
-        applications: ApplicationService::new(Arc::new(store.clone()), secrets, audit.clone()),
+        applications: ApplicationService::new(
+            Arc::new(store.clone()),
+            secrets,
+            audit.clone(),
+            runtime(config, &deploy),
+        ),
+        domains: domain_service(config, &store, audit.clone()),
         deployments: deployment_service(&store, &deploy, audit),
         health: Arc::new(DatabaseProbe(store.clone())),
         settings: Arc::new(api_settings(config)),

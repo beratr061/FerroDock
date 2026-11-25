@@ -4,6 +4,7 @@ mod events;
 mod image;
 mod images;
 mod logs;
+mod naming;
 mod readiness;
 mod workloads;
 
@@ -11,12 +12,13 @@ use bollard::Docker;
 use ferrodock_core::{AppError, AppResult, ErrorKind};
 use serde::Serialize;
 
-pub use build::{ComposeUp, ImageBuild, build_image, compose_up};
+pub use build::{ComposeUp, ImageBuild, build_image, compose_down, compose_up};
 pub use containers::{ContainerAction, ContainerInfo};
 pub use events::{ContainerEvent, EventStream};
 pub use image::validate_image;
 pub use images::WORKLOAD_NETWORK;
 pub use logs::{LogLine, LogQuery, LogStream};
+pub use naming::{application_key, compose_project, network_alias, short_key};
 pub use workloads::{APPLICATION_LABEL, DEPLOYMENT_LABEL, WorkloadContainer, WorkloadSpec};
 
 const MAX_REFERENCE_LEN: usize = 128;

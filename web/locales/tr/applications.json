@@ -65,5 +65,37 @@
       "deploy": "Dağıtım",
       "rollback": "Geri alma"
     }
+  },
+  "domains": {
+    "title": "Domainler",
+    "description": "Bir alan adını bu uygulamaya yönlendirin. HTTPS sertifikaları Let's Encrypt'ten alınır, düz HTTP yönlendirilir.",
+    "new": "Domain ekle",
+    "add": "Domain ekle",
+    "empty": "Henüz domain yok. Uygulamaya yalnızca sunucu ağı içinden erişilebilir.",
+    "host": "Alan adı",
+    "port": "Konteyner portu",
+    "portHint": "Uygulamanızın konteyner içinde dinlediği port.",
+    "portInvalid": "1 ile 65535 arasında bir port girin.",
+    "path": "Yol öneki",
+    "https": "Otomatik sertifikalı HTTPS",
+    "portLabel": "konteyner portu {{port}}",
+    "checkDns": "DNS kontrol et",
+    "remove": "Kaldır",
+    "confirmRemove": "Evet, kaldır",
+    "proxyDisabled": "Bu sunucuda FerroDock kendi proxy'si olmadan çalışıyor; domainler kaydedilir ama yönlendirilmez. 80 ve 443 portları boşaldığında FERRODOCK_PROXY=traefik ile yeniden kurun.",
+    "verdict": {
+      "points_here": "Bu sunucuyu gösteriyor",
+      "proxied": "Cloudflare arkasında",
+      "unverified": "Çözümlendi",
+      "points_elsewhere": "Başka yeri gösteriyor",
+      "unresolved": "Bulunamadı"
+    },
+    "verdictHint": {
+      "points_here": "Trafik bu sunucuya gelecek ve sertifika alınabilir.",
+      "proxied": "Kayıt Cloudflare üzerinden geçiyor. Sertifika doğrulamasının geçmesi için SSL modunu Full (strict) tutun.",
+      "unverified": "Kayıt çözümleniyor ama karşılaştırma için bu sunucunun genel adresi ayarlı değil.",
+      "points_elsewhere": "Kayıt başka bir adresi gösteriyor. HTTPS beklemeden önce A veya AAAA kaydını güncelleyin.",
+      "unresolved": "Henüz A veya AAAA kaydı yok. Bu sunucuyu gösteren bir kayıt oluşturun."
+    }
   }
 }

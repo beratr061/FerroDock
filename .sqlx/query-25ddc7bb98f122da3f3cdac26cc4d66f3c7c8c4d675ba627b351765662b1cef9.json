@@ -1,0 +1,100 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, application_id, host, path_prefix, container_port, https, created_at\n             FROM domains WHERE application_id = $1 ORDER BY host, path_prefix",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "domains",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "application_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "domains",
+            "name": "application_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "host",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "domains",
+            "name": "host"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "path_prefix",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "domains",
+            "name": "path_prefix"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "container_port",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "domains",
+            "name": "container_port"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "https",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "domains",
+            "name": "https"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "domains",
+            "name": "created_at"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "25ddc7bb98f122da3f3cdac26cc4d66f3c7c8c4d675ba627b351765662b1cef9"
+}

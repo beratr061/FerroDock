@@ -8,6 +8,7 @@ use serde_json::{Value, json};
 
 use super::keys::{needs_deploy_key, new_deploy_key, settle_deploy_key};
 use super::model::{Application, ApplicationUpdate, NewApplicationInput};
+use super::runtime::Runtime;
 use super::source::{parse_strategy, to_record, validate_source};
 use crate::audit::{Actor, AuditLog};
 use crate::auth::{Principal, Role};
@@ -18,6 +19,7 @@ pub struct ApplicationService {
     repo: Arc<dyn ApplicationRepo>,
     secrets: SecretBox,
     audit: AuditLog,
+    runtime: Runtime,
 }
 
 impl std::fmt::Debug for ApplicationService {
@@ -35,11 +37,17 @@ fn already_exists(error: AppError) -> AppError {
 }
 
 impl ApplicationService {
-    pub fn new(repo: Arc<dyn ApplicationRepo>, secrets: SecretBox, audit: AuditLog) -> Self {
+    pub fn new(
+        repo: Arc<dyn ApplicationRepo>,
+        secrets: SecretBox,
+        audit: AuditLog,
+        runtime: Runtime,
+    ) -> Self {
         Self {
             repo,
             secrets,
             audit,
+            runtime,
         }
     }
 
@@ -152,6 +160,7 @@ impl ApplicationService {
     pub async fn delete(&self, actor: Actor<'_>, id: Id) -> AppResult<()> {
         actor.principal.require(Role::Admin)?;
         let current = self.owned(actor.principal, id).await?;
+        self.runtime.teardown(&current).await?;
         if !self.repo.delete(id).await? {
             return Err(AppError::not_found("APPLICATION_NOT_FOUND"));
         }

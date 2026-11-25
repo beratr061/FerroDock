@@ -73,6 +73,15 @@
     "READINESS_TIMEOUT": "Konteyner zamanında hazır olmadı",
     "COMPOSE_UP_FAILED": "Docker Compose projeyi başlatamadı",
     "JOB_INTERRUPTED": "Panel yeniden başladığı için yarıda kaldı",
-    "DEPLOYMENT_CANCELLED": "İptal edildi"
+    "DEPLOYMENT_CANCELLED": "İptal edildi",
+    "DOMAIN_HOST_INVALID": "app.example.com gibi bir alan adı girin.",
+    "DOMAIN_HOST_IP": "Alan adı kullanın; IP adreslerine sertifika verilemez.",
+    "DOMAIN_PATH_INVALID": "/api gibi boşluk ve \"..\" içermeyen bir yol kullanın.",
+    "DOMAIN_PORT_INVALID": "1 ile 65535 arasında bir port girin.",
+    "DOMAIN_TAKEN": "Bu alan adı ve yol zaten bir uygulamaya yönlendirilmiş.",
+    "DOMAIN_RESERVED": "Bu alan adı FerroDock paneli tarafından kullanılıyor.",
+    "DOMAIN_NOT_FOUND": "Bu domain artık yok.",
+    "PROXY_WRITE_FAILED": "Domain kaydedildi ama proxy yapılandırması yazılamadı.",
+    "COMPOSE_DOWN_FAILED": "Compose projesi durdurulamadı."
   }
 }

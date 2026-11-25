@@ -6,7 +6,9 @@ use ferrodock_core::{AppResult, Id};
 use ferrodock_db::DeploymentRepo;
 use ferrodock_db::deployments::DeploymentArtifact;
 use ferrodock_db::pg::PgStore;
-use ferrodock_domain::applications::{ApplicationService, NewApplicationInput, SourceInput};
+use ferrodock_domain::applications::{
+    ApplicationService, NewApplicationInput, Runtime, SourceInput,
+};
 use ferrodock_domain::audit::{Actor, AuditLog};
 use ferrodock_domain::auth::{AuthRepos, AuthService, Principal, SetupInput};
 use ferrodock_domain::deployments::{DeploymentRepos, DeploymentService, DeploymentStatus};
@@ -58,8 +60,12 @@ async fn application(store: &Arc<PgStore>, principal: &Principal) -> AppResult<I
     let project = ProjectService::new(store.clone(), audit.clone())
         .create(actor, project_input)
         .await?;
-    let applications =
-        ApplicationService::new(store.clone(), SecretBox::from_key(&[3u8; 32])?, audit);
+    let applications = ApplicationService::new(
+        store.clone(),
+        SecretBox::from_key(&[3u8; 32])?,
+        audit,
+        runtime()?,
+    );
     let input = NewApplicationInput {
         name: "web".to_owned(),
         description: None,
@@ -131,4 +137,11 @@ async fn deployments_queue_cancel_and_guard_rollbacks(pool: PgPool) -> AppResult
         Some("APPLICATION_NOT_FOUND")
     );
     Ok(())
+}
+
+fn runtime() -> AppResult<Runtime> {
+    Ok(Runtime {
+        docker: ferrodock_infra::docker::DockerEngine::connect_local()?,
+        proxy: ferrodock_infra::proxy::ProxyRoutes::new(None),
+    })
 }

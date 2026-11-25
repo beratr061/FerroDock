@@ -73,6 +73,15 @@
     "READINESS_TIMEOUT": "The container did not become ready in time",
     "COMPOSE_UP_FAILED": "Docker Compose could not start the project",
     "JOB_INTERRUPTED": "Interrupted by a panel restart",
-    "DEPLOYMENT_CANCELLED": "Cancelled"
+    "DEPLOYMENT_CANCELLED": "Cancelled",
+    "DOMAIN_HOST_INVALID": "Enter a host name like app.example.com.",
+    "DOMAIN_HOST_IP": "Use a host name; certificates cannot be issued for IP addresses.",
+    "DOMAIN_PATH_INVALID": "Use a path such as /api without spaces or \"..\".",
+    "DOMAIN_PORT_INVALID": "Enter a port between 1 and 65535.",
+    "DOMAIN_TAKEN": "This host and path are already routed to an application.",
+    "DOMAIN_RESERVED": "This host name is used by the FerroDock panel.",
+    "DOMAIN_NOT_FOUND": "This domain no longer exists.",
+    "PROXY_WRITE_FAILED": "The domain was saved but the proxy configuration could not be written.",
+    "COMPOSE_DOWN_FAILED": "The Compose project could not be stopped."
   }
 }

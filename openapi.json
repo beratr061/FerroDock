@@ -420,6 +420,217 @@
         }
       }
     },
+    "/api/v1/applications/{id}/domains": {
+      "get": {
+        "tags": [
+          "domains"
+        ],
+        "description": "Lists the domains routed to an application and whether this server runs the proxy",
+        "operationId": "list_domains",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainListDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "domains"
+        ],
+        "description": "Routes a host name to the application; HTTPS uses a Let's Encrypt certificate and redirects plain HTTP",
+        "operationId": "create_domain",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDomainRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications/{id}/domains/{domain_id}": {
+      "delete": {
+        "tags": [
+          "domains"
+        ],
+        "description": "Stops routing a domain to the application",
+        "operationId": "delete_domain",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "domain_id",
+            "in": "path",
+            "description": "Domain id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications/{id}/domains/{domain_id}/dns": {
+      "get": {
+        "tags": [
+          "domains"
+        ],
+        "description": "Resolves the domain and compares it with this server's public address; Cloudflare proxied records are recognised",
+        "operationId": "check_domain_dns",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "domain_id",
+            "in": "path",
+            "description": "Domain id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DnsCheckDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/auth/me": {
       "get": {
         "tags": [
@@ -1669,6 +1880,35 @@
           }
         }
       },
+      "CreateDomainRequest": {
+        "type": "object",
+        "required": [
+          "host",
+          "container_port"
+        ],
+        "properties": {
+          "container_port": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "host": {
+            "type": "string"
+          },
+          "https": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "path_prefix": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
       "CreateEnvironmentRequest": {
         "type": "object",
         "required": [
@@ -1818,6 +2058,87 @@
           "failed",
           "cancelled"
         ]
+      },
+      "DnsCheckDto": {
+        "type": "object",
+        "required": [
+          "verdict",
+          "addresses"
+        ],
+        "properties": {
+          "addresses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/DnsVerdictDto"
+          }
+        }
+      },
+      "DnsVerdictDto": {
+        "type": "string",
+        "enum": [
+          "points_here",
+          "points_elsewhere",
+          "proxied",
+          "unresolved",
+          "unverified"
+        ]
+      },
+      "DomainDto": {
+        "type": "object",
+        "required": [
+          "id",
+          "host",
+          "path_prefix",
+          "container_port",
+          "https",
+          "created_at"
+        ],
+        "properties": {
+          "container_port": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "host": {
+            "type": "string"
+          },
+          "https": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "path_prefix": {
+            "type": "string"
+          }
+        }
+      },
+      "DomainListDto": {
+        "type": "object",
+        "required": [
+          "proxy_enabled",
+          "domains"
+        ],
+        "properties": {
+          "domains": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DomainDto"
+            }
+          },
+          "proxy_enabled": {
+            "type": "boolean"
+          }
+        }
       },
       "EngineInfoDto": {
         "type": "object",

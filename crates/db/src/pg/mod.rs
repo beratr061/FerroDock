@@ -3,6 +3,7 @@ mod application_rows;
 mod applications;
 mod audit;
 mod deployments;
+mod domains;
 mod environments;
 mod identity;
 mod jobs;

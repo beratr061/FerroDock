@@ -1,4 +1,4 @@
-use std::net::SocketAddr;
+use std::net::{IpAddr, SocketAddr};
 use std::path::{Path, PathBuf};
 
 use figment::Figment;
@@ -6,6 +6,13 @@ use figment::providers::{Env, Format, Serialized, Toml};
 use serde::{Deserialize, Serialize};
 
 use crate::{AppError, AppResult, Secret};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ProxyMode {
+    Traefik,
+    None,
+}
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct AppConfig {
@@ -21,6 +28,9 @@ pub struct AppConfig {
     pub trust_forwarded_for: bool,
     pub job_concurrency: u32,
     pub setup_token: Option<Secret<String>>,
+    pub proxy: ProxyMode,
+    pub proxy_dir: PathBuf,
+    pub public_ip: Option<IpAddr>,
 }
 
 #[derive(Serialize)]
@@ -34,6 +44,8 @@ struct Defaults {
     session_ttl_hours: u32,
     trust_forwarded_for: bool,
     job_concurrency: u32,
+    proxy: ProxyMode,
+    proxy_dir: &'static str,
 }
 
 const DEFAULTS: Defaults = Defaults {
@@ -46,6 +58,8 @@ const DEFAULTS: Defaults = Defaults {
     session_ttl_hours: 168,
     trust_forwarded_for: false,
     job_concurrency: 2,
+    proxy: ProxyMode::None,
+    proxy_dir: "/etc/ferrodock/proxy",
 };
 
 impl AppConfig {

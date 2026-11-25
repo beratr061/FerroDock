@@ -5,7 +5,9 @@ use ferrodock_core::Id;
 use ferrodock_core::crypto::SecretBox;
 use ferrodock_db::{ApplicationRepo, DeploymentRepo};
 use ferrodock_infra::deploy_log::DeployLogs;
-use ferrodock_infra::docker::DockerEngine;
+use ferrodock_infra::docker::{
+    DockerEngine, application_key, compose_project, network_alias, short_key,
+};
 
 pub const KEPT_IMAGES: usize = 5;
 
@@ -29,20 +31,17 @@ impl std::fmt::Debug for DeployContext {
 
 #[derive(Debug, Clone)]
 pub struct Names {
+    pub application_id: Id,
     pub application_key: String,
     pub deployment_key: String,
     pub slug: String,
 }
 
-fn short_key(id: Id, length: usize) -> String {
-    let simple = id.as_uuid().simple().to_string();
-    simple[simple.len() - length..].to_owned()
-}
-
 impl Names {
     pub fn new(application_id: Id, deployment_id: Id, slug: &str) -> Self {
         Self {
-            application_key: short_key(application_id, 12),
+            application_id,
+            application_key: application_key(application_id),
             deployment_key: short_key(deployment_id, 8),
             slug: slug.to_owned(),
         }
@@ -60,11 +59,11 @@ impl Names {
     }
 
     pub fn alias(&self) -> String {
-        format!("fd-{}", self.application_key)
+        network_alias(self.application_id)
     }
 
     pub fn compose_project(&self) -> String {
-        format!("fd-{}", self.application_key)
+        compose_project(self.application_id)
     }
 }
 

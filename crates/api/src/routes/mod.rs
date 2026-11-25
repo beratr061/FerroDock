@@ -3,6 +3,7 @@ mod applications;
 mod auth;
 mod deployments;
 mod docker;
+mod domains;
 mod environments;
 mod health;
 mod projects;
@@ -29,6 +30,9 @@ pub(crate) use deployments::{
     __path_get_deployment, __path_list_deployments, __path_rollback_deployment,
 };
 pub(crate) use docker::{__path_container_action, __path_docker_info, __path_list_containers};
+pub(crate) use domains::{
+    __path_check_domain_dns, __path_create_domain, __path_delete_domain, __path_list_domains,
+};
 pub(crate) use environments::{__path_create_environment, __path_delete_environment};
 pub(crate) use health::__path_check;
 pub(crate) use projects::{
@@ -112,6 +116,22 @@ fn deployment_routes() -> Router<AppState> {
         )
 }
 
+fn domain_routes() -> Router<AppState> {
+    Router::new()
+        .route(
+            "/applications/{id}/domains",
+            get(domains::list_domains).post(domains::create_domain),
+        )
+        .route(
+            "/applications/{id}/domains/{domain_id}",
+            delete(domains::delete_domain),
+        )
+        .route(
+            "/applications/{id}/domains/{domain_id}/dns",
+            get(domains::check_domain_dns),
+        )
+}
+
 fn docker_routes() -> Router<AppState> {
     Router::new()
         .route("/docker/info", get(docker::docker_info))
@@ -141,5 +161,6 @@ pub fn api_routes(trust_forwarded: bool) -> Router<AppState> {
         .route("/api-keys/{id}", delete(api_keys::revoke))
         .merge(workload_routes())
         .merge(deployment_routes())
+        .merge(domain_routes())
         .merge(docker_routes())
 }

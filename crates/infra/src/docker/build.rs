@@ -5,7 +5,7 @@ use tokio::process::Command;
 use tokio_util::sync::CancellationToken;
 
 use crate::deploy_log::DeployLog;
-use crate::process::run_logged;
+use crate::process::{capture, run_logged};
 
 const COMPOSE_WAIT_SECONDS: &str = "300";
 
@@ -66,4 +66,10 @@ pub async fn compose_up(
     log.step(&format!("Starting compose project {}", compose.project))
         .await;
     run_logged(command, log, cancel, "COMPOSE_UP_FAILED").await
+}
+
+pub async fn compose_down(project: &str) -> AppResult<()> {
+    let mut command = docker();
+    command.args(["compose", "-p", project, "down", "--remove-orphans"]);
+    capture(command, "COMPOSE_DOWN_FAILED").await.map(|_| ())
 }

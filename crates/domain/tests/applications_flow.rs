@@ -6,8 +6,8 @@ use ferrodock_core::{AppResult, ErrorKind, Id};
 use ferrodock_db::ApplicationRepo;
 use ferrodock_db::pg::PgStore;
 use ferrodock_domain::applications::{
-    ApplicationService, ApplicationUpdate, BuildKind, GitSourceInput, NewApplicationInput, Source,
-    SourceInput,
+    ApplicationService, ApplicationUpdate, BuildKind, GitSourceInput, NewApplicationInput, Runtime,
+    Source, SourceInput,
 };
 use ferrodock_domain::audit::{Actor, AuditLog};
 use ferrodock_domain::auth::{AuthRepos, AuthService, Principal, SetupInput};
@@ -73,7 +73,7 @@ async fn fixture(pool: PgPool) -> AppResult<Fixture> {
         )
         .await?;
     let secrets = SecretBox::from_key(&[7u8; 32])?;
-    let applications = ApplicationService::new(store.clone(), secrets.clone(), audit);
+    let applications = ApplicationService::new(store.clone(), secrets.clone(), audit, runtime()?);
     Ok(Fixture {
         environment_id: project.environments[0].id,
         owner,
@@ -196,4 +196,11 @@ async fn applications_validate_and_stay_in_their_organization(pool: PgPool) -> A
     f.applications.delete(actor, app.id).await?;
     assert!(f.applications.get(&f.owner, app.id).await.is_err());
     Ok(())
+}
+
+fn runtime() -> AppResult<Runtime> {
+    Ok(Runtime {
+        docker: ferrodock_infra::docker::DockerEngine::connect_local()?,
+        proxy: ferrodock_infra::proxy::ProxyRoutes::new(None),
+    })
 }
