@@ -1854,6 +1854,170 @@
         }
       }
     },
+    "/api/v1/system/backups": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "description": "Lists encrypted panel backups, newest first; owner only",
+        "operationId": "list_backups",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BackupDto"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "system"
+        ],
+        "description": "Queues a panel backup: database dump plus proxy routes, sealed with the master key",
+        "operationId": "create_backup",
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupRequestedDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/system/backups/{name}": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "description": "Downloads one backup archive; restoring it also needs the master key",
+        "operationId": "download_backup",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Backup file name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/octet-stream": {}
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "system"
+        ],
+        "description": "Deletes one backup archive",
+        "operationId": "delete_backup",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Backup file name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/system/master-key": {
+      "post": {
+        "tags": [
+          "system"
+        ],
+        "description": "Returns the master key after confirming the owner's password; store it apart from the backups",
+        "operationId": "export_master_key",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MasterKeyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MasterKeyDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/terminal": {
       "get": {
         "tags": [
@@ -2054,6 +2218,40 @@
           "updated_at": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "BackupDto": {
+        "type": "object",
+        "required": [
+          "name",
+          "size",
+          "created_at"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "name": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        }
+      },
+      "BackupRequestedDto": {
+        "type": "object",
+        "required": [
+          "job_id"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       },
@@ -2541,6 +2739,29 @@
           },
           "version": {
             "type": "string"
+          }
+        }
+      },
+      "MasterKeyDto": {
+        "type": "object",
+        "required": [
+          "master_key"
+        ],
+        "properties": {
+          "master_key": {
+            "type": "string"
+          }
+        }
+      },
+      "MasterKeyRequest": {
+        "type": "object",
+        "required": [
+          "password"
+        ],
+        "properties": {
+          "password": {
+            "type": "string",
+            "format": "password"
           }
         }
       },

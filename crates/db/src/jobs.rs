@@ -4,6 +4,7 @@ use serde_json::Value;
 use time::OffsetDateTime;
 
 pub const LOCAL_QUEUE: &str = "server:local";
+pub const PANEL_BACKUP_JOB: &str = "panel.backup";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum JobStatus {

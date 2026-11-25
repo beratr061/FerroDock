@@ -23,6 +23,7 @@ tower = { workspace = true }
 tower-http = { workspace = true }
 tower_governor = "0.8.0"
 governor = "0.10"
+tokio-util = { version = "0.7.20", features = ["io"] }
 futures-util = { version = "0.3", default-features = false, features = ["std"] }
 tracing = { workspace = true }
 utoipa = { workspace = true }

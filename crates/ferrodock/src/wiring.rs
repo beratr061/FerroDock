@@ -10,6 +10,10 @@ use ferrodock_db::pg::PgStore;
 use ferrodock_domain::applications::{ApplicationService, Runtime};
 use ferrodock_domain::audit::AuditLog;
 use ferrodock_domain::auth::{AuthRepos, AuthService};
+use ferrodock_domain::backups::{BackupService, BackupServiceParts};
+use ferrodock_engine::backup::BackupContext;
+
+use crate::backups;
 use ferrodock_domain::deployments::{DeploymentRepos, DeploymentService};
 use ferrodock_domain::domains::{DomainService, DomainSettings};
 use ferrodock_domain::projects::ProjectService;
@@ -46,6 +50,7 @@ pub struct Wired {
     pub state: AppState,
     pub store: PgStore,
     pub deploy: DeployContext,
+    pub backup: BackupContext,
 }
 
 pub async fn connect(config: &AppConfig) -> AppResult<PgStore> {
@@ -149,41 +154,61 @@ fn deployment_service(
     DeploymentService::new(repos, deploy.logs.clone(), audit, deploy.hub.clone())
 }
 
+fn backup_service(
+    config: &AppConfig,
+    store: &PgStore,
+    auth: AuthService,
+    audit: AuditLog,
+) -> BackupService {
+    BackupService::new(BackupServiceParts {
+        store: backups::store(config),
+        jobs: Arc::new(store.clone()),
+        auth,
+        audit,
+        master_key_path: config.master_key_path.clone(),
+    })
+}
+
+fn app_state(config: &AppConfig, store: &PgStore, deploy: &DeployContext) -> AppState {
+    let audit = AuditLog::new(Arc::new(store.clone()));
+    let auth = auth_service(config, store);
+    let shared = || Arc::new(store.clone());
+    AppState {
+        auth: auth.clone(),
+        docker: deploy.docker.clone(),
+        hub: deploy.hub.clone(),
+        audit: audit.clone(),
+        projects: ProjectService::new(shared(), audit.clone()),
+        applications: ApplicationService::new(
+            shared(),
+            deploy.secrets.clone(),
+            audit.clone(),
+            runtime(config, deploy),
+        ),
+        domains: domain_service(config, store, audit.clone()),
+        variables: VariableService::new(
+            (shared(), shared()),
+            deploy.secrets.clone(),
+            audit.clone(),
+        ),
+        deployments: deployment_service(store, deploy, audit.clone()),
+        terminal: TerminalService::new(deploy.docker.clone(), shared(), audit.clone()),
+        backups: backup_service(config, store, auth, audit),
+        health: Arc::new(DatabaseProbe(store.clone())),
+        settings: Arc::new(api_settings(config)),
+    }
+}
+
 pub async fn build(config: &AppConfig) -> AppResult<Wired> {
     let secrets = SecretBox::load_or_create(&config.master_key_path)?;
     let store = connect(config).await?;
     let deploy = deploy_context(config, &store, secrets.clone())?;
-    let audit = AuditLog::new(Arc::new(store.clone()));
-    let state = AppState {
-        auth: auth_service(config, &store),
-        docker: deploy.docker.clone(),
-        hub: deploy.hub.clone(),
-        audit: audit.clone(),
-        projects: ProjectService::new(Arc::new(store.clone()), audit.clone()),
-        applications: ApplicationService::new(
-            Arc::new(store.clone()),
-            secrets,
-            audit.clone(),
-            runtime(config, &deploy),
-        ),
-        domains: domain_service(config, &store, audit.clone()),
-        variables: VariableService::new(
-            (Arc::new(store.clone()), Arc::new(store.clone())),
-            deploy.secrets.clone(),
-            audit.clone(),
-        ),
-        deployments: deployment_service(&store, &deploy, audit.clone()),
-        terminal: TerminalService::new(
-            deploy.docker.clone(),
-            Arc::new(store.clone()),
-            audit.clone(),
-        ),
-        health: Arc::new(DatabaseProbe(store.clone())),
-        settings: Arc::new(api_settings(config)),
-    };
+    let backup = backups::context(config, deploy.docker.clone(), secrets)?;
+    let state = app_state(config, &store, &deploy);
     Ok(Wired {
         state,
         store,
         deploy,
+        backup,
     })
 }

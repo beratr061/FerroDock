@@ -117,6 +117,12 @@ const appearanceRoute = createRoute({
   component: lazyRouteComponent(() => import("@/features/settings"), "AppearancePage"),
 });
 
+const backupsRoute = createRoute({
+  getParentRoute: () => settingsRoute,
+  path: "/backups",
+  component: lazyRouteComponent(() => import("@/features/settings"), "BackupsPage"),
+});
+
 const routeTree = rootRoute.addChildren([
   setupRoute,
   signInRoute,
@@ -126,7 +132,7 @@ const routeTree = rootRoute.addChildren([
     projectDetailRoute,
     applicationRoute,
     serversRoute,
-    settingsRoute.addChildren([settingsIndexRoute, apiKeysRoute, appearanceRoute]),
+    settingsRoute.addChildren([settingsIndexRoute, apiKeysRoute, appearanceRoute, backupsRoute]),
   ]),
 ]);
 

@@ -5,6 +5,7 @@ use ferrodock_core::AppResult;
 use ferrodock_domain::applications::ApplicationService;
 use ferrodock_domain::audit::AuditLog;
 use ferrodock_domain::auth::AuthService;
+use ferrodock_domain::backups::BackupService;
 use ferrodock_domain::deployments::DeploymentService;
 use ferrodock_domain::domains::DomainService;
 use ferrodock_domain::projects::ProjectService;
@@ -38,6 +39,7 @@ pub struct AppState {
     pub domains: DomainService,
     pub variables: VariableService,
     pub terminal: TerminalService,
+    pub backups: BackupService,
     pub health: Arc<dyn HealthProbe>,
     pub settings: Arc<ApiSettings>,
 }

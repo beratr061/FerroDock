@@ -1,4 +1,5 @@
 mod api_keys;
+mod confirm;
 mod input;
 mod model;
 mod password;

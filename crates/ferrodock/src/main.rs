@@ -1,3 +1,4 @@
+mod backups;
 mod container_events;
 mod healthcheck;
 mod jobs;
@@ -42,6 +43,12 @@ enum Command {
         #[arg(long, default_value = "127.0.0.1:3000")]
         address: String,
     },
+    Backup,
+    Restore {
+        archive: PathBuf,
+        #[arg(long)]
+        master_key: PathBuf,
+    },
 }
 
 #[tokio::main]
@@ -62,12 +69,17 @@ async fn run(cli: Cli) -> AppResult<()> {
         Command::Openapi => return serve::print_openapi(),
         Command::Healthcheck { address } => return healthcheck::probe(address).await,
         Command::Update { action } => return update::run(action).await,
-        Command::Serve | Command::Migrate => {}
+        Command::Serve | Command::Migrate | Command::Backup | Command::Restore { .. } => {}
     }
     let config = AppConfig::load(cli.config.as_deref())?;
     match cli.command {
         Command::Serve => serve::run(config).await,
         Command::Migrate => wiring::migrate_only(&config).await,
+        Command::Backup => backups::create_now(&config).await,
+        Command::Restore {
+            archive,
+            master_key,
+        } => backups::restore(&config, &archive, &master_key).await,
         Command::Openapi | Command::Healthcheck { .. } | Command::Update { .. } => Ok(()),
     }
 }

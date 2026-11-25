@@ -1,3 +1,4 @@
+pub mod archive;
 pub mod config;
 pub mod crypto;
 pub mod error;

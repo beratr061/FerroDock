@@ -1,4 +1,5 @@
 use std::net::SocketAddr;
+use std::sync::Arc;
 use std::time::Duration;
 
 use ferrodock_core::config::AppConfig;
@@ -8,7 +9,7 @@ use tokio::net::TcpListener;
 
 use tokio_util::sync::CancellationToken;
 
-use crate::{container_events, jobs, wiring};
+use crate::{backups, container_events, jobs, wiring};
 
 const SESSION_PURGE_INTERVAL: Duration = Duration::from_secs(3600);
 
@@ -25,9 +26,11 @@ pub async fn run(config: AppConfig) -> AppResult<()> {
     jobs::start(
         &wired.store,
         wired.deploy.clone(),
+        wired.backup.clone(),
         config.job_concurrency,
         &background,
     );
+    backups::schedule(&config, Arc::new(wired.store.clone()), background.clone());
     container_events::forward(
         wired.state.docker.clone(),
         wired.state.hub.clone(),

@@ -91,7 +91,13 @@
     "VARIABLE_NOT_FOUND": "This variable no longer exists.",
     "SECRET_CORRUPTED": "A stored secret could not be decrypted. Check the master key.",
     "CONTAINER_NOT_RUNNING": "The container is not running.",
-    "SHELL_DETACHED": "The shell could not be attached."
+    "SHELL_DETACHED": "The shell could not be attached.",
+    "PASSWORD_INCORRECT": "The password is incorrect.",
+    "BACKUP_NOT_FOUND": "This backup no longer exists.",
+    "BACKUP_DUMP_FAILED": "The database could not be dumped.",
+    "BACKUP_DATABASE_NOT_FOUND": "The panel database container was not found.",
+    "BACKUP_ARCHIVE_INVALID": "The backup file is damaged or not a FerroDock backup.",
+    "BACKUP_KEY_MISMATCH": "This backup was made with a different master key."
   },
   "terminal": {
     "label": "Terminal for {{name}}",

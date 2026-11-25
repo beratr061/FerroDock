@@ -40,5 +40,30 @@
     "title": "Appearance",
     "description": "Theme and language apply to this browser.",
     "theme": "Theme"
+  },
+  "backups": {
+    "title": "Backups",
+    "description": "Encrypted copies of the panel database and proxy routes, made daily and on demand. Restoring one also needs the master key.",
+    "create": "Back up now",
+    "download": "Download",
+    "delete": "Delete",
+    "confirmDelete": "Yes, delete",
+    "ownerOnly": "Only the organization owner can manage panel backups.",
+    "empty": {
+      "title": "No backups yet",
+      "description": "A backup runs every day automatically. You can also start one now."
+    },
+    "masterKey": {
+      "title": "Master key",
+      "description": "Backups and stored secrets are encrypted with this key. Keep a copy somewhere other than this server; without it a backup cannot be restored.",
+      "password": "Your password",
+      "reveal": "Show master key",
+      "hide": "Hide",
+      "revealed": "Store this key in a password manager. Anyone with the key and a backup can read the panel data."
+    },
+    "restore": {
+      "title": "Restore on a server",
+      "description": "Install FerroDock, copy the backup to /var/lib/ferrodock/backups and the master key to /var/lib/ferrodock/restore.key, then run:"
+    }
   }
 }

@@ -40,5 +40,30 @@
     "title": "Görünüm",
     "description": "Tema ve dil bu tarayıcıya uygulanır.",
     "theme": "Tema"
+  },
+  "backups": {
+    "title": "Yedekler",
+    "description": "Panel veritabanının ve proxy yönlendirmelerinin şifreli kopyaları; her gün otomatik ve istendiğinde alınır. Geri yüklemek için ana anahtar da gerekir.",
+    "create": "Şimdi yedekle",
+    "download": "İndir",
+    "delete": "Sil",
+    "confirmDelete": "Evet, sil",
+    "ownerOnly": "Panel yedeklerini yalnızca organizasyon sahibi yönetebilir.",
+    "empty": {
+      "title": "Henüz yedek yok",
+      "description": "Her gün otomatik bir yedek alınır. İsterseniz şimdi de başlatabilirsiniz."
+    },
+    "masterKey": {
+      "title": "Ana anahtar",
+      "description": "Yedekler ve kayıtlı gizli değerler bu anahtarla şifrelenir. Bir kopyasını bu sunucu dışında saklayın; anahtar olmadan yedek geri yüklenemez.",
+      "password": "Parolanız",
+      "reveal": "Ana anahtarı göster",
+      "hide": "Gizle",
+      "revealed": "Bu anahtarı bir parola yöneticisinde saklayın. Anahtara ve bir yedeğe sahip olan herkes panel verisini okuyabilir."
+    },
+    "restore": {
+      "title": "Bir sunucuya geri yükleme",
+      "description": "FerroDock'u kurun, yedeği /var/lib/ferrodock/backups içine ve ana anahtarı /var/lib/ferrodock/restore.key olarak kopyalayın, sonra çalıştırın:"
+    }
   }
 }

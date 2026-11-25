@@ -1,6 +1,7 @@
 mod api_keys;
 mod applications;
 mod auth;
+mod backups;
 mod deployments;
 mod docker;
 mod domains;
@@ -17,6 +18,7 @@ pub use applications::{
 pub use auth::{
     HealthResponse, MeResponse, MembershipDto, RoleDto, SetupRequest, SetupStatus, SignInRequest,
 };
+pub use backups::{BackupDto, BackupRequestedDto, MasterKeyDto, MasterKeyRequest};
 pub use deployments::{
     DeploymentDto, DeploymentKindDto, DeploymentLogDto, DeploymentLogQuery, DeploymentStatusDto,
 };

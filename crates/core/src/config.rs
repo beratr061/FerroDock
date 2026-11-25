@@ -31,6 +31,9 @@ pub struct AppConfig {
     pub proxy: ProxyMode,
     pub proxy_dir: PathBuf,
     pub public_ip: Option<IpAddr>,
+    pub backup_interval_hours: u32,
+    pub backup_retention: u32,
+    pub database_container: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -46,6 +49,8 @@ struct Defaults {
     job_concurrency: u32,
     proxy: ProxyMode,
     proxy_dir: &'static str,
+    backup_interval_hours: u32,
+    backup_retention: u32,
 }
 
 const DEFAULTS: Defaults = Defaults {
@@ -60,6 +65,8 @@ const DEFAULTS: Defaults = Defaults {
     job_concurrency: 2,
     proxy: ProxyMode::None,
     proxy_dir: "/etc/ferrodock/proxy",
+    backup_interval_hours: 24,
+    backup_retention: 7,
 };
 
 impl AppConfig {

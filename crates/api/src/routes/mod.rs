@@ -1,6 +1,7 @@
 mod api_keys;
 mod applications;
 mod auth;
+mod backups;
 mod deployments;
 mod docker;
 mod domains;
@@ -29,6 +30,10 @@ pub(crate) use applications::{
     __path_update_application,
 };
 pub(crate) use auth::{__path_me, __path_sign_in, __path_sign_out};
+pub(crate) use backups::{
+    __path_create_backup, __path_delete_backup, __path_download_backup, __path_export_master_key,
+    __path_list_backups,
+};
 pub(crate) use deployments::{
     __path_cancel_deployment, __path_create_deployment, __path_deployment_log,
     __path_get_deployment, __path_list_deployments, __path_rollback_deployment,
@@ -162,6 +167,19 @@ fn variable_routes() -> Router<AppState> {
         )
 }
 
+fn system_routes() -> Router<AppState> {
+    Router::new()
+        .route(
+            "/system/backups",
+            get(backups::list_backups).post(backups::create_backup),
+        )
+        .route(
+            "/system/backups/{name}",
+            get(backups::download_backup).delete(backups::delete_backup),
+        )
+        .route("/system/master-key", post(backups::export_master_key))
+}
+
 fn docker_routes() -> Router<AppState> {
     Router::new()
         .route("/docker/info", get(docker::docker_info))
@@ -195,5 +213,6 @@ pub fn api_routes(trust_forwarded: bool) -> Router<AppState> {
         .merge(deployment_routes())
         .merge(domain_routes())
         .merge(variable_routes())
+        .merge(system_routes())
         .merge(docker_routes())
 }

@@ -4,6 +4,7 @@ import { useTranslation } from "@/shared/i18n";
 const SECTIONS = [
   { to: "/settings/api-keys", key: "apiKeys" },
   { to: "/settings/appearance", key: "appearance" },
+  { to: "/settings/backups", key: "backups" },
 ] as const;
 
 export function SettingsLayout() {

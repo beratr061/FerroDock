@@ -38,6 +38,10 @@ impl SecretBox {
         Ok(Self { cipher })
     }
 
+    pub fn load(path: &Path) -> AppResult<Self> {
+        Self::from_key(&read_key(path)?)
+    }
+
     pub fn load_or_create(path: &Path) -> AppResult<Self> {
         let key = if path.exists() {
             read_key(path)?
@@ -58,6 +62,28 @@ impl SecretBox {
             STANDARD_NO_PAD.encode(nonce_bytes),
             STANDARD_NO_PAD.encode(ciphertext)
         ))
+    }
+
+    pub fn seal_bytes(&self, plaintext: &[u8]) -> AppResult<Vec<u8>> {
+        let nonce_bytes = random_bytes::<NONCE_LEN>();
+        let ciphertext = self
+            .cipher
+            .encrypt(&Nonce::from(nonce_bytes), plaintext)
+            .map_err(|_| AppError::validation("ENCRYPTION_FAILED"))?;
+        let mut sealed = Vec::with_capacity(NONCE_LEN + ciphertext.len());
+        sealed.extend_from_slice(&nonce_bytes);
+        sealed.extend_from_slice(&ciphertext);
+        Ok(sealed)
+    }
+
+    pub fn open_bytes(&self, sealed: &[u8]) -> AppResult<Zeroizing<Vec<u8>>> {
+        let corrupted = || AppError::validation("SECRET_CORRUPTED");
+        let (nonce, body) = sealed.split_at_checked(NONCE_LEN).ok_or_else(corrupted)?;
+        let nonce: [u8; NONCE_LEN] = nonce.try_into().map_err(|_| corrupted())?;
+        self.cipher
+            .decrypt(&Nonce::from(nonce), body)
+            .map(Zeroizing::new)
+            .map_err(|_| corrupted())
     }
 
     pub fn decrypt(&self, sealed: &str) -> AppResult<Zeroizing<Vec<u8>>> {
@@ -135,6 +161,14 @@ mod tests {
         let tampered = format!("{}A", &sealed[..sealed.len() - 1]);
         assert!(secrets.decrypt(&tampered).is_err());
         assert!(secrets.decrypt("v2:abc:def").is_err());
+        let blob = secrets.seal_bytes(b"archive")?;
+        assert_eq!(secrets.open_bytes(&blob)?.as_slice(), b"archive");
+        let mut flipped = blob.clone();
+        if let Some(last) = flipped.last_mut() {
+            *last ^= 1;
+        }
+        assert!(secrets.open_bytes(&flipped).is_err());
+        assert!(secrets.open_bytes(&blob[..4]).is_err());
         Ok(())
     }
 

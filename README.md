@@ -29,6 +29,20 @@ Optional environment variables: `FERRODOCK_DOMAIN` (serve the panel over HTTPS o
 
 `deploy/uninstall.sh` stops the stack; `deploy/uninstall.sh --purge` also deletes all data.
 
+## Backups
+
+The panel backs itself up every day (`FERRODOCK_BACKUP_INTERVAL_HOURS`, default 24, `0` turns it off) and keeps the newest seven archives (`FERRODOCK_BACKUP_RETENTION`). An archive holds a `pg_dump` of the panel database, taken inside the Postgres container, plus the proxy route files, sealed with AES-256-GCM using the master key. The master key is not inside the archive: export it once from Settings → Backups (your password is required) and store it away from the server.
+
+To restore on a fresh install, copy the archive to `/var/lib/ferrodock/backups/` and the key to `/var/lib/ferrodock/restore.key`, then:
+
+```sh
+docker compose -f /etc/ferrodock/docker-compose.yml stop ferrodock
+docker compose -f /etc/ferrodock/docker-compose.yml run --rm ferrodock restore /var/lib/ferrodock/backups/<file>.fdbk --master-key /var/lib/ferrodock/restore.key
+docker compose -f /etc/ferrodock/docker-compose.yml start ferrodock
+```
+
+Archives from a newer FerroDock release are refused; update the panel first.
+
 ## Develop
 
 Requirements: Rust 1.99, Node 24 with pnpm, Docker.
