@@ -48,11 +48,8 @@ previous_setting() {
 
 load_previous_settings() {
     if [ -z "${FERRODOCK_PROXY:-}" ] && [ -f "$CONFIG_DIR/.env" ]; then
-        if [ "$(previous_setting COMPOSE_PROFILES)" = proxy ]; then
-            PROXY_MODE=traefik
-        else
-            PROXY_MODE=none
-        fi
+        PROXY_MODE=none
+        [ "$(previous_setting COMPOSE_PROFILES)" != proxy ] || PROXY_MODE=traefik
     fi
     previous_url=$(sed -n "s/^FERRODOCK_PUBLIC_URL=https:\/\///p" "$CONFIG_DIR/ferrodock.env" 2>/dev/null | head -n 1)
     if [ -z "${FERRODOCK_DOMAIN:-}" ] && [ -n "$previous_url" ]; then
@@ -65,11 +62,8 @@ load_previous_settings() {
 }
 
 required_ports() {
-    if [ "$PROXY_MODE" = traefik ]; then
-        echo 80 443 "$PANEL_PORT"
-    else
-        echo "$PANEL_PORT"
-    fi
+    [ "$PROXY_MODE" != traefik ] || echo 80 443
+    echo "$PANEL_PORT"
 }
 
 already_installed() {
@@ -151,16 +145,12 @@ detect_public_ip() {
 write_panel_env() {
     password=$(cat "$CONFIG_DIR/secrets/postgres_password")
     secure=false
-    trust_forwarded=false
-    if [ -n "$PANEL_DOMAIN" ]; then
-        secure=true
-        trust_forwarded=true
-    fi
+    [ -z "$PANEL_DOMAIN" ] || secure=true
     umask 077
     {
         echo "FERRODOCK_DATABASE_URL=postgres://ferrodock:${password}@postgres:5432/ferrodock"
         echo "FERRODOCK_SECURE_COOKIES=${secure}"
-        echo "FERRODOCK_TRUST_FORWARDED_FOR=${trust_forwarded}"
+        echo "FERRODOCK_TRUST_FORWARDED_FOR=${secure}"
         echo "FERRODOCK_SETUP_TOKEN=$(cat "$CONFIG_DIR/setup-token")"
         echo "FERRODOCK_LOG_JSON=true"
         echo "FERRODOCK_PROXY=${PROXY_MODE}"
@@ -193,13 +183,9 @@ docker_socket_gid() {
 
 write_compose_env() {
     panel_bind=0.0.0.0
-    if [ -n "$PANEL_DOMAIN" ]; then
-        panel_bind=127.0.0.1
-    fi
+    [ -z "$PANEL_DOMAIN" ] || panel_bind=127.0.0.1
     profiles=""
-    if [ "$PROXY_MODE" = traefik ]; then
-        profiles=proxy
-    fi
+    [ "$PROXY_MODE" != traefik ] || profiles=proxy
     umask 077
     {
         echo "FERRODOCK_IMAGE=${FERRODOCK_IMAGE}"
@@ -225,15 +211,11 @@ wait_until_healthy() {
     done
 }
 
-server_address() {
-    ip route get 1.1.1.1 2>/dev/null | awk '{for (i = 1; i <= NF; i++) if ($i == "src") { print $(i + 1); exit }}'
-}
-
 print_summary() {
     if [ -n "$PANEL_DOMAIN" ]; then
         url="https://$PANEL_DOMAIN"
     else
-        url="http://$(server_address):$PANEL_PORT"
+        url="http://$(detect_public_ip):$PANEL_PORT"
     fi
     say "FerroDock is ready: $url"
     echo "    Open it and create the owner account with this setup token:"
