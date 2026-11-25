@@ -3,3 +3,4 @@ pub mod docker;
 pub mod git;
 pub mod process;
 pub mod proxy;
+pub mod realtime;

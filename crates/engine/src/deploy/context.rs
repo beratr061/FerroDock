@@ -9,6 +9,7 @@ use ferrodock_infra::deploy_log::DeployLogs;
 use ferrodock_infra::docker::{
     DockerEngine, application_key, compose_project, network_alias, short_key,
 };
+use ferrodock_infra::realtime::{Hub, Signal};
 
 pub const KEPT_IMAGES: usize = 5;
 
@@ -20,6 +21,7 @@ pub struct DeployContext {
     pub variables: Arc<dyn VariableRepo>,
     pub secrets: SecretBox,
     pub logs: DeployLogs,
+    pub hub: Hub,
     pub data_dir: PathBuf,
 }
 
@@ -70,6 +72,14 @@ impl Names {
 }
 
 impl DeployContext {
+    pub fn announce(&self, organization_id: Option<Id>, application_id: Id, deployment_id: Id) {
+        let signal = Signal::DeploymentStatus {
+            application_id,
+            deployment_id,
+        };
+        self.hub.publish(organization_id, signal);
+    }
+
     pub async fn variables(&self, application_id: Id) -> AppResult<Vec<(String, String)>> {
         let records = self.variables.list(application_id).await?;
         records

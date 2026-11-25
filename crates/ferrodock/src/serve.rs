@@ -8,7 +8,7 @@ use tokio::net::TcpListener;
 
 use tokio_util::sync::CancellationToken;
 
-use crate::{jobs, wiring};
+use crate::{container_events, jobs, wiring};
 
 const SESSION_PURGE_INTERVAL: Duration = Duration::from_secs(3600);
 
@@ -27,6 +27,11 @@ pub async fn run(config: AppConfig) -> AppResult<()> {
         wired.deploy.clone(),
         config.job_concurrency,
         &background,
+    );
+    container_events::forward(
+        wired.state.docker.clone(),
+        wired.state.hub.clone(),
+        background.clone(),
     );
     let listener = TcpListener::bind(config.bind_addr)
         .await

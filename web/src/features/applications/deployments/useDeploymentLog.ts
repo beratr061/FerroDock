@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 
+import { isRealtimeConnected, waitForSignal } from "@/shared/realtime";
+
 import { fetchDeploymentLog, isActive, type DeploymentStatus } from "./api";
 
 const FOLLOW_INTERVAL_MS = 1_200;
+const REALTIME_SAFETY_MS = 10_000;
 const MAX_KEPT_CHARS = 400_000;
 
 interface LogState {
@@ -11,14 +14,9 @@ interface LogState {
   failed: boolean;
 }
 
-function delay(ms: number, signal: AbortSignal): Promise<void> {
-  return new Promise((resolve) => {
-    const timer = setTimeout(resolve, ms);
-    signal.addEventListener("abort", () => {
-      clearTimeout(timer);
-      resolve();
-    });
-  });
+function waitForMore(id: string, signal: AbortSignal): Promise<void> {
+  const timeout = isRealtimeConnected() ? REALTIME_SAFETY_MS : FOLLOW_INTERVAL_MS;
+  return waitForSignal((event) => event.type === "deployment_log" && event.deployment_id === id, timeout, signal);
 }
 
 async function follow(id: string, signal: AbortSignal, update: (next: (prev: LogState) => LogState) => void) {
@@ -36,11 +34,11 @@ async function follow(id: string, signal: AbortSignal, update: (next: (prev: Log
         return;
       }
       if (drained) {
-        await delay(FOLLOW_INTERVAL_MS, signal);
+        await waitForMore(id, signal);
       }
     } catch {
       update((prev) => ({ ...prev, failed: true }));
-      await delay(FOLLOW_INTERVAL_MS * 3, signal);
+      await waitForSignal(() => false, FOLLOW_INTERVAL_MS * 3, signal);
     }
   }
 }

@@ -15,6 +15,7 @@ pub use runner::{JobRunner, RunnerConfig};
 pub trait JobHandler: Send + Sync + 'static {
     fn kind(&self) -> &'static str;
     async fn run(&self, job: &JobRecord, cancel: CancellationToken) -> AppResult<()>;
+    async fn finished(&self, _job: &JobRecord) {}
 }
 
 #[derive(Debug, Clone, Default)]

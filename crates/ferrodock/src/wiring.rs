@@ -18,6 +18,7 @@ use ferrodock_engine::deploy::DeployContext;
 use ferrodock_infra::deploy_log::DeployLogs;
 use ferrodock_infra::docker::DockerEngine;
 use ferrodock_infra::proxy::ProxyRoutes;
+use ferrodock_infra::realtime::Hub;
 use time::Duration;
 
 #[derive(Debug)]
@@ -99,6 +100,7 @@ fn deploy_context(
         secrets,
         logs: DeployLogs::new(config.data_dir.join("deployments")),
         data_dir: config.data_dir.clone(),
+        hub: Hub::new(),
     })
 }
 
@@ -143,7 +145,7 @@ fn deployment_service(
         applications: Arc::new(store.clone()),
         jobs: Arc::new(store.clone()),
     };
-    DeploymentService::new(repos, deploy.logs.clone(), audit)
+    DeploymentService::new(repos, deploy.logs.clone(), audit, deploy.hub.clone())
 }
 
 pub async fn build(config: &AppConfig) -> AppResult<Wired> {
@@ -154,6 +156,7 @@ pub async fn build(config: &AppConfig) -> AppResult<Wired> {
     let state = AppState {
         auth: auth_service(config, &store),
         docker: deploy.docker.clone(),
+        hub: deploy.hub.clone(),
         audit: audit.clone(),
         projects: ProjectService::new(Arc::new(store.clone()), audit.clone()),
         applications: ApplicationService::new(

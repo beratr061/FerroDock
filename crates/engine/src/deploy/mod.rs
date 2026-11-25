@@ -9,6 +9,7 @@ use ferrodock_core::{AppError, AppResult, Id};
 
 use ferrodock_db::jobs::JobRecord;
 use ferrodock_infra::deploy_log::DeployLog;
+use ferrodock_infra::realtime::LogSignal;
 use tokio_util::sync::CancellationToken;
 use uuid::Uuid;
 
@@ -56,6 +57,7 @@ impl DeployHandler {
             .find(organization_id, deployment.application_id)
             .await?
             .ok_or_else(|| AppError::not_found("APPLICATION_NOT_FOUND"))?;
+        ctx.announce(Some(organization_id), application.id, deployment.id);
         let names = Names::new(application.id, deployment.id, &application.slug);
         let variables = ctx.variables(application.id).await?;
         let run = Job {
@@ -114,7 +116,9 @@ impl JobHandler for DeployHandler {
     }
 
     async fn run(&self, job: &JobRecord, cancel: CancellationToken) -> AppResult<()> {
-        let log = self.ctx.logs.open(deployment_id(job)?).await?;
+        let id = deployment_id(job)?;
+        let signal = LogSignal::new(self.ctx.hub.clone(), job.organization_id, id);
+        let log = self.ctx.logs.open(id).await?.with_signal(signal);
         let result = self.deploy(job, &log, &cancel).await;
         match &result {
             Ok(()) => log.step("Deployment finished").await,
@@ -123,5 +127,16 @@ impl JobHandler for DeployHandler {
         }
         log.flush().await;
         result
+    }
+
+    async fn finished(&self, job: &JobRecord) {
+        let Ok(id) = deployment_id(job) else { return };
+        if let Ok(Some(deployment)) = self.ctx.deployments.find(id).await {
+            self.ctx.announce(
+                job.organization_id,
+                deployment.application_id,
+                deployment.id,
+            );
+        }
     }
 }

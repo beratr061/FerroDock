@@ -1,6 +1,7 @@
 import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { api, unwrap, type Schemas } from "@/shared/api/client";
+import { isRealtimeConnected } from "@/shared/realtime";
 
 export type Deployment = Schemas["DeploymentDto"];
 export type DeploymentStatus = Schemas["DeploymentStatusDto"];
@@ -16,8 +17,10 @@ export function deploymentsQuery(applicationId: string) {
     queryKey: ["deployments", applicationId],
     queryFn: () =>
       unwrap(api.GET("/api/v1/applications/{id}/deployments", { params: { path: { id: applicationId } } })),
-    refetchInterval: (query) =>
-      query.state.data?.some((deployment) => isActive(deployment.status)) ? ACTIVE_REFRESH_MS : false,
+    refetchInterval: (query) => {
+      const active = query.state.data?.some((deployment) => isActive(deployment.status)) ?? false;
+      return active && !isRealtimeConnected() ? ACTIVE_REFRESH_MS : false;
+    },
   });
 }
 

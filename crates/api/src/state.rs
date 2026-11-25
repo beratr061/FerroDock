@@ -10,6 +10,7 @@ use ferrodock_domain::domains::DomainService;
 use ferrodock_domain::projects::ProjectService;
 use ferrodock_domain::variables::VariableService;
 use ferrodock_infra::docker::DockerEngine;
+use ferrodock_infra::realtime::Hub;
 
 #[async_trait]
 pub trait HealthProbe: Send + Sync + 'static {
@@ -28,6 +29,7 @@ pub struct ApiSettings {
 pub struct AppState {
     pub auth: AuthService,
     pub docker: DockerEngine,
+    pub hub: Hub,
     pub audit: AuditLog,
     pub projects: ProjectService,
     pub applications: ApplicationService,

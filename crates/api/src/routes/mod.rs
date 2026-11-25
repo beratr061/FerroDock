@@ -7,6 +7,7 @@ mod domains;
 mod environments;
 mod health;
 mod projects;
+mod realtime;
 mod setup;
 mod variables;
 
@@ -40,6 +41,7 @@ pub(crate) use projects::{
     __path_create_project, __path_delete_project, __path_get_project, __path_list_projects,
     __path_update_project,
 };
+pub(crate) use realtime::__path_realtime;
 pub(crate) use setup::{__path_complete, __path_status};
 pub(crate) use variables::{
     __path_list_variables, __path_replace_variables, __path_reveal_variable,
@@ -173,6 +175,7 @@ pub fn api_routes(trust_forwarded: bool) -> Router<AppState> {
         )
         .route("/auth/sign-out", post(auth::sign_out))
         .route("/auth/me", get(auth::me))
+        .route("/ws", get(realtime::realtime))
         .route("/api-keys", get(api_keys::list).post(api_keys::create))
         .route("/api-keys/{id}", delete(api_keys::revoke))
         .merge(workload_routes())

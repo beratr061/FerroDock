@@ -20,9 +20,10 @@ use crate::routes::{
     __path_delete_project, __path_deployment_log, __path_docker_info, __path_get_application,
     __path_get_deployment, __path_get_project, __path_list, __path_list_applications,
     __path_list_containers, __path_list_deployments, __path_list_domains, __path_list_projects,
-    __path_list_variables, __path_me, __path_replace_variables, __path_reveal_variable,
-    __path_revoke, __path_rollback_deployment, __path_rotate_deploy_key, __path_sign_in,
-    __path_sign_out, __path_status, __path_update_application, __path_update_project,
+    __path_list_variables, __path_me, __path_realtime, __path_replace_variables,
+    __path_reveal_variable, __path_revoke, __path_rollback_deployment, __path_rotate_deploy_key,
+    __path_sign_in, __path_sign_out, __path_status, __path_update_application,
+    __path_update_project,
 };
 
 #[derive(OpenApi)]
@@ -66,6 +67,7 @@ use crate::routes::{
         list_variables,
         replace_variables,
         reveal_variable,
+        realtime,
         delete_environment,
         docker_info,
         list_containers,

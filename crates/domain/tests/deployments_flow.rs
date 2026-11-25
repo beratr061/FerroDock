@@ -85,7 +85,12 @@ fn service(store: &Arc<PgStore>) -> DeploymentService {
         jobs: store.clone(),
     };
     let logs = DeployLogs::new(std::env::temp_dir().join(format!("fd-test-{}", Id::new())));
-    DeploymentService::new(repos, logs, AuditLog::new(store.clone()))
+    DeploymentService::new(
+        repos,
+        logs,
+        AuditLog::new(store.clone()),
+        ferrodock_infra::realtime::Hub::new(),
+    )
 }
 
 #[sqlx::test(migrator = "ferrodock_db::pg::MIGRATOR")]

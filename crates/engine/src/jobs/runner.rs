@@ -96,6 +96,9 @@ impl JobRunner {
             if let Err(error) = runner.repo.complete(job.id, outcome).await {
                 tracing::error!(code = error.code(), job = %job.id, "job completion failed");
             }
+            if let Some(handler) = runner.handlers.get(job.kind.as_str()) {
+                handler.finished(&job).await;
+            }
             runner.signal.notify();
         });
     }

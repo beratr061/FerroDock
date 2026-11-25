@@ -1809,6 +1809,36 @@
           }
         }
       }
+    },
+    "/api/v1/ws": {
+      "get": {
+        "tags": [
+          "realtime"
+        ],
+        "description": "WebSocket that pushes change signals (deployment log, deployment status, containers) scoped to the caller's organization; data is then read through the REST API",
+        "operationId": "realtime",
+        "responses": {
+          "101": {},
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

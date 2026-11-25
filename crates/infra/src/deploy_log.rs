@@ -7,6 +7,8 @@ use tokio::fs::{File, OpenOptions};
 use tokio::io::{AsyncReadExt, AsyncSeekExt, AsyncWriteExt};
 use tokio::sync::Mutex;
 
+use crate::realtime::LogSignal;
+
 const MAX_LINE_LEN: usize = 4096;
 pub const MAX_CHUNK_LEN: usize = 64 * 1024;
 
@@ -18,6 +20,7 @@ pub struct DeployLogs {
 #[derive(Debug, Clone)]
 pub struct DeployLog {
     file: Arc<Mutex<File>>,
+    signal: Option<LogSignal>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -59,6 +62,7 @@ impl DeployLogs {
             .map_err(io_error)?;
         Ok(DeployLog {
             file: Arc::new(Mutex::new(file)),
+            signal: None,
         })
     }
 
@@ -101,10 +105,25 @@ impl DeployLog {
             .take(MAX_LINE_LEN)
             .collect();
         cleaned.push('\n');
-        let mut file = self.file.lock().await;
-        if let Err(error) = file.write_all(cleaned.as_bytes()).await {
+        let written = {
+            let mut file = self.file.lock().await;
+            match file.write_all(cleaned.as_bytes()).await {
+                Ok(()) => file.flush().await,
+                Err(error) => Err(error),
+            }
+        };
+        if let Err(error) = written {
             tracing::warn!(%error, "deploy log write failed");
         }
+        if let Some(signal) = &self.signal {
+            signal.appended(false).await;
+        }
+    }
+
+    #[must_use]
+    pub fn with_signal(mut self, signal: LogSignal) -> Self {
+        self.signal = Some(signal);
+        self
     }
 
     pub async fn step(&self, text: &str) {
@@ -113,6 +132,9 @@ impl DeployLog {
 
     pub async fn flush(&self) {
         let _ = self.file.lock().await.flush().await;
+        if let Some(signal) = &self.signal {
+            signal.appended(true).await;
+        }
     }
 }
 

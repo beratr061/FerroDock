@@ -77,7 +77,7 @@ fn uses_session_cookie(headers: &HeaderMap, secure: bool) -> bool {
     has_cookie && !has_bearer
 }
 
-fn origin_allowed(headers: &HeaderMap, public_origin: Option<&str>) -> bool {
+pub(crate) fn origin_allowed(headers: &HeaderMap, public_origin: Option<&str>) -> bool {
     if header_str(headers, &HeaderName::from_static("sec-fetch-site")) == Some("same-origin") {
         return true;
     }

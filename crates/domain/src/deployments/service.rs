@@ -5,6 +5,7 @@ use ferrodock_db::deployments::{DEPLOYMENT_JOB, DeploymentKind, DeploymentRecord
 use ferrodock_db::jobs::{CancelResult, JobStatus, LOCAL_QUEUE, NewJob};
 use ferrodock_db::{ApplicationRepo, DeploymentRepo, JobQueue};
 use ferrodock_infra::deploy_log::{DeployLogs, LogChunk};
+use ferrodock_infra::realtime::{Hub, Signal};
 use serde_json::json;
 
 use crate::audit::{Actor, AuditLog};
@@ -30,6 +31,7 @@ pub struct DeploymentService {
     repos: DeploymentRepos,
     logs: DeployLogs,
     audit: AuditLog,
+    hub: Hub,
 }
 
 impl std::fmt::Debug for DeploymentService {
@@ -39,8 +41,21 @@ impl std::fmt::Debug for DeploymentService {
 }
 
 impl DeploymentService {
-    pub fn new(repos: DeploymentRepos, logs: DeployLogs, audit: AuditLog) -> Self {
-        Self { repos, logs, audit }
+    pub fn new(repos: DeploymentRepos, logs: DeployLogs, audit: AuditLog, hub: Hub) -> Self {
+        Self {
+            repos,
+            logs,
+            audit,
+            hub,
+        }
+    }
+
+    fn announce(&self, principal: &Principal, deployment: &DeploymentRecord) {
+        let signal = Signal::DeploymentStatus {
+            application_id: deployment.application_id,
+            deployment_id: deployment.id,
+        };
+        self.hub.publish(Some(principal.organization_id), signal);
     }
 
     pub async fn list(
@@ -118,7 +133,9 @@ impl DeploymentService {
         self.audit
             .change(actor, "deployment.cancelled", id, metadata)
             .await;
-        self.get(actor.principal, id).await
+        let deployment = self.get(actor.principal, id).await?;
+        self.announce(actor.principal, &deployment);
+        Ok(deployment)
     }
 
     async fn enqueue(
@@ -145,6 +162,7 @@ impl DeploymentService {
             job,
         };
         let record = self.repos.deployments.create(deployment).await?;
+        self.announce(actor.principal, &record);
         let metadata = json!({ "application_id": application_id, "kind": kind.as_str() });
         self.audit
             .change(actor, "deployment.created", id, metadata)

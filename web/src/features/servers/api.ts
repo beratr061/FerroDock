@@ -1,6 +1,7 @@
 import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { api, unwrap, unwrapEmpty, type Schemas } from "@/shared/api/client";
+import { isRealtimeConnected } from "@/shared/realtime";
 
 export type Container = Schemas["ContainerDto"];
 export type ContainerAction = Schemas["ContainerActionDto"];
@@ -19,7 +20,7 @@ export function containersQuery(includeStopped: boolean) {
     queryKey: ["docker", "containers", includeStopped],
     queryFn: () =>
       unwrap(api.GET("/api/v1/docker/containers", { params: { query: { all: includeStopped } } })),
-    refetchInterval: REFRESH_INTERVAL_MS,
+    refetchInterval: () => (isRealtimeConnected() ? false : REFRESH_INTERVAL_MS),
     retry: false,
   });
 }
