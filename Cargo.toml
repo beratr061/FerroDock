@@ -10,11 +10,11 @@ rust-version = "1.99"
 repository = "https://github.com/beratr061/FerroDock"
 
 [workspace.dependencies]
-ferrodock-core = { path = "crates/core" }
-ferrodock-db = { path = "crates/db" }
-ferrodock-domain = { path = "crates/domain" }
-ferrodock-api = { path = "crates/api" }
-ferrodock-engine = { path = "crates/engine" }
+ferrodock-core = { path = "crates/core", version = "0.1.0" }
+ferrodock-db = { path = "crates/db", version = "0.1.0" }
+ferrodock-domain = { path = "crates/domain", version = "0.1.0" }
+ferrodock-api = { path = "crates/api", version = "0.1.0" }
+ferrodock-engine = { path = "crates/engine", version = "0.1.0" }
 aes-gcm = "0.11.1"
 argon2 = "0.6.0"
 async-trait = "0.1.92"

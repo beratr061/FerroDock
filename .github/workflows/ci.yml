@@ -49,6 +49,7 @@ jobs:
       - name: sqlx offline data is current
         run: |
           cargo install sqlx-cli --no-default-features --features postgres,rustls --locked
+          sqlx migrate run --source crates/db/migrations/postgres
           SQLX_OFFLINE=false cargo sqlx prepare --workspace --check -- --all-targets
       - name: openapi contract is current
         run: |
@@ -69,6 +70,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: web/package.json
       - uses: actions/setup-node@v5
         with:
           node-version: "24"
