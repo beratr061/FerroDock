@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM login_attempts\n             WHERE window_started_at < $1 AND (locked_until IS NULL OR locked_until < $1)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "84abd0f5d31174e9d2403823feec98253402bff67fe009b20a12cd029e89ab53"
+}

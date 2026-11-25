@@ -1,0 +1,71 @@
+[workspace]
+resolver = "3"
+members = ["crates/*", "xtask"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+rust-version = "1.99"
+repository = "https://github.com/beratr061/FerroDock"
+
+[workspace.dependencies]
+ferrodock-core = { path = "crates/core" }
+ferrodock-db = { path = "crates/db" }
+ferrodock-domain = { path = "crates/domain" }
+ferrodock-api = { path = "crates/api" }
+ferrodock-engine = { path = "crates/engine" }
+aes-gcm = "0.11.1"
+argon2 = "0.6.0"
+async-trait = "0.1.92"
+axum = { version = "0.8.9", features = ["macros"] }
+axum-extra = { version = "0.12.6", features = ["cookie", "typed-header"] }
+base64 = "0.23.1"
+clap = { version = "4.6.10", features = ["derive", "env"] }
+figment = { version = "0.10.19", features = ["env", "toml"] }
+mimalloc = "0.1.52"
+rand = "0.10.4"
+rust-embed = "8.14.0"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+sha2 = "0.11.1"
+sqlx = { version = "0.9.1", default-features = false, features = ["runtime-tokio", "tls-rustls", "postgres", "macros", "migrate", "uuid", "time", "json"] }
+subtle = "2.6.1"
+thiserror = "2.0.21"
+time = { version = "0.3.55", features = ["serde", "formatting", "parsing", "macros"] }
+tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros", "signal", "net", "fs", "sync", "time", "io-util"] }
+tower = "0.5.3"
+tower-http = { version = "0.7.1", features = ["trace", "compression-br", "compression-gzip", "set-header", "request-id", "util"] }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter", "json"] }
+utoipa = { version = "6.0.0", features = ["uuid", "time"] }
+uuid = { version = "1.29.3", features = ["v7", "serde"] }
+mime_guess = "2"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "warn"
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "deny"
+unimplemented = "deny"
+dbg_macro = "deny"
+print_stdout = "deny"
+too_many_lines = "deny"
+cognitive_complexity = "deny"
+module_name_repetitions = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+must_use_candidate = "allow"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+strip = true
+panic = "abort"
+opt-level = 3

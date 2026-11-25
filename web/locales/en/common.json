@@ -1,0 +1,45 @@
+{
+  "language": "Language",
+  "theme": {
+    "label": "Theme",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "nav": {
+    "label": "Main",
+    "projects": "Projects",
+    "servers": "Servers",
+    "settings": "Settings"
+  },
+  "actions": {
+    "cancel": "Cancel",
+    "signOut": "Sign out"
+  },
+  "servers": {
+    "title": "Remote servers arrive in a later release",
+    "description": "Applications run on this server for now. Connecting more servers over SSH is planned."
+  },
+  "errors": {
+    "UNKNOWN": "Something went wrong. Try again.",
+    "NETWORK": "The server could not be reached. Check your connection.",
+    "RATE_LIMITED": "Too many attempts. Wait a minute and try again.",
+    "INVALID_CREDENTIALS": "Email or password is incorrect.",
+    "UNAUTHORIZED": "Your session has ended. Sign in again.",
+    "FORBIDDEN": "You do not have permission for this action.",
+    "CSRF_ORIGIN_MISMATCH": "The request came from an untrusted origin and was blocked.",
+    "ROLE_EXCEEDS_MEMBERSHIP": "A key cannot have more access than your own role.",
+    "PASSWORD_TOO_SHORT": "Password must be at least {{min}} characters.",
+    "PASSWORD_TOO_LONG": "Password must be at most {{max}} characters.",
+    "EMAIL_INVALID": "Enter a valid email address.",
+    "NAME_INVALID": "Enter a name up to {{max}} characters.",
+    "ORGANIZATION_NAME_INVALID": "Enter an organization name up to {{max}} characters.",
+    "API_KEY_NAME_INVALID": "Enter a key name up to {{max}} characters.",
+    "API_KEY_EXPIRY_INVALID": "Choose a valid expiry.",
+    "API_KEY_NOT_FOUND": "This key no longer exists.",
+    "SETUP_ALREADY_COMPLETED": "Setup is already complete. Sign in instead.",
+    "DATABASE_UNAVAILABLE": "The database is unavailable. Try again shortly.",
+    "INTERNAL": "An unexpected error occurred. Try again.",
+    "SETUP_TOKEN_INVALID": "The setup token is missing or incorrect. Find it in /etc/ferrodock/setup-token on the server."
+  }
+}

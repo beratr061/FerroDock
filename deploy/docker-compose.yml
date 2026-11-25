@@ -1,0 +1,92 @@
+name: ferrodock
+
+services:
+  postgres:
+    image: postgres:18.7-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ferrodock
+      POSTGRES_DB: ferrodock
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    command:
+      - postgres
+      - -c
+      - shared_buffers=32MB
+      - -c
+      - max_connections=40
+      - -c
+      - work_mem=2MB
+      - -c
+      - maintenance_work_mem=16MB
+      - -c
+      - effective_cache_size=128MB
+      - -c
+      - wal_buffers=1MB
+    secrets:
+      - postgres_password
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ferrodock -d ferrodock"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  ferrodock:
+    image: ${FERRODOCK_IMAGE:-ghcr.io/beratr061/ferrodock:0.1.0}
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - /etc/ferrodock/ferrodock.env
+    environment:
+      FERRODOCK_MASTER_KEY_PATH: /etc/ferrodock/master.key
+      FERRODOCK_DATA_DIR: /var/lib/ferrodock
+    volumes:
+      - /etc/ferrodock/panel:/etc/ferrodock
+      - ferrodock-data:/var/lib/ferrodock
+    ports:
+      - "${FERRODOCK_PANEL_BIND:-0.0.0.0}:${FERRODOCK_PANEL_PORT:-3000}:3000"
+    networks:
+      - internal
+      - ferrodock-network
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  traefik:
+    image: traefik:v3.8.0
+    restart: unless-stopped
+    command:
+      - --configFile=/etc/traefik/traefik.yml
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - /etc/ferrodock/traefik:/etc/traefik
+    networks:
+      - ferrodock-network
+    security_opt:
+      - no-new-privileges:true
+
+secrets:
+  postgres_password:
+    file: /etc/ferrodock/secrets/postgres_password
+
+volumes:
+  postgres-data:
+  ferrodock-data:
+
+networks:
+  internal:
+    internal: true
+  ferrodock-network:
+    external: true

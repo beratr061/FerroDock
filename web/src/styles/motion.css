@@ -1,0 +1,73 @@
+.press {
+  transition: transform var(--dur-feedback) var(--ease-out),
+    background-color var(--dur-state) var(--ease-out),
+    color var(--dur-state) var(--ease-out);
+}
+
+.press:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.enter-settle {
+  animation: settle var(--dur-transition) var(--ease-out) both;
+}
+
+.skeleton {
+  background: var(--surface-raised);
+  border-radius: var(--radius-control);
+  animation: breathe 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes breathe {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.55;
+  }
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--dur-transition);
+  animation-timing-function: var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press:active:not(:disabled) {
+    transform: none;
+  }
+
+  .enter-settle {
+    animation: fade var(--dur-state) linear both;
+  }
+
+  .skeleton {
+    animation: none;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0ms;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

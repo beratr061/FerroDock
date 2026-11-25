@@ -1,0 +1,10 @@
+{
+  "title": "Projeler",
+  "subtitle": "Uygulama ve veritabanlarını ortama göre gruplayın.",
+  "create": "Yeni proje",
+  "comingSoon": "Bir sonraki sürümde",
+  "empty": {
+    "title": "Henüz proje yok",
+    "description": "Projeler uygulamalarınızı, veritabanlarınızı ve ortamlarını bir arada tutar. Proje oluşturma bir sonraki aşamada geliyor."
+  }
+}

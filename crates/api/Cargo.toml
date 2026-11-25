@@ -1,0 +1,32 @@
+[package]
+name = "ferrodock-api"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+async-trait = { workspace = true }
+axum = { workspace = true }
+axum-extra = { workspace = true }
+ferrodock-core = { workspace = true }
+ferrodock-domain = { workspace = true }
+mime_guess = { workspace = true }
+rust-embed = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+time = { workspace = true }
+tokio = { workspace = true }
+tower = { workspace = true }
+tower-http = { workspace = true }
+tower_governor = "0.8.0"
+governor = "0.10"
+tracing = { workspace = true }
+utoipa = { workspace = true }
+uuid = { workspace = true }
+zeroize = "1.8"
+
+[dev-dependencies]
+
+[lints]
+workspace = true

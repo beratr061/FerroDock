@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM login_attempts WHERE user_id = $1 AND source = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "3064ab1df4f9e16fa6c8b66fc437fece6ae10d9eb8165c61a928f9041eda5c22"
+}

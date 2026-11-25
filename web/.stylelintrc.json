@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "color-no-hex": true,
+    "color-no-invalid-hex": true,
+    "declaration-no-important": true,
+    "max-nesting-depth": 2,
+    "selector-max-id": 0
+  },
+  "overrides": [
+    {
+      "files": ["src/styles/tokens.css"],
+      "rules": { "color-no-hex": null }
+    }
+  ]
+}

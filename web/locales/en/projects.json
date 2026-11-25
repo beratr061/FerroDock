@@ -1,0 +1,10 @@
+{
+  "title": "Projects",
+  "subtitle": "Group applications and databases by environment.",
+  "create": "New project",
+  "comingSoon": "Available in the next release",
+  "empty": {
+    "title": "No projects yet",
+    "description": "Projects hold your applications, databases and their environments. Creating projects is part of the next milestone."
+  }
+}

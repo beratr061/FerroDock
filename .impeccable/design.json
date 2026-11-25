@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-25T04:10:00Z",
+  "title": "Design System: FerroDock",
+  "extensions": {
+    "colorMeta": {
+      "primary-light": { "role": "primary", "displayName": "Ink", "canonical": "#111111", "tonalRamp": ["#111111", "#2e2e2e", "#3d3d3d", "#595959", "#7a7a7a", "#bdbdbd", "#e0e0e0", "#f7f7f7"] },
+      "bg-dark": { "role": "neutral", "displayName": "Workbench Ground (dark)", "canonical": "#0c0c0c", "tonalRamp": ["#0c0c0c", "#141414", "#1b1b1b", "#222222", "#262626", "#6e6e6e", "#9a9a9a", "#f2f2f2"] },
+      "bg-light": { "role": "neutral", "displayName": "Workbench Ground (light)", "canonical": "#f7f7f7", "tonalRamp": ["#111111", "#3d3d3d", "#595959", "#7a7a7a", "#e0e0e0", "#e9e9e9", "#f0f0f0", "#fcfcfc"] },
+      "success-light": { "role": "status", "displayName": "Success", "canonical": "#11602e" },
+      "warning-light": { "role": "status", "displayName": "Warning", "canonical": "#7a4a00" },
+      "danger-light": { "role": "status", "displayName": "Danger", "canonical": "#a51f1f" },
+      "info-light": { "role": "status", "displayName": "Info", "canonical": "#124c96" }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "Headline", "purpose": "Single heading on authentication screens." },
+      "title": { "displayName": "Title", "purpose": "Page titles." },
+      "body": { "displayName": "Body", "purpose": "Descriptions and running copy." },
+      "label": { "displayName": "Label", "purpose": "Form labels, buttons, active navigation." },
+      "mono": { "displayName": "Mono", "purpose": "Machine output: logs, identifiers, key prefixes, metrics." }
+    },
+    "shadows": [
+      { "name": "overlay", "value": "0 12px 32px #1111111f", "purpose": "Menus, popovers and dialogs only; dark theme uses #00000099." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "All state and transition motion." },
+      { "name": "dur-feedback", "value": "120ms", "purpose": "Press and immediate feedback." },
+      { "name": "dur-state", "value": "200ms", "purpose": "Colour and state changes." },
+      { "name": "dur-transition", "value": "280ms", "purpose": "Overlays, view transitions, settle-in." },
+      { "name": "dur-focal", "value": "600ms", "purpose": "The deploy traffic-switch moment only." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main action of a region.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Create key</button>",
+      "css": ".ds-btn { height: 36px; padding: 0 12px; border-radius: 6px; font: 500 14px/1.5 var(--font-sans); border: 1px solid transparent; cursor: pointer; transition: transform 120ms cubic-bezier(0.16,1,0.3,1), background-color 200ms cubic-bezier(0.16,1,0.3,1); } .ds-btn:active { transform: scale(0.98); } .ds-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; } .ds-btn-primary { background: var(--primary); color: var(--on-primary); } .ds-btn-primary:hover { background: var(--primary-hover); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Alternative action beside a primary.",
+      "html": "<button class=\"ds-btn2\">Copy key</button>",
+      "css": ".ds-btn2 { height: 36px; padding: 0 12px; border-radius: 6px; font: 500 14px/1.5 var(--font-sans); background: var(--surface); color: var(--text); border: 1px solid var(--border-strong); cursor: pointer; transition: background-color 200ms cubic-bezier(0.16,1,0.3,1); } .ds-btn2:hover { background: var(--surface-hover); } .ds-btn2:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Confirm step for destructive actions.",
+      "html": "<button class=\"ds-btn-danger\">Revoke key</button>",
+      "css": ".ds-btn-danger { height: 36px; padding: 0 12px; border-radius: 6px; font: 500 14px/1.5 var(--font-sans); background: var(--status-danger-tint); color: var(--status-danger); border: 1px solid var(--status-danger-border); cursor: pointer; } .ds-btn-danger:hover { background: var(--surface-hover); }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Label above, hint or error below.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Email</span><input class=\"ds-input\" placeholder=\"ada@example.com\"><span class=\"ds-field-hint\">Used to sign in.</span></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; font-family: var(--font-sans); } .ds-field-label { font-weight: 500; color: var(--text); } .ds-input { height: 40px; padding: 0 10.5px; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); font: 400 14px var(--font-sans); } .ds-input::placeholder { color: var(--text-subtle); } .ds-input:hover, .ds-input:focus { border-color: var(--text); } .ds-input:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; } .ds-field-hint { font-size: 13px; color: var(--text-subtle); }"
+    },
+    {
+      "name": "Sidebar Navigation",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Primary navigation items.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item ds-nav-active\">Projects</a><a class=\"ds-nav-item\">Servers</a><a class=\"ds-nav-item\">Settings</a></nav>",
+      "css": ".ds-nav { display: flex; flex-direction: column; gap: 4px; width: 220px; padding: 10px; background: var(--surface); font-family: var(--font-sans); } .ds-nav-item { height: 40px; display: flex; align-items: center; padding: 0 12px; border-radius: 6px; color: var(--text-muted); cursor: pointer; transition: background-color 200ms; } .ds-nav-item:hover { background: var(--surface-hover); color: var(--text); } .ds-nav-active { background: var(--surface-raised); color: var(--text); font-weight: 500; }"
+    },
+    {
+      "name": "Inline Notice",
+      "kind": "custom",
+      "description": "Status-tinted message with icon.",
+      "html": "<div class=\"ds-notice\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24Zm45.66 85.66-56 56a8 8 0 0 1-11.32 0l-24-24a8 8 0 0 1 11.32-11.32L112 148.69l50.34-50.35a8 8 0 0 1 11.32 11.32Z\"/></svg><span>Key created. Copy it now.</span></div>",
+      "css": ".ds-notice { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--status-success-border); background: var(--status-success-tint); color: var(--status-success); font: 400 14px/1.5 var(--font-sans); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Workbench",
+    "overview": "FerroDock is a clean workbench: every tool hangs where it belongs, nothing is there for show, and attention goes to the work on the bench. Every surface is a solid neutral grey; colour appears only when it carries meaning. Depth comes from tonal layering and 1px opaque lines rather than shadows. Components feel precise and calm.",
+    "keyCharacteristics": [
+      "Solid, opaque neutral surfaces only (R = G = B); semantic status colours are the sole hues.",
+      "WCAG AA floor for every text, AAA for primary and secondary text.",
+      "Poppins for interface text, JetBrains Mono for machine output; tonal layering instead of shadows; light, dark and system themes with identical hierarchy."
+    ],
+    "rules": [
+      { "name": "The Signal Only Rule", "body": "A hue appears only when it reports state. If removing the colour would lose no information, the colour must not be there.", "section": "colors" },
+      { "name": "The Opaque Fill Rule", "body": "Fills never use alpha. A soft background is a pre-blended opaque token, so it never shifts with what sits beneath it.", "section": "colors" },
+      { "name": "The Machine Voice Rule", "body": "Monospace is reserved for text a machine produced or a person must copy exactly. It is never used as decoration to look technical.", "section": "typography" },
+      { "name": "The Flat Bench Rule", "body": "Nothing at rest casts a shadow. If an element seems to need one, step its surface tone instead.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do take every colour from tokens; light and dark values ship together.",
+      "Do keep primary and secondary text at AAA and everything else at AA or better.",
+      "Do animate only transform, opacity and clip-path, 100-350ms with cubic-bezier(0.16, 1, 0.3, 1), and honour reduced motion.",
+      "Do show skeletons shaped like the final content instead of spinners, and use Phosphor icons in one weight."
+    ],
+    "donts": [
+      "Don't use gradients, glassmorphism, glows, blobs or purple-blue accent colour.",
+      "Don't use alpha-transparent fills or pure #000 and #fff.",
+      "Don't add eyebrow labels above headings, section numbers or decorative status dots.",
+      "Don't nest cards or lay out three identical feature cards.",
+      "Don't run infinite decorative animation; the only loop is a building indicator that stops when hidden."
+    ]
+  }
+}

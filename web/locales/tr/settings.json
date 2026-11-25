@@ -1,0 +1,68 @@
+{
+  "title": "Ayarlar",
+  "roles": {
+    "viewer": "İzleyici",
+    "developer": "Geliştirici",
+    "admin": "Yönetici",
+    "owner": "Sahip"
+  },
+  "apiKeys": {
+    "title": "API anahtarları",
+    "description": "Anahtarlar, CI süreçlerinin ve betiklerin FerroDock API'sini sınırlı bir rolle kullanmasını sağlar.",
+    "new": "Yeni anahtar",
+    "create": "Anahtar oluştur",
+    "revoke": "İptal et",
+    "confirmRevoke": "Anahtarı iptal et",
+    "neverUsed": "Hiç kullanılmadı",
+    "fields": {
+      "name": "Ad",
+      "namePlaceholder": "GitHub Actions",
+      "role": "Rol",
+      "expiry": "Geçerlilik"
+    },
+    "expiry": {
+      "30": "30 gün",
+      "90": "90 gün",
+      "365": "1 yıl",
+      "never": "Süresiz"
+    },
+    "created": {
+      "title": "Anahtar oluşturuldu",
+      "body": "Şimdi kopyalayın. Güvenliğiniz için tekrar gösterilmeyecek.",
+      "copy": "Anahtarı kopyala",
+      "copied": "Kopyalandı",
+      "done": "Tamam"
+    },
+    "empty": {
+      "title": "API anahtarı yok",
+      "description": "CI üzerinden deploy'ları otomatikleştirmek için bir anahtar oluşturun."
+    }
+  },
+  "appearance": {
+    "title": "Görünüm",
+    "description": "Tema ve dil bu tarayıcıya uygulanır.",
+    "theme": "Tema"
+  },
+  "errors": {
+    "UNKNOWN": "Bir şeyler ters gitti. Tekrar deneyin.",
+    "NETWORK": "Sunucuya ulaşılamadı. Bağlantınızı kontrol edin.",
+    "RATE_LIMITED": "Çok fazla deneme yapıldı. Bir dakika bekleyip tekrar deneyin.",
+    "INVALID_CREDENTIALS": "E-posta veya parola hatalı.",
+    "UNAUTHORIZED": "Oturumunuz sona erdi. Tekrar giriş yapın.",
+    "FORBIDDEN": "Bu işlem için yetkiniz yok.",
+    "CSRF_ORIGIN_MISMATCH": "İstek güvenilmeyen bir kaynaktan geldiği için engellendi.",
+    "ROLE_EXCEEDS_MEMBERSHIP": "Bir anahtar kendi rolünüzden fazla yetkiye sahip olamaz.",
+    "PASSWORD_TOO_SHORT": "Parola en az {{min}} karakter olmalı.",
+    "PASSWORD_TOO_LONG": "Parola en fazla {{max}} karakter olabilir.",
+    "EMAIL_INVALID": "Geçerli bir e-posta adresi girin.",
+    "NAME_INVALID": "En fazla {{max}} karakterlik bir ad girin.",
+    "ORGANIZATION_NAME_INVALID": "En fazla {{max}} karakterlik bir organizasyon adı girin.",
+    "API_KEY_NAME_INVALID": "En fazla {{max}} karakterlik bir anahtar adı girin.",
+    "API_KEY_EXPIRY_INVALID": "Geçerli bir süre seçin.",
+    "API_KEY_NOT_FOUND": "Bu anahtar artık mevcut değil.",
+    "SETUP_ALREADY_COMPLETED": "Kurulum zaten tamamlanmış. Giriş yapın.",
+    "DATABASE_UNAVAILABLE": "Veritabanına ulaşılamıyor. Birazdan tekrar deneyin.",
+    "INTERNAL": "Beklenmeyen bir hata oluştu. Tekrar deneyin.",
+    "SETUP_TOKEN_INVALID": "Kurulum anahtarı eksik veya hatalı. Sunucuda /etc/ferrodock/setup-token dosyasında bulabilirsiniz."
+  }
+}

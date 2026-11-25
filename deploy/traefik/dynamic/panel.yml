@@ -1,0 +1,26 @@
+http:
+  routers:
+    ferrodock-panel:
+      rule: Host(`__PANEL_DOMAIN__`)
+      entryPoints:
+        - websecure
+      service: ferrodock-panel
+      tls:
+        certResolver: letsencrypt
+    ferrodock-panel-redirect:
+      rule: Host(`__PANEL_DOMAIN__`)
+      entryPoints:
+        - web
+      middlewares:
+        - ferrodock-https
+      service: ferrodock-panel
+  middlewares:
+    ferrodock-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
+  services:
+    ferrodock-panel:
+      loadBalancer:
+        servers:
+          - url: http://ferrodock:3000

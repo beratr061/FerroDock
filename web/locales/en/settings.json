@@ -1,0 +1,68 @@
+{
+  "title": "Settings",
+  "roles": {
+    "viewer": "Viewer",
+    "developer": "Developer",
+    "admin": "Admin",
+    "owner": "Owner"
+  },
+  "apiKeys": {
+    "title": "API keys",
+    "description": "Keys let CI pipelines and scripts call the FerroDock API with a limited role.",
+    "new": "New key",
+    "create": "Create key",
+    "revoke": "Revoke",
+    "confirmRevoke": "Revoke key",
+    "neverUsed": "Never used",
+    "fields": {
+      "name": "Name",
+      "namePlaceholder": "GitHub Actions",
+      "role": "Role",
+      "expiry": "Expires"
+    },
+    "expiry": {
+      "30": "In 30 days",
+      "90": "In 90 days",
+      "365": "In 1 year",
+      "never": "Never"
+    },
+    "created": {
+      "title": "Key created",
+      "body": "Copy it now. For your security it will not be shown again.",
+      "copy": "Copy key",
+      "copied": "Copied",
+      "done": "Done"
+    },
+    "empty": {
+      "title": "No API keys",
+      "description": "Create a key to automate deployments from CI."
+    }
+  },
+  "appearance": {
+    "title": "Appearance",
+    "description": "Theme and language apply to this browser.",
+    "theme": "Theme"
+  },
+  "errors": {
+    "UNKNOWN": "Something went wrong. Try again.",
+    "NETWORK": "The server could not be reached. Check your connection.",
+    "RATE_LIMITED": "Too many attempts. Wait a minute and try again.",
+    "INVALID_CREDENTIALS": "Email or password is incorrect.",
+    "UNAUTHORIZED": "Your session has ended. Sign in again.",
+    "FORBIDDEN": "You do not have permission for this action.",
+    "CSRF_ORIGIN_MISMATCH": "The request came from an untrusted origin and was blocked.",
+    "ROLE_EXCEEDS_MEMBERSHIP": "A key cannot have more access than your own role.",
+    "PASSWORD_TOO_SHORT": "Password must be at least {{min}} characters.",
+    "PASSWORD_TOO_LONG": "Password must be at most {{max}} characters.",
+    "EMAIL_INVALID": "Enter a valid email address.",
+    "NAME_INVALID": "Enter a name up to {{max}} characters.",
+    "ORGANIZATION_NAME_INVALID": "Enter an organization name up to {{max}} characters.",
+    "API_KEY_NAME_INVALID": "Enter a key name up to {{max}} characters.",
+    "API_KEY_EXPIRY_INVALID": "Choose a valid expiry.",
+    "API_KEY_NOT_FOUND": "This key no longer exists.",
+    "SETUP_ALREADY_COMPLETED": "Setup is already complete. Sign in instead.",
+    "DATABASE_UNAVAILABLE": "The database is unavailable. Try again shortly.",
+    "INTERNAL": "An unexpected error occurred. Try again.",
+    "SETUP_TOKEN_INVALID": "The setup token is missing or incorrect. Find it in /etc/ferrodock/setup-token on the server."
+  }
+}
