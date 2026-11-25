@@ -65,5 +65,27 @@
       "title": "Bir sunucuya geri yükleme",
       "description": "FerroDock'u kurun, yedeği /var/lib/ferrodock/backups içine ve ana anahtarı /var/lib/ferrodock/restore.key olarak kopyalayın, sonra çalıştırın:"
     }
+  },
+  "updates": {
+    "title": "Güncellemeler",
+    "description": "Güncellemeler imzalı bir sürüm manifestinden gelir. Panel önce kendini yedekler, yeni imaja geçer; yeni sürüm sağlıklı açılmazsa otomatik olarak öncekine döner.",
+    "current": "Çalışan sürüm",
+    "checkNow": "Güncellemeleri denetle",
+    "install": "{{latest}} sürümüne güncelle",
+    "rollback": "Önceki sürüme geri dön",
+    "notes": "Sürüm notları",
+    "restarting": "Panel yeniden başlıyor. Geri geldiğinde bu sayfa yenilenecek.",
+    "check": {
+      "up_to_date": "FerroDock {{current}} en güncel sürüm.",
+      "available": "FerroDock {{latest}} yayında.",
+      "requires_intermediate": "Önce {{min_from_version}}, ardından {{latest}} sürümüne güncelleyin."
+    },
+    "state": {
+      "pending": "Başlıyor",
+      "applying": "Uygulanıyor",
+      "succeeded": "Güncellendi",
+      "rolled_back": "Geri alındı",
+      "failed": "Başarısız"
+    }
   }
 }

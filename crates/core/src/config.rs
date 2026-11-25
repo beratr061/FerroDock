@@ -34,6 +34,8 @@ pub struct AppConfig {
     pub backup_interval_hours: u32,
     pub backup_retention: u32,
     pub database_container: Option<String>,
+    pub host_config_dir: String,
+    pub update_manifest_url: String,
 }
 
 #[derive(Serialize)]
@@ -51,6 +53,8 @@ struct Defaults {
     proxy_dir: &'static str,
     backup_interval_hours: u32,
     backup_retention: u32,
+    host_config_dir: &'static str,
+    update_manifest_url: &'static str,
 }
 
 const DEFAULTS: Defaults = Defaults {
@@ -67,6 +71,8 @@ const DEFAULTS: Defaults = Defaults {
     proxy_dir: "/etc/ferrodock/proxy",
     backup_interval_hours: 24,
     backup_retention: 7,
+    host_config_dir: "/etc/ferrodock",
+    update_manifest_url: "https://github.com/beratr061/FerroDock/releases/latest/download/manifest.json",
 };
 
 impl AppConfig {

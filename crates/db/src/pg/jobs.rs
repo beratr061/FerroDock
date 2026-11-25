@@ -176,6 +176,17 @@ impl JobQueue for PgStore {
         .map_err(db_error)
     }
 
+    async fn active_count(&self, kind: &str) -> AppResult<i64> {
+        sqlx::query_scalar!(
+            "SELECT count(*) AS \"count!\" FROM jobs
+             WHERE kind = $1 AND status IN ('queued', 'running')",
+            kind
+        )
+        .fetch_one(&self.pool)
+        .await
+        .map_err(db_error)
+    }
+
     async fn find(&self, id: Id) -> AppResult<Option<JobRecord>> {
         sqlx::query_as!(
             JobRow,

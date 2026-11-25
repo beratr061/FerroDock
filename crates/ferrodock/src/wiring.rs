@@ -12,6 +12,7 @@ use ferrodock_domain::audit::AuditLog;
 use ferrodock_domain::auth::{AuthRepos, AuthService};
 use ferrodock_domain::backups::{BackupService, BackupServiceParts};
 use ferrodock_engine::backup::BackupContext;
+use ferrodock_engine::updater::UpdateLauncher;
 
 use crate::backups;
 use ferrodock_domain::deployments::{DeploymentRepos, DeploymentService};
@@ -169,7 +170,28 @@ fn backup_service(
     })
 }
 
-fn app_state(config: &AppConfig, store: &PgStore, deploy: &DeployContext) -> AppState {
+fn update_launcher(
+    config: &AppConfig,
+    store: &PgStore,
+    deploy: &DeployContext,
+    backup: BackupContext,
+) -> UpdateLauncher {
+    UpdateLauncher {
+        docker: deploy.docker.clone(),
+        jobs: Arc::new(store.clone()),
+        backup,
+        status_file: config.master_key_path.with_file_name("update-status.json"),
+        host_config_dir: config.host_config_dir.clone(),
+        manifest_url: config.update_manifest_url.clone(),
+    }
+}
+
+fn app_state(
+    config: &AppConfig,
+    store: &PgStore,
+    deploy: &DeployContext,
+    updates: UpdateLauncher,
+) -> AppState {
     let audit = AuditLog::new(Arc::new(store.clone()));
     let auth = auth_service(config, store);
     let shared = || Arc::new(store.clone());
@@ -194,6 +216,7 @@ fn app_state(config: &AppConfig, store: &PgStore, deploy: &DeployContext) -> App
         deployments: deployment_service(store, deploy, audit.clone()),
         terminal: TerminalService::new(deploy.docker.clone(), shared(), audit.clone()),
         backups: backup_service(config, store, auth, audit),
+        updates,
         health: Arc::new(DatabaseProbe(store.clone())),
         settings: Arc::new(api_settings(config)),
     }
@@ -204,7 +227,8 @@ pub async fn build(config: &AppConfig) -> AppResult<Wired> {
     let store = connect(config).await?;
     let deploy = deploy_context(config, &store, secrets.clone())?;
     let backup = backups::context(config, deploy.docker.clone(), secrets)?;
-    let state = app_state(config, &store, &deploy);
+    let updates = update_launcher(config, &store, &deploy, backup.clone());
+    let state = app_state(config, &store, &deploy, updates);
     Ok(Wired {
         state,
         store,

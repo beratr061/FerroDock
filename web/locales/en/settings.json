@@ -65,5 +65,27 @@
       "title": "Restore on a server",
       "description": "Install FerroDock, copy the backup to /var/lib/ferrodock/backups and the master key to /var/lib/ferrodock/restore.key, then run:"
     }
+  },
+  "updates": {
+    "title": "Updates",
+    "description": "Updates come from a signed release manifest. The panel backs itself up, switches to the new image and returns to the previous one automatically if the new one is not healthy.",
+    "current": "Running version",
+    "checkNow": "Check for updates",
+    "install": "Update to {{latest}}",
+    "rollback": "Roll back to the previous version",
+    "notes": "Release notes",
+    "restarting": "The panel is restarting. This page reloads when it is back.",
+    "check": {
+      "up_to_date": "FerroDock {{current}} is the latest release.",
+      "available": "FerroDock {{latest}} is available.",
+      "requires_intermediate": "Update to {{min_from_version}} first, then to {{latest}}."
+    },
+    "state": {
+      "pending": "Starting",
+      "applying": "Applying",
+      "succeeded": "Updated",
+      "rolled_back": "Rolled back",
+      "failed": "Failed"
+    }
   }
 }

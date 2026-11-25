@@ -43,6 +43,12 @@ docker compose -f /etc/ferrodock/docker-compose.yml start ferrodock
 
 Archives from a newer FerroDock release are refused; update the panel first.
 
+## Updates
+
+Settings → Updates checks the signed release manifest. Updating takes a backup, pulls the release by digest and starts a short-lived `ferrodock-updater` container from the new image. The updater points `FERRODOCK_IMAGE` in `/etc/ferrodock/.env` at the new image, recreates the panel with Docker Compose and waits for its health check; if the new panel is not healthy it switches back to the previous image on its own. The outcome is shown on the same page, which also offers a rollback to the previous version. Updates are refused while deployments are running.
+
+The same switch can be run by hand: `ferrodock update apply --image <image> --config-dir /etc/ferrodock`.
+
 ## Develop
 
 Requirements: Rust 1.99, Node 24 with pnpm, Docker.

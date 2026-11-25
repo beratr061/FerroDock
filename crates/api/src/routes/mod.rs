@@ -11,6 +11,7 @@ mod projects;
 mod realtime;
 mod setup;
 mod terminal;
+mod updates;
 mod variables;
 
 use axum::Router;
@@ -51,6 +52,9 @@ pub(crate) use projects::{
 pub(crate) use realtime::__path_realtime;
 pub(crate) use setup::{__path_complete, __path_status};
 pub(crate) use terminal::__path_terminal;
+pub(crate) use updates::{
+    __path_check_update, __path_roll_back_update, __path_start_update, __path_update_overview,
+};
 pub(crate) use variables::{
     __path_list_variables, __path_replace_variables, __path_reveal_variable,
 };
@@ -178,6 +182,12 @@ fn system_routes() -> Router<AppState> {
             get(backups::download_backup).delete(backups::delete_backup),
         )
         .route("/system/master-key", post(backups::export_master_key))
+        .route(
+            "/system/update",
+            get(updates::update_overview).post(updates::start_update),
+        )
+        .route("/system/update/check", get(updates::check_update))
+        .route("/system/update/rollback", post(updates::roll_back_update))
 }
 
 fn docker_routes() -> Router<AppState> {

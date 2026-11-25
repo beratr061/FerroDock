@@ -1,6 +1,10 @@
+mod apply;
 mod check;
 mod client;
+mod env_file;
+mod launch;
 mod manifest;
+mod status;
 
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
@@ -8,9 +12,13 @@ use ed25519_dalek::VerifyingKey;
 use ferrodock_core::{AppError, AppResult};
 use semver::Version;
 
+pub use apply::{InstallLayout, PANEL_PROJECT, PANEL_SERVICE, apply, layout};
 pub use check::{UpdateStatus, evaluate};
 pub use client::{Fetched, ManifestClient};
+pub use env_file::{IMAGE_VARIABLE, image_of};
+pub use launch::UpdateLauncher;
 pub use manifest::{ComponentImages, ReleaseManifest, SignedManifest, parse_envelope};
+pub use status::{UpdateRecord, UpdateState, read_status, write_status};
 
 pub const DEFAULT_MANIFEST_URL: &str =
     "https://github.com/beratr061/FerroDock/releases/latest/download/manifest.json";

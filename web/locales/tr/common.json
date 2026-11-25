@@ -71,7 +71,7 @@
     "CONTAINER_CRASHING": "Konteyner sürekli yeniden başladı",
     "HEALTHCHECK_FAILED": "Sağlık kontrolü başarısız oldu",
     "READINESS_TIMEOUT": "Konteyner zamanında hazır olmadı",
-    "COMPOSE_UP_FAILED": "Docker Compose projeyi başlatamadı",
+    "COMPOSE_UP_FAILED": "Docker Compose servisi başlatamadı.",
     "JOB_INTERRUPTED": "Panel yeniden başladığı için yarıda kaldı",
     "DEPLOYMENT_CANCELLED": "İptal edildi",
     "DOMAIN_HOST_INVALID": "app.example.com gibi bir alan adı girin.",
@@ -97,7 +97,15 @@
     "BACKUP_DUMP_FAILED": "Veritabanı dökümü alınamadı.",
     "BACKUP_DATABASE_NOT_FOUND": "Panel veritabanı konteyneri bulunamadı.",
     "BACKUP_ARCHIVE_INVALID": "Yedek dosyası bozuk ya da FerroDock yedeği değil.",
-    "BACKUP_KEY_MISMATCH": "Bu yedek farklı bir ana anahtarla alınmış."
+    "BACKUP_KEY_MISMATCH": "Bu yedek farklı bir ana anahtarla alınmış.",
+    "UPDATE_IN_PROGRESS": "Zaten bir güncelleme sürüyor.",
+    "UPDATE_DEPLOYMENTS_ACTIVE": "Süren dağıtımlar bitince güncelleyin.",
+    "UPDATE_NOT_AVAILABLE": "Daha yeni bir sürüm yok.",
+    "UPDATE_REQUIRES_INTERMEDIATE": "Önce {{version}} sürümüne güncelleyin.",
+    "UPDATE_NOTHING_TO_ROLL_BACK": "Dönülecek önceki bir sürüm yok.",
+    "UPDATE_PANEL_NOT_FOUND": "Kurulumun yönettiği panel konteyneri bulunamadı; güncelleme için kurulu bir panel gerekir.",
+    "UPDATE_KEY_NOT_CONFIGURED": "Bu derlemede sürüm anahtarı yok, güncellemeler doğrulanamaz.",
+    "UPDATE_MANIFEST_INVALID": "Sürüm manifesti doğrulanamadı."
   },
   "terminal": {
     "label": "{{name}} terminali",

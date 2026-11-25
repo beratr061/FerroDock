@@ -2018,6 +2018,138 @@
         }
       }
     },
+    "/api/v1/system/update": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "description": "Running version and the outcome of the last update or rollback",
+        "operationId": "update_overview",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateOverviewDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "system"
+        ],
+        "description": "Backs up the panel, pulls the signed release by digest and hands over to the updater; the panel restarts",
+        "operationId": "start_update",
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateRecordDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/system/update/check": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "description": "Fetches and verifies the signed release manifest",
+        "operationId": "check_update",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateCheckDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/system/update/rollback": {
+      "post": {
+        "tags": [
+          "system"
+        ],
+        "description": "Returns the panel to the image it ran before the last update",
+        "operationId": "roll_back_update",
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateRecordDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/terminal": {
       "get": {
         "tags": [
@@ -3134,6 +3266,101 @@
           }
         }
       },
+      "UpdateCheckDto": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "current",
+              "status"
+            ],
+            "properties": {
+              "current": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "up_to_date"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "current",
+              "latest",
+              "notes_url",
+              "status"
+            ],
+            "properties": {
+              "current": {
+                "type": "string"
+              },
+              "latest": {
+                "type": "string"
+              },
+              "notes_url": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "available"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "current",
+              "latest",
+              "min_from_version",
+              "status"
+            ],
+            "properties": {
+              "current": {
+                "type": "string"
+              },
+              "latest": {
+                "type": "string"
+              },
+              "min_from_version": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "requires_intermediate"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "UpdateOverviewDto": {
+        "type": "object",
+        "required": [
+          "current_version"
+        ],
+        "properties": {
+          "current_version": {
+            "type": "string"
+          },
+          "last": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/UpdateRecordDto"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
       "UpdateProjectRequest": {
         "type": "object",
         "properties": {
@@ -3150,6 +3377,55 @@
             ]
           }
         }
+      },
+      "UpdateRecordDto": {
+        "type": "object",
+        "required": [
+          "state",
+          "to_image",
+          "started_at"
+        ],
+        "properties": {
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "finished_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "from_image": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "state": {
+            "$ref": "#/components/schemas/UpdateStateDto"
+          },
+          "to_image": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateStateDto": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "applying",
+          "succeeded",
+          "rolled_back",
+          "failed"
+        ]
       },
       "VariableDto": {
         "type": "object",

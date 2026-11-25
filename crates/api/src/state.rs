@@ -11,6 +11,7 @@ use ferrodock_domain::domains::DomainService;
 use ferrodock_domain::projects::ProjectService;
 use ferrodock_domain::terminal::TerminalService;
 use ferrodock_domain::variables::VariableService;
+use ferrodock_engine::updater::UpdateLauncher;
 use ferrodock_infra::docker::DockerEngine;
 use ferrodock_infra::realtime::Hub;
 
@@ -40,6 +41,7 @@ pub struct AppState {
     pub variables: VariableService,
     pub terminal: TerminalService,
     pub backups: BackupService,
+    pub updates: UpdateLauncher,
     pub health: Arc<dyn HealthProbe>,
     pub settings: Arc<ApiSettings>,
 }

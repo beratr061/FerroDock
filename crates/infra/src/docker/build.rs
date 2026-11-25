@@ -75,3 +75,14 @@ pub async fn compose_down(project: &str) -> AppResult<()> {
     command.args(["compose", "-p", project, "down", "--remove-orphans"]);
     capture(command, "COMPOSE_DOWN_FAILED").await.map(|_| ())
 }
+
+pub async fn compose_service_up(file: &Path, directory: &Path, service: &str) -> AppResult<()> {
+    let mut command = docker();
+    command
+        .args(["compose", "-f"])
+        .arg(file)
+        .arg("--project-directory")
+        .arg(directory)
+        .args(["up", "-d", "--no-deps", service]);
+    capture(command, "COMPOSE_UP_FAILED").await.map(|_| ())
+}

@@ -874,6 +874,7 @@ dependencies = [
  "base64 0.23.1",
  "ferrodock-core",
  "ferrodock-domain",
+ "ferrodock-engine",
  "ferrodock-infra",
  "futures-util",
  "governor",
