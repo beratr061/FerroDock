@@ -1,15 +1,17 @@
 use async_trait::async_trait;
-use ferrodock_core::{AppError, AppResult, Id};
+use ferrodock_core::{AppError, AppResult};
 use time::OffsetDateTime;
 use uuid::Uuid;
 
 use super::{PgStore, db_error};
-use crate::backups::{BackupPolicyRepo, DuePolicy, PolicyRecord};
+use crate::backups::{BackupPolicyRepo, BackupTarget, DuePolicy, PolicyRecord};
 
 const DUE_BATCH: i64 = 50;
 
 struct PolicyRow {
-    database_id: Uuid,
+    database_id: Option<Uuid>,
+    application_id: Option<Uuid>,
+    volume: Option<String>,
     destination_id: Uuid,
     schedule: String,
     retention: i32,
@@ -18,7 +20,9 @@ struct PolicyRow {
 }
 
 struct DueRow {
-    database_id: Uuid,
+    database_id: Option<Uuid>,
+    application_id: Option<Uuid>,
+    volume: Option<String>,
     destination_id: Uuid,
     schedule: String,
     retention: i32,
@@ -31,8 +35,10 @@ impl TryFrom<PolicyRow> for PolicyRecord {
     type Error = AppError;
 
     fn try_from(row: PolicyRow) -> AppResult<Self> {
+        let target = BackupTarget::from_columns(row.database_id, row.application_id, row.volume)
+            .ok_or_else(|| AppError::internal("backup policy without a target"))?;
         Ok(Self {
-            database_id: row.database_id.into(),
+            target,
             destination_id: row.destination_id.into(),
             schedule: row.schedule,
             retention: u16::try_from(row.retention).map_err(AppError::internal)?,
@@ -48,6 +54,8 @@ impl TryFrom<DueRow> for DuePolicy {
     fn try_from(row: DueRow) -> AppResult<Self> {
         let policy = PolicyRow {
             database_id: row.database_id,
+            application_id: row.application_id,
+            volume: row.volume,
             destination_id: row.destination_id,
             schedule: row.schedule,
             retention: row.retention,
@@ -63,12 +71,18 @@ impl TryFrom<DueRow> for DuePolicy {
 
 #[async_trait]
 impl BackupPolicyRepo for PgStore {
-    async fn policy(&self, database_id: Id) -> AppResult<Option<PolicyRecord>> {
+    async fn policy(&self, target: &BackupTarget) -> AppResult<Option<PolicyRecord>> {
+        let (database_id, application_id, volume) = target.columns();
         let row = sqlx::query_as!(
             PolicyRow,
-            "SELECT database_id, destination_id, schedule, retention, enabled, next_run_at
-             FROM backup_policies WHERE database_id = $1",
-            database_id.as_uuid()
+            "SELECT database_id, application_id, volume, destination_id, schedule, retention,
+             enabled, next_run_at
+             FROM backup_policies
+             WHERE database_id IS NOT DISTINCT FROM $1
+               AND application_id IS NOT DISTINCT FROM $2 AND volume IS NOT DISTINCT FROM $3",
+            database_id,
+            application_id,
+            volume
         )
         .fetch_optional(&self.pool)
         .await
@@ -77,30 +91,47 @@ impl BackupPolicyRepo for PgStore {
     }
 
     async fn save_policy(&self, policy: PolicyRecord) -> AppResult<()> {
+        let (database_id, application_id, volume) = policy.target.columns();
+        let mut tx = self.pool.begin().await.map_err(db_error)?;
         sqlx::query!(
-            "INSERT INTO backup_policies (database_id, destination_id, schedule, retention,
-             enabled, next_run_at)
-             VALUES ($1, $2, $3, $4, $5, $6)
-             ON CONFLICT (database_id) DO UPDATE SET destination_id = EXCLUDED.destination_id,
-             schedule = EXCLUDED.schedule, retention = EXCLUDED.retention,
-             enabled = EXCLUDED.enabled, next_run_at = EXCLUDED.next_run_at, updated_at = now()",
-            policy.database_id.as_uuid(),
+            "DELETE FROM backup_policies
+             WHERE database_id IS NOT DISTINCT FROM $1
+               AND application_id IS NOT DISTINCT FROM $2 AND volume IS NOT DISTINCT FROM $3",
+            database_id,
+            application_id,
+            volume
+        )
+        .execute(&mut *tx)
+        .await
+        .map_err(db_error)?;
+        sqlx::query!(
+            "INSERT INTO backup_policies (database_id, application_id, volume, destination_id,
+             schedule, retention, enabled, next_run_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+            database_id,
+            application_id,
+            volume,
             policy.destination_id.as_uuid(),
             policy.schedule,
             i32::from(policy.retention),
             policy.enabled,
             policy.next_run_at
         )
-        .execute(&self.pool)
+        .execute(&mut *tx)
         .await
-        .map(|_| ())
-        .map_err(db_error)
+        .map_err(db_error)?;
+        tx.commit().await.map_err(db_error)
     }
 
-    async fn remove_policy(&self, database_id: Id) -> AppResult<()> {
+    async fn remove_policy(&self, target: &BackupTarget) -> AppResult<()> {
+        let (database_id, application_id, volume) = target.columns();
         sqlx::query!(
-            "DELETE FROM backup_policies WHERE database_id = $1",
-            database_id.as_uuid()
+            "DELETE FROM backup_policies
+             WHERE database_id IS NOT DISTINCT FROM $1
+               AND application_id IS NOT DISTINCT FROM $2 AND volume IS NOT DISTINCT FROM $3",
+            database_id,
+            application_id,
+            volume
         )
         .execute(&self.pool)
         .await
@@ -111,11 +142,12 @@ impl BackupPolicyRepo for PgStore {
     async fn due_policies(&self, now: OffsetDateTime) -> AppResult<Vec<DuePolicy>> {
         let rows = sqlx::query_as!(
             DueRow,
-            "SELECT b.database_id, b.destination_id, b.schedule, b.retention, b.enabled,
-             b.next_run_at, p.organization_id
+            "SELECT b.database_id, b.application_id, b.volume, b.destination_id, b.schedule,
+             b.retention, b.enabled, b.next_run_at, p.organization_id
              FROM backup_policies b
-             JOIN databases d ON d.id = b.database_id
-             JOIN environments e ON e.id = d.environment_id
+             LEFT JOIN databases d ON d.id = b.database_id
+             LEFT JOIN applications a ON a.id = b.application_id
+             JOIN environments e ON e.id = COALESCE(d.environment_id, a.environment_id)
              JOIN projects p ON p.id = e.project_id
              WHERE b.enabled AND b.next_run_at <= $1
              ORDER BY b.next_run_at LIMIT $2",
@@ -130,14 +162,19 @@ impl BackupPolicyRepo for PgStore {
 
     async fn advance_policy(
         &self,
-        database_id: Id,
+        target: &BackupTarget,
         expected: OffsetDateTime,
         next: OffsetDateTime,
     ) -> AppResult<bool> {
+        let (database_id, application_id, volume) = target.columns();
         let updated = sqlx::query!(
-            "UPDATE backup_policies SET next_run_at = $3
-             WHERE database_id = $1 AND next_run_at = $2",
-            database_id.as_uuid(),
+            "UPDATE backup_policies SET next_run_at = $5
+             WHERE database_id IS NOT DISTINCT FROM $1
+               AND application_id IS NOT DISTINCT FROM $2 AND volume IS NOT DISTINCT FROM $3
+               AND next_run_at = $4",
+            database_id,
+            application_id,
+            volume,
             expected,
             next
         )

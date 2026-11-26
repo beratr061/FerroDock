@@ -2,8 +2,8 @@ use async_trait::async_trait;
 use ferrodock_core::{AppResult, Id};
 use time::OffsetDateTime;
 
-pub const DATABASE_BACKUP_JOB: &str = "database.backup";
-pub const DATABASE_RESTORE_JOB: &str = "database.restore";
+pub const BACKUP_RUN_JOB: &str = "backup.run";
+pub const BACKUP_RESTORE_JOB: &str = "backup.restore";
 
 #[derive(Debug, Clone)]
 pub struct S3Settings {
@@ -25,9 +25,49 @@ pub struct DestinationRecord {
     pub created_at: OffsetDateTime,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum BackupTarget {
+    Database(Id),
+    Volume { application_id: Id, volume: String },
+}
+
+impl BackupTarget {
+    pub fn columns(&self) -> (Option<uuid::Uuid>, Option<uuid::Uuid>, Option<&str>) {
+        match self {
+            Self::Database(id) => (Some(id.as_uuid()), None, None),
+            Self::Volume {
+                application_id,
+                volume,
+            } => (None, Some(application_id.as_uuid()), Some(volume.as_str())),
+        }
+    }
+
+    pub fn from_columns(
+        database_id: Option<uuid::Uuid>,
+        application_id: Option<uuid::Uuid>,
+        volume: Option<String>,
+    ) -> Option<Self> {
+        match (database_id, application_id, volume) {
+            (Some(id), None, None) => Some(Self::Database(id.into())),
+            (None, Some(application_id), Some(volume)) => Some(Self::Volume {
+                application_id: application_id.into(),
+                volume,
+            }),
+            _ => None,
+        }
+    }
+
+    pub fn group_key(&self) -> String {
+        match self {
+            Self::Database(id) => format!("database:{id}"),
+            Self::Volume { application_id, .. } => application_id.to_string(),
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct PolicyRecord {
-    pub database_id: Id,
+    pub target: BackupTarget,
     pub destination_id: Id,
     pub schedule: String,
     pub retention: u16,
@@ -44,7 +84,7 @@ pub struct DuePolicy {
 #[derive(Debug, Clone)]
 pub struct RunRecord {
     pub id: Id,
-    pub database_id: Id,
+    pub target: BackupTarget,
     pub destination_id: Option<Id>,
     pub operation: String,
     pub trigger: String,
@@ -60,7 +100,7 @@ pub struct RunRecord {
 #[derive(Debug, Clone)]
 pub struct NewRun {
     pub id: Id,
-    pub database_id: Id,
+    pub target: BackupTarget,
     pub destination_id: Id,
     pub operation: &'static str,
     pub trigger: &'static str,
@@ -91,13 +131,13 @@ pub trait BackupDestinationRepo: Send + Sync + 'static {
 
 #[async_trait]
 pub trait BackupPolicyRepo: Send + Sync + 'static {
-    async fn policy(&self, database_id: Id) -> AppResult<Option<PolicyRecord>>;
+    async fn policy(&self, target: &BackupTarget) -> AppResult<Option<PolicyRecord>>;
     async fn save_policy(&self, policy: PolicyRecord) -> AppResult<()>;
-    async fn remove_policy(&self, database_id: Id) -> AppResult<()>;
+    async fn remove_policy(&self, target: &BackupTarget) -> AppResult<()>;
     async fn due_policies(&self, now: OffsetDateTime) -> AppResult<Vec<DuePolicy>>;
     async fn advance_policy(
         &self,
-        database_id: Id,
+        target: &BackupTarget,
         expected: OffsetDateTime,
         next: OffsetDateTime,
     ) -> AppResult<bool>;
@@ -106,13 +146,13 @@ pub trait BackupPolicyRepo: Send + Sync + 'static {
 #[async_trait]
 pub trait BackupRunRepo: Send + Sync + 'static {
     async fn create_run(&self, run: NewRun) -> AppResult<()>;
-    async fn runs(&self, database_id: Id, limit: i64) -> AppResult<Vec<RunRecord>>;
+    async fn runs(&self, target: &BackupTarget, limit: i64) -> AppResult<Vec<RunRecord>>;
     async fn run(&self, id: Id) -> AppResult<Option<RunRecord>>;
     async fn start_run(&self, id: Id) -> AppResult<()>;
     async fn finish_run(&self, id: Id, outcome: RunOutcome) -> AppResult<()>;
     async fn stored_backups(
         &self,
-        database_id: Id,
+        target: &BackupTarget,
         destination_id: Id,
     ) -> AppResult<Vec<RunRecord>>;
     async fn delete_run(&self, id: Id) -> AppResult<()>;

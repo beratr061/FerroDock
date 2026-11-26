@@ -7,7 +7,7 @@ use ferrodock_core::crypto::SecretBox;
 use ferrodock_db::{ApplicationRepo, DeploymentRepo, DomainRepo, RuntimeConfigRepo, VariableRepo};
 use ferrodock_infra::deploy_log::DeployLogs;
 use ferrodock_infra::docker::{
-    DockerEngine, application_key, compose_project, network_alias, short_key,
+    DockerEngine, application_key, application_volume, compose_project, network_alias, short_key,
 };
 use ferrodock_infra::proxy::ProxyRoutes;
 use ferrodock_infra::realtime::{Hub, Signal};
@@ -67,7 +67,7 @@ impl Names {
     }
 
     pub fn volume(&self, name: &str) -> String {
-        format!("fd-{}-{name}", self.application_key)
+        application_volume(self.application_id, name)
     }
 
     pub fn alias(&self) -> String {

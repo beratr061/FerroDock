@@ -160,6 +160,10 @@
     "remove": "Kaldır",
     "save": "Depolama ve portları kaydet",
     "sharedVolume": "Blue-green deploy'da eski ve yeni konteyner kısa bir süre birlikte çalışır, ikisi de aynı volume'e yazar. Veritabanları ve tek yazarlı veriler için stratejiyi recreate yapın.",
-    "portsRecreate": "Bir sunucu portu yalnızca bir konteynere ait olabilir; bu yüzden bu uygulamanın deploy'ları trafiği devretmek yerine çalışan konteyneri değiştirir."
+    "portsRecreate": "Bir sunucu portu yalnızca bir konteynere ait olabilir; bu yüzden bu uygulamanın deploy'ları trafiği devretmek yerine çalışan konteyneri değiştirir.",
+    "volumeBackups": {
+      "title": "{{volume}} yedekleri",
+      "description": "Bu volume'daki dosyaların şifreli arşivleri. Arşiv uygulama çalışırken alınır; geri yükleme konteynerleri durdurur, volume içeriğini değiştirir ve yeniden başlatır."
+    }
   }
 }

@@ -160,6 +160,10 @@
     "remove": "Remove",
     "save": "Save storage and ports",
     "sharedVolume": "Blue-green deploys run the old and new container side by side for a moment, so both write to the same volume. Switch the strategy to recreate for databases and other single-writer data.",
-    "portsRecreate": "A host port can only belong to one container, so deployments of this application replace the running container instead of switching traffic."
+    "portsRecreate": "A host port can only belong to one container, so deployments of this application replace the running container instead of switching traffic.",
+    "volumeBackups": {
+      "title": "Backups of {{volume}}",
+      "description": "Encrypted archives of the files in this volume. The archive is taken while the application runs; a restore stops its containers, replaces the volume contents and starts them again."
+    }
   }
 }

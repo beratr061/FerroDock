@@ -14,6 +14,7 @@ import { DeployKeyPanel } from "./DeployKeyPanel";
 import { DomainsPanel } from "./domains/DomainsPanel";
 import { LogsPanel } from "./logs/LogsPanel";
 import { RuntimePanel } from "./runtime/RuntimePanel";
+import { VolumeBackups } from "./runtime/VolumeBackups";
 import { VariablesPanel } from "./variables/VariablesPanel";
 import { isCompose, sourceSummary } from "./sourceForm";
 
@@ -52,6 +53,7 @@ export function ApplicationPage() {
           <VariablesPanel applicationId={data.id} />
           <DomainsPanel applicationId={data.id} compose={isCompose(data)} />
           <RuntimePanel application={data} />
+          <VolumeBackups application={data} />
           <DeployKeyPanel application={data} />
           <ApplicationSettings application={data} />
         </>

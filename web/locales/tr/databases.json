@@ -71,43 +71,6 @@
   },
   "backups": {
     "title": "Yedekler",
-    "description": "Zamanlanmış ya da isteğe bağlı şifreli dökümler. Geri yükleme, veritabanının mevcut içeriğini değiştirir.",
-    "now": "Şimdi yedekle",
-    "noDestinations": "Yedek zamanlamadan önce bir yedek hedefi ekleyin.",
-    "addDestination": "Hedef ekle",
-    "destination": "Hedef",
-    "schedule": "Zamanlama",
-    "presets": {
-      "daily": "Her gün 03:00 UTC",
-      "sixHours": "6 saatte bir",
-      "hourly": "Saatte bir",
-      "weekly": "Her pazar 03:00 UTC",
-      "custom": "Özel (cron)"
-    },
-    "cron": "Cron ifadesi",
-    "cronHint": "UTC'de beş alan: dakika saat gün ay haftanın-günü.",
-    "retention": "Saklanacak yedek",
-    "retentionInvalid": "1 ile {{max}} arasında yedek saklayın.",
-    "enabled": "Zamanlanmış yedek açık",
-    "nextRun": "Sonraki çalışma {{time}}",
-    "saveSchedule": "Zamanlamayı kaydet",
-    "removeSchedule": "Zamanlamayı kaldır",
-    "restore": "Geri yükle",
-    "confirmRestore": "Mevcut veriyi değiştir",
-    "delete": "Yedeği sil",
-    "operation": {
-      "backup": "Yedek",
-      "restore": "Geri yükleme"
-    },
-    "trigger": {
-      "schedule": "Zamanlanmış",
-      "manual": "Elle"
-    },
-    "status": {
-      "queued": "Sırada",
-      "running": "Çalışıyor",
-      "succeeded": "Tamam",
-      "failed": "Başarısız"
-    }
+    "description": "Zamanlanmış ya da isteğe bağlı şifreli dökümler. Geri yükleme, veritabanının mevcut içeriğini değiştirir."
   }
 }

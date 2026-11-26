@@ -1007,6 +1007,308 @@
         }
       }
     },
+    "/api/v1/applications/{id}/volumes/{volume}/backup-policy": {
+      "get": {
+        "tags": [
+          "backups"
+        ],
+        "description": "Returns the backup schedule of an application volume, or null when it has none",
+        "operationId": "get_volume_backup_policy",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "volume",
+            "in": "path",
+            "description": "Volume name as configured on the application",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/BackupPolicyDto"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "backups"
+        ],
+        "description": "Sets the backup schedule of an application volume; requires the developer role",
+        "operationId": "set_volume_backup_policy",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "volume",
+            "in": "path",
+            "description": "Volume name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BackupPolicyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupPolicyDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "backups"
+        ],
+        "description": "Stops scheduled backups of an application volume; existing backups are kept",
+        "operationId": "delete_volume_backup_policy",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "volume",
+            "in": "path",
+            "description": "Volume name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications/{id}/volumes/{volume}/backups": {
+      "get": {
+        "tags": [
+          "backups"
+        ],
+        "description": "Lists the latest backup and restore runs of an application volume",
+        "operationId": "list_volume_backups",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "volume",
+            "in": "path",
+            "description": "Volume name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BackupRunDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "backups"
+        ],
+        "description": "Queues an encrypted archive of an application volume; requires the developer role. The volume is read while the application keeps running",
+        "operationId": "create_volume_backup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "volume",
+            "in": "path",
+            "description": "Volume name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBackupRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupRunDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/auth/me": {
       "get": {
         "tags": [
@@ -1288,7 +1590,7 @@
         }
       }
     },
-    "/api/v1/database-backups/{id}": {
+    "/api/v1/backup-runs/{id}": {
       "delete": {
         "tags": [
           "backups"
@@ -1330,7 +1632,7 @@
         }
       }
     },
-    "/api/v1/database-backups/{id}/restore": {
+    "/api/v1/backup-runs/{id}/restore": {
       "post": {
         "tags": [
           "backups"
@@ -1798,7 +2100,7 @@
           "backups"
         ],
         "description": "Lists the latest backup and restore runs of a database",
-        "operationId": "list_database_backups",
+        "operationId": "list_scheduled_backups",
         "parameters": [
           {
             "name": "id",

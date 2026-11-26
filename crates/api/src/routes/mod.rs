@@ -2,7 +2,6 @@ mod api_keys;
 mod applications;
 mod auth;
 mod backups;
-mod database_backups;
 mod databases;
 mod deployments;
 mod docker;
@@ -13,6 +12,7 @@ mod logs;
 mod projects;
 mod realtime;
 mod runtime_config;
+mod scheduled_backups;
 mod setup;
 mod terminal;
 mod updates;
@@ -39,7 +39,6 @@ pub(crate) use backups::{
     __path_create_backup, __path_delete_backup, __path_download_backup, __path_export_master_key,
     __path_list_backups,
 };
-pub(crate) use database_backups::DatabaseBackupApi;
 pub(crate) use databases::DatabaseApi;
 pub(crate) use deployments::{
     __path_cancel_deployment, __path_create_deployment, __path_deployment_log,
@@ -58,6 +57,7 @@ pub(crate) use projects::{
 };
 pub(crate) use realtime::__path_realtime;
 pub(crate) use runtime_config::{__path_get_runtime_config, __path_replace_runtime_config};
+pub(crate) use scheduled_backups::ScheduledBackupApi;
 pub(crate) use setup::{__path_complete, __path_status};
 pub(crate) use terminal::__path_terminal;
 pub(crate) use updates::{
@@ -239,5 +239,5 @@ pub fn api_routes(trust_forwarded: bool) -> Router<AppState> {
         .merge(system_routes())
         .merge(docker_routes())
         .merge(databases::database_routes())
-        .merge(database_backups::database_backup_routes())
+        .merge(scheduled_backups::scheduled_backup_routes())
 }

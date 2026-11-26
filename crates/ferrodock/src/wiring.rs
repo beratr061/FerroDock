@@ -12,8 +12,8 @@ use ferrodock_domain::audit::AuditLog;
 use ferrodock_domain::auth::{AuthRepos, AuthService};
 use ferrodock_domain::backups::{BackupService, BackupServiceParts};
 use ferrodock_engine::backup::BackupContext;
-use ferrodock_engine::database_backups::BackupJobContext;
 use ferrodock_engine::databases::DatabaseContext;
+use ferrodock_engine::scheduled_backups::BackupJobContext;
 use ferrodock_engine::updater::UpdateLauncher;
 
 use crate::{backups, databases as database_wiring};
@@ -208,7 +208,7 @@ fn app_state(
         ),
         runtime_configs: RuntimeConfigService::new((shared(), shared()), audit.clone()),
         databases: database_wiring::service(config, store, databases, audit.clone()),
-        database_backups: database_wiring::backup_service(config, store, databases, audit.clone()),
+        scheduled_backups: database_wiring::backup_service(config, store, databases, audit.clone()),
         deployments: deployment_service(store, deploy, audit.clone()),
         terminal: TerminalService::new(deploy.docker.clone(), shared(), audit.clone()),
         backups: backup_service(config, store, auth, audit),

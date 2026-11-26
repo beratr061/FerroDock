@@ -2,7 +2,6 @@ mod api_keys;
 mod applications;
 mod auth;
 mod backups;
-mod database_backups;
 mod databases;
 mod deployments;
 mod docker;
@@ -10,6 +9,7 @@ mod domains;
 mod password;
 mod projects;
 mod runtime_config;
+mod scheduled_backups;
 mod updates;
 mod variables;
 mod workloads;
@@ -23,10 +23,6 @@ pub use auth::{
     HealthResponse, MeResponse, MembershipDto, RoleDto, SetupRequest, SetupStatus, SignInRequest,
 };
 pub use backups::{BackupDto, BackupRequestedDto, MasterKeyDto, MasterKeyRequest};
-pub use database_backups::{
-    BackupDestinationDto, BackupPolicyDto, BackupPolicyRequest, BackupRunDto,
-    CreateBackupDestinationRequest, CreateBackupRequest, DestinationKindDto, S3DestinationRequest,
-};
 pub use databases::{
     CreateDatabaseRequest, DatabaseActionDto, DatabaseActionRequest, DatabaseCredentialsDto,
     DatabaseDto, DatabaseEngineDto, DatabaseLogDto, DatabaseLogQuery, DatabaseLogsQuery,
@@ -47,6 +43,10 @@ pub use projects::{
     UpdateProjectRequest,
 };
 pub use runtime_config::{MountDto, MountKindDto, PortDto, ProtocolDto, RuntimeConfigDto};
+pub use scheduled_backups::{
+    BackupDestinationDto, BackupPolicyDto, BackupPolicyRequest, BackupRunDto,
+    CreateBackupDestinationRequest, CreateBackupRequest, DestinationKindDto, S3DestinationRequest,
+};
 pub use updates::{UpdateCheckDto, UpdateOverviewDto, UpdateRecordDto, UpdateStateDto};
 pub use variables::{ReplaceVariablesRequest, RevealedVariableDto, VariableDto, VariableInputDto};
 pub use workloads::WorkloadDto;

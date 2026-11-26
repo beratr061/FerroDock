@@ -1,14 +1,16 @@
 use async_trait::async_trait;
-use ferrodock_core::{AppResult, Id};
+use ferrodock_core::{AppError, AppResult, Id};
 use time::OffsetDateTime;
 use uuid::Uuid;
 
 use super::{PgStore, db_error};
-use crate::backups::{BackupRunRepo, NewRun, RunOutcome, RunRecord};
+use crate::backups::{BackupRunRepo, BackupTarget, NewRun, RunOutcome, RunRecord};
 
 struct RunRow {
     id: Uuid,
-    database_id: Uuid,
+    database_id: Option<Uuid>,
+    application_id: Option<Uuid>,
+    volume: Option<String>,
     destination_id: Option<Uuid>,
     operation: String,
     trigger: String,
@@ -21,11 +23,15 @@ struct RunRow {
     finished_at: Option<OffsetDateTime>,
 }
 
-impl From<RunRow> for RunRecord {
-    fn from(row: RunRow) -> Self {
-        Self {
+impl TryFrom<RunRow> for RunRecord {
+    type Error = AppError;
+
+    fn try_from(row: RunRow) -> AppResult<Self> {
+        let target = BackupTarget::from_columns(row.database_id, row.application_id, row.volume)
+            .ok_or_else(|| AppError::internal("backup run without a target"))?;
+        Ok(Self {
             id: row.id.into(),
-            database_id: row.database_id.into(),
+            target,
             destination_id: row.destination_id.map(Id::from),
             operation: row.operation,
             trigger: row.trigger,
@@ -36,19 +42,26 @@ impl From<RunRow> for RunRecord {
             error_code: row.error_code,
             created_at: row.created_at,
             finished_at: row.finished_at,
-        }
+        })
     }
+}
+
+fn records(rows: Vec<RunRow>) -> AppResult<Vec<RunRecord>> {
+    rows.into_iter().map(RunRecord::try_from).collect()
 }
 
 #[async_trait]
 impl BackupRunRepo for PgStore {
     async fn create_run(&self, run: NewRun) -> AppResult<()> {
+        let (database_id, application_id, volume) = run.target.columns();
         sqlx::query!(
-            "INSERT INTO backup_runs (id, database_id, destination_id, operation, trigger,
-             source_run_id, created_by)
-             VALUES ($1, $2, $3, $4, $5, $6, $7)",
+            "INSERT INTO backup_runs (id, database_id, application_id, volume, destination_id,
+             operation, trigger, source_run_id, created_by)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
             run.id.as_uuid(),
-            run.database_id.as_uuid(),
+            database_id,
+            application_id,
+            volume,
             run.destination_id.as_uuid(),
             run.operation,
             run.trigger,
@@ -61,33 +74,39 @@ impl BackupRunRepo for PgStore {
         .map_err(db_error)
     }
 
-    async fn runs(&self, database_id: Id, limit: i64) -> AppResult<Vec<RunRecord>> {
+    async fn runs(&self, target: &BackupTarget, limit: i64) -> AppResult<Vec<RunRecord>> {
+        let (database_id, application_id, volume) = target.columns();
         let rows = sqlx::query_as!(
             RunRow,
-            "SELECT id, database_id, destination_id, operation, trigger, source_run_id, status,
-             object_key, size_bytes, error_code, created_at, finished_at
-             FROM backup_runs WHERE database_id = $1 ORDER BY created_at DESC LIMIT $2",
-            database_id.as_uuid(),
+            "SELECT id, database_id, application_id, volume, destination_id, operation, trigger,
+             source_run_id, status, object_key, size_bytes, error_code, created_at, finished_at
+             FROM backup_runs
+             WHERE database_id IS NOT DISTINCT FROM $1
+               AND application_id IS NOT DISTINCT FROM $2 AND volume IS NOT DISTINCT FROM $3
+             ORDER BY created_at DESC LIMIT $4",
+            database_id,
+            application_id,
+            volume,
             limit
         )
         .fetch_all(&self.pool)
         .await
         .map_err(db_error)?;
-        Ok(rows.into_iter().map(Into::into).collect())
+        records(rows)
     }
 
     async fn run(&self, id: Id) -> AppResult<Option<RunRecord>> {
         let row = sqlx::query_as!(
             RunRow,
-            "SELECT id, database_id, destination_id, operation, trigger, source_run_id, status,
-             object_key, size_bytes, error_code, created_at, finished_at
+            "SELECT id, database_id, application_id, volume, destination_id, operation, trigger,
+             source_run_id, status, object_key, size_bytes, error_code, created_at, finished_at
              FROM backup_runs WHERE id = $1",
             id.as_uuid()
         )
         .fetch_optional(&self.pool)
         .await
         .map_err(db_error)?;
-        Ok(row.map(Into::into))
+        row.map(RunRecord::try_from).transpose()
     }
 
     async fn start_run(&self, id: Id) -> AppResult<()> {
@@ -120,24 +139,29 @@ impl BackupRunRepo for PgStore {
 
     async fn stored_backups(
         &self,
-        database_id: Id,
+        target: &BackupTarget,
         destination_id: Id,
     ) -> AppResult<Vec<RunRecord>> {
+        let (database_id, application_id, volume) = target.columns();
         let rows = sqlx::query_as!(
             RunRow,
-            "SELECT id, database_id, destination_id, operation, trigger, source_run_id, status,
-             object_key, size_bytes, error_code, created_at, finished_at
+            "SELECT id, database_id, application_id, volume, destination_id, operation, trigger,
+             source_run_id, status, object_key, size_bytes, error_code, created_at, finished_at
              FROM backup_runs
-             WHERE database_id = $1 AND destination_id = $2 AND operation = 'backup'
+             WHERE database_id IS NOT DISTINCT FROM $1
+               AND application_id IS NOT DISTINCT FROM $2 AND volume IS NOT DISTINCT FROM $3
+               AND destination_id = $4 AND operation = 'backup'
                AND status = 'succeeded' AND object_key IS NOT NULL
              ORDER BY created_at DESC",
-            database_id.as_uuid(),
+            database_id,
+            application_id,
+            volume,
             destination_id.as_uuid()
         )
         .fetch_all(&self.pool)
         .await
         .map_err(db_error)?;
-        Ok(rows.into_iter().map(Into::into).collect())
+        records(rows)
     }
 
     async fn delete_run(&self, id: Id) -> AppResult<()> {

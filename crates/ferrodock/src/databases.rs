@@ -5,11 +5,11 @@ use std::time::Duration;
 use ferrodock_core::config::AppConfig;
 use ferrodock_db::pg::PgStore;
 use ferrodock_domain::audit::AuditLog;
-use ferrodock_domain::database_backups::{DatabaseBackupParts, DatabaseBackupService};
 use ferrodock_domain::databases::{DatabaseService, DatabaseServiceParts};
-use ferrodock_engine::database_backups::BackupJobContext;
+use ferrodock_domain::scheduled_backups::{ScheduledBackupParts, ScheduledBackupService};
 use ferrodock_engine::databases::DatabaseContext;
 use ferrodock_engine::deploy::DeployContext;
+use ferrodock_engine::scheduled_backups::BackupJobContext;
 use ferrodock_infra::deploy_log::DeployLogs;
 
 use time::OffsetDateTime;
@@ -62,6 +62,7 @@ pub fn backup_jobs(
     BackupJobContext {
         docker: databases.docker.clone(),
         databases: shared.clone(),
+        applications: shared.clone(),
         destinations: shared.clone(),
         policies: shared.clone(),
         runs: shared,
@@ -75,10 +76,12 @@ pub fn backup_service(
     store: &PgStore,
     databases: &DatabaseContext,
     audit: AuditLog,
-) -> DatabaseBackupService {
+) -> ScheduledBackupService {
     let shared = Arc::new(store.clone());
-    DatabaseBackupService::new(DatabaseBackupParts {
+    ScheduledBackupService::new(ScheduledBackupParts {
         databases: shared.clone(),
+        applications: shared.clone(),
+        runtime_configs: shared.clone(),
         destinations: shared.clone(),
         policies: shared.clone(),
         runs: shared.clone(),
@@ -89,7 +92,7 @@ pub fn backup_service(
     })
 }
 
-pub fn schedule_backups(service: DatabaseBackupService, shutdown: CancellationToken) {
+pub fn schedule_backups(service: ScheduledBackupService, shutdown: CancellationToken) {
     tokio::spawn(async move {
         loop {
             match service.run_due(OffsetDateTime::now_utc()).await {

@@ -1,0 +1,18 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE backup_policies SET next_run_at = $5\n             WHERE database_id IS NOT DISTINCT FROM $1\n               AND application_id IS NOT DISTINCT FROM $2 AND volume IS NOT DISTINCT FROM $3\n               AND next_run_at = $4",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Timestamptz",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "e29e231bca00bdb1b324cd66be223fe4531f3c18e3b9bac45e91e9273bb2df61"
+}

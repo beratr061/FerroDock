@@ -32,7 +32,8 @@ pub use image::validate_image;
 pub use images::WORKLOAD_NETWORK;
 pub use logs::{LogLine, LogQuery, LogStream};
 pub use naming::{
-    application_key, compose_project, compose_service_alias, network_alias, short_key,
+    application_key, application_volume, compose_project, compose_service_alias, network_alias,
+    short_key,
 };
 pub use updater::{UPDATER_NAME, UpdaterSpec};
 pub use workload_storage::{MountSource, WorkloadMount, WorkloadPort};

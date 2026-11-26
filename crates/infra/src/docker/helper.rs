@@ -9,6 +9,8 @@ use futures_util::StreamExt;
 
 use super::{DockerEngine, MANAGED_LABEL, docker_error};
 
+const IDLE_SCRIPT: &str = "sleep 3600";
+
 #[derive(Debug, Clone)]
 pub struct VolumeTask {
     pub image: String,
@@ -43,7 +45,45 @@ fn body(task: &VolumeTask) -> ContainerCreateBody {
     }
 }
 
+fn idle_body(task: &VolumeTask, read_only: bool) -> ContainerCreateBody {
+    let mut created = body(task);
+    created.cmd = Some(vec![IDLE_SCRIPT.to_owned()]);
+    if let Some(mount) = created
+        .host_config
+        .as_mut()
+        .and_then(|host| host.mounts.as_mut())
+        .and_then(|mounts| mounts.first_mut())
+    {
+        mount.read_only = Some(read_only);
+    }
+    created
+}
+
 impl DockerEngine {
+    pub async fn start_volume_helper(
+        &self,
+        task: &VolumeTask,
+        read_only: bool,
+    ) -> AppResult<String> {
+        self.ensure_image(&task.image).await?;
+        let options = CreateContainerOptionsBuilder::new().build();
+        let created = self
+            .client
+            .create_container(Some(options), idle_body(task, read_only))
+            .await
+            .map_err(docker_error)?;
+        if let Err(error) = self.start_workload(&created.id).await {
+            self.remove_volume_helper(&created.id).await;
+            return Err(error);
+        }
+        Ok(created.id)
+    }
+
+    pub async fn remove_volume_helper(&self, id: &str) {
+        let remove = RemoveContainerOptionsBuilder::new().force(true).build();
+        let _ = self.client.remove_container(id, Some(remove)).await;
+    }
+
     pub async fn run_volume_task(&self, task: &VolumeTask) -> AppResult<()> {
         let options = CreateContainerOptionsBuilder::new().build();
         let created = self

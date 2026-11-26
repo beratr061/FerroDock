@@ -29,7 +29,7 @@ use crate::routes::{
     __path_roll_back_update, __path_rollback_deployment, __path_rotate_deploy_key, __path_sign_in,
     __path_sign_out, __path_start_update, __path_status, __path_terminal,
     __path_update_application, __path_update_overview, __path_update_project, DatabaseApi,
-    DatabaseBackupApi,
+    ScheduledBackupApi,
 };
 
 #[derive(OpenApi)]
@@ -157,7 +157,7 @@ struct ApiDoc;
 fn document() -> utoipa::openapi::OpenApi {
     ApiDoc::openapi()
         .merge_from(DatabaseApi::openapi())
-        .merge_from(DatabaseBackupApi::openapi())
+        .merge_from(ScheduledBackupApi::openapi())
 }
 
 pub fn openapi_json() -> Result<String, serde_json::Error> {

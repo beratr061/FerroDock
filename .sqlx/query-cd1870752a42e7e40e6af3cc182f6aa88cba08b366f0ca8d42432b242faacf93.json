@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM backup_policies\n             WHERE database_id IS NOT DISTINCT FROM $1\n               AND application_id IS NOT DISTINCT FROM $2 AND volume IS NOT DISTINCT FROM $3",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "cd1870752a42e7e40e6af3cc182f6aa88cba08b366f0ca8d42432b242faacf93"
+}

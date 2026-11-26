@@ -6,12 +6,12 @@ use ferrodock_domain::applications::ApplicationService;
 use ferrodock_domain::audit::AuditLog;
 use ferrodock_domain::auth::AuthService;
 use ferrodock_domain::backups::BackupService;
-use ferrodock_domain::database_backups::DatabaseBackupService;
 use ferrodock_domain::databases::DatabaseService;
 use ferrodock_domain::deployments::DeploymentService;
 use ferrodock_domain::domains::DomainService;
 use ferrodock_domain::projects::ProjectService;
 use ferrodock_domain::runtime_config::RuntimeConfigService;
+use ferrodock_domain::scheduled_backups::ScheduledBackupService;
 use ferrodock_domain::terminal::TerminalService;
 use ferrodock_domain::variables::VariableService;
 use ferrodock_engine::updater::UpdateLauncher;
@@ -44,7 +44,7 @@ pub struct AppState {
     pub variables: VariableService,
     pub runtime_configs: RuntimeConfigService,
     pub databases: DatabaseService,
-    pub database_backups: DatabaseBackupService,
+    pub scheduled_backups: ScheduledBackupService,
     pub terminal: TerminalService,
     pub backups: BackupService,
     pub updates: UpdateLauncher,

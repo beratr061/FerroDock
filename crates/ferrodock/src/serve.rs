@@ -36,7 +36,7 @@ pub async fn run(config: AppConfig) -> AppResult<()> {
         &background,
     );
     backups::schedule(&config, Arc::new(wired.store.clone()), background.clone());
-    databases::schedule_backups(wired.state.database_backups.clone(), background.clone());
+    databases::schedule_backups(wired.state.scheduled_backups.clone(), background.clone());
     container_events::forward(
         wired.state.docker.clone(),
         wired.state.hub.clone(),
