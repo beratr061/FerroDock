@@ -225,5 +225,24 @@
       "succeeded": "Done",
       "failed": "Failed"
     }
+  },
+  "palette": {
+    "label": "Go to",
+    "placeholder": "Search pages, projects, applications and databases",
+    "results": "Results",
+    "empty": "Nothing matches.",
+    "pages": {
+      "apiKeys": "API keys",
+      "backups": "Panel backups",
+      "storage": "Backup storage",
+      "updates": "Updates",
+      "appearance": "Appearance"
+    },
+    "kinds": {
+      "page": "Page",
+      "project": "Project",
+      "application": "Application",
+      "database": "Database"
+    }
   }
 }

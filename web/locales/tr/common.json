@@ -225,5 +225,24 @@
       "succeeded": "Tamam",
       "failed": "Başarısız"
     }
+  },
+  "palette": {
+    "label": "Git",
+    "placeholder": "Sayfa, proje, uygulama ve veritabanı ara",
+    "results": "Sonuçlar",
+    "empty": "Eşleşen bir şey yok.",
+    "pages": {
+      "apiKeys": "API anahtarları",
+      "backups": "Panel yedekleri",
+      "storage": "Yedek depolama",
+      "updates": "Güncellemeler",
+      "appearance": "Görünüm"
+    },
+    "kinds": {
+      "page": "Sayfa",
+      "project": "Proje",
+      "application": "Uygulama",
+      "database": "Veritabanı"
+    }
   }
 }

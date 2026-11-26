@@ -46,7 +46,19 @@ export async function mountTerminal(element: HTMLElement): Promise<MountedTermin
   term.loadAddon(mounted.search);
   term.loadAddon(new links.WebLinksAddon());
   withStyleNonce(() => term.open(element));
+  void attachWebgl(term);
   return mounted;
+}
+
+async function attachWebgl(term: Terminal): Promise<void> {
+  try {
+    const { WebglAddon } = await import("@xterm/addon-webgl");
+    const webgl = new WebglAddon();
+    webgl.onContextLoss(() => webgl.dispose());
+    term.loadAddon(webgl);
+  } catch {
+    return;
+  }
 }
 
 export function fitVisible(mounted: MountedTerminal, element: HTMLElement): void {

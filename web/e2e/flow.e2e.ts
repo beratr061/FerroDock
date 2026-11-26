@@ -60,12 +60,11 @@ test("an image application deploys, logs and opens a shell", async ({ page }) =>
   await expect(page.locator("pre").first()).toContainText("nginx", { timeout: 30_000 });
 
   await page.getByRole("button", { name: "Terminal" }).click();
-  const terminal = page.locator(".xterm").first();
-  await expect(terminal).toBeVisible();
-  await terminal.click();
-  await page.keyboard.type("echo e2e-$((2+3))");
+  await expect(page.getByText("Connected", { exact: true })).toBeVisible();
+  await page.locator(".xterm").first().click();
+  await page.keyboard.type("echo shell-$((2+3)) > /proc/1/fd/1");
   await page.keyboard.press("Enter");
-  await expect(page.locator(".xterm-rows").first()).toContainText("e2e-5");
+  await expect(page.locator("pre").first()).toContainText("shell-5");
 });
 
 test("a managed database starts", async ({ page }) => {

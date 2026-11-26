@@ -19,12 +19,13 @@
 }
 
 .terminal-drawer {
-  height: min(60dvh, 560px);
+  bottom: var(--fd-keyboard-inset, 0px);
+  height: min(60dvh, 560px, var(--fd-visible-height, 100dvh));
   animation: drawer-rise var(--dur-transition) var(--ease-out) both;
 }
 
 .terminal-drawer-maximized {
-  height: 100dvh;
+  height: var(--fd-visible-height, 100dvh);
 }
 
 .terminal-host .xterm {
@@ -48,6 +49,21 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+.palette-enter {
+  animation: palette-in 160ms var(--ease-out) both;
+}
+
+@keyframes palette-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
@@ -79,7 +95,8 @@
     animation: none;
   }
 
-  .terminal-drawer {
+  .terminal-drawer,
+  .palette-enter {
     animation: fade var(--dur-state) linear both;
   }
 

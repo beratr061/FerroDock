@@ -3,6 +3,7 @@ import { Outlet } from "@tanstack/react-router";
 import { TerminalHost } from "@/shared/terminal";
 import { Logo } from "@/shared/ui";
 
+import { PaletteHost } from "../palette/PaletteHost";
 import { BottomNav } from "./BottomNav";
 import { RealtimeBridge } from "./RealtimeBridge";
 import { Sidebar } from "./Sidebar";
@@ -24,6 +25,7 @@ export function AppShell() {
       </main>
       <BottomNav />
       <TerminalHost />
+      <PaletteHost />
     </div>
   );
 }

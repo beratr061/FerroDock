@@ -26,6 +26,7 @@ import {
   type Workspace,
 } from "./store";
 import { TerminalPane } from "./TerminalPane";
+import { useKeyboardInset } from "./viewport";
 
 const ICON_BUTTON = "press grid size-8 place-items-center rounded-control text-muted hover:bg-surface-hover hover:text-text";
 
@@ -124,6 +125,7 @@ function ReopenButton({ count }: { count: number }) {
 export default function TerminalWorkspace() {
   const { t } = useTranslation("common");
   const workspace = useWorkspace();
+  useKeyboardInset();
   const active = workspace.tabs.find((tab) => tab.id === workspace.activeTab);
 
   useEffect(() => {
@@ -145,7 +147,7 @@ export default function TerminalWorkspace() {
       <section
         aria-label={t("terminal.workspace")}
         hidden={!workspace.visible}
-        className={cx("terminal-drawer fixed inset-x-0 bottom-0 z-40 flex-col gap-2 border-t border-border-strong bg-surface px-3 pt-2 pb-3", workspace.visible ? "flex" : "hidden", workspace.maximized && "terminal-drawer-maximized")}
+        className={cx("terminal-drawer fixed inset-x-0 z-40 flex-col gap-2 border-t border-border-strong bg-surface px-3 pt-2 pb-3", workspace.visible ? "flex" : "hidden", workspace.maximized && "terminal-drawer-maximized")}
       >
         <header className="flex items-center gap-2">
           <TabStrip workspace={workspace} />
