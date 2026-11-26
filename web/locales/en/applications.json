@@ -167,5 +167,14 @@
       "title": "Backups of {{volume}}",
       "description": "Encrypted archives of the files in this volume. The archive is taken while the application runs; a restore stops its containers, replaces the volume contents and starts them again."
     }
+  },
+  "tabs": {
+    "label": "Application sections",
+    "deployments": "Deployments",
+    "logs": "Logs",
+    "environment": "Environment",
+    "domains": "Domains",
+    "storage": "Storage",
+    "settings": "Settings"
   }
 }

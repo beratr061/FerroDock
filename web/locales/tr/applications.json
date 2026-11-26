@@ -167,5 +167,14 @@
       "title": "{{volume}} yedekleri",
       "description": "Bu volume'daki dosyaların şifreli arşivleri. Arşiv uygulama çalışırken alınır; geri yükleme konteynerleri durdurur, volume içeriğini değiştirir ve yeniden başlatır."
     }
+  },
+  "tabs": {
+    "label": "Uygulama bölümleri",
+    "deployments": "Dağıtımlar",
+    "logs": "Loglar",
+    "environment": "Ortam",
+    "domains": "Domainler",
+    "storage": "Depolama",
+    "settings": "Ayarlar"
   }
 }

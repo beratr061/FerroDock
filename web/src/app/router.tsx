@@ -82,6 +82,8 @@ const projectDetailRoute = createRoute({
 const applicationRoute = createRoute({
   getParentRoute: () => appRoute,
   path: "/applications/$applicationId",
+  validateSearch: (search: Record<string, unknown>): { tab?: string } =>
+    typeof search.tab === "string" ? { tab: search.tab } : {},
   component: lazyRouteComponent(() => import("@/features/applications"), "ApplicationPage"),
 });
 
