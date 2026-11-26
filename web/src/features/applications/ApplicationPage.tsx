@@ -10,6 +10,7 @@ import { applicationQuery, type Application } from "./api";
 import { ApplicationSettings } from "./ApplicationSettings";
 import { ApplicationTabs } from "./ApplicationTabs";
 import { ComposeTrustPanel } from "./ComposeTrustPanel";
+import { WebhookPanel } from "./WebhookPanel";
 import { ContainerTerminal } from "./ContainerTerminal";
 import { DeploymentsPanel } from "./deployments/DeploymentsPanel";
 import { DeployKeyPanel } from "./DeployKeyPanel";
@@ -42,6 +43,7 @@ function TabContent({ tab, application }: { tab: ApplicationTab; application: Ap
       return (
         <>
           <ApplicationSettings application={application} />
+          {application.source.kind === "git" ? <WebhookPanel application={application} /> : null}
           {isCompose(application) ? <ComposeTrustPanel application={application} /> : null}
           <DeployKeyPanel application={application} />
         </>

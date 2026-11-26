@@ -14,6 +14,7 @@ use ferrodock_domain::runtime_config::RuntimeConfigService;
 use ferrodock_domain::scheduled_backups::ScheduledBackupService;
 use ferrodock_domain::terminal::TerminalService;
 use ferrodock_domain::variables::VariableService;
+use ferrodock_domain::webhooks::WebhookService;
 use ferrodock_engine::updater::UpdateLauncher;
 use ferrodock_infra::docker::DockerEngine;
 use ferrodock_infra::realtime::Hub;
@@ -42,6 +43,7 @@ pub struct AppState {
     pub deployments: DeploymentService,
     pub domains: DomainService,
     pub variables: VariableService,
+    pub webhooks: WebhookService,
     pub runtime_configs: RuntimeConfigService,
     pub databases: DatabaseService,
     pub scheduled_backups: ScheduledBackupService,

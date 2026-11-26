@@ -6,7 +6,7 @@ FerroDock deploys applications, Docker Compose stacks and managed databases on y
 
 ## What it does today (0.3)
 
-- **Applications** from a Docker image or a Git repository (HTTPS or SSH), built from a Dockerfile or run as a Docker Compose stack. Deployments use blue-green (zero downtime) or recreate, stream their log live, can be cancelled and rolled back, and old images are pruned (the last five successful ones are kept).
+- **Applications** from a Docker image or a Git repository (HTTPS or SSH), built from a Dockerfile or run as a Docker Compose stack. Deployments run by hand or on every Git push (GitHub, GitLab, Gitea and Forgejo webhooks), use blue-green (zero downtime) or recreate, stream their log live, can be cancelled and rolled back, and old images are pruned (the last five successful ones are kept).
 - **Compose stacks are checked before they run.** Options that reach the host are refused, including privileged mode, the Docker socket, host namespaces, devices and files outside the repository. Compose itself runs in a short-lived helper container that cannot see the panel's keys. Only the organization owner can mark a stack as trusted.
 - **Domains** routed through Traefik, with Let's Encrypt certificates, an HTTP to HTTPS redirect, basic auth and a DNS pre-check.
 - **Encrypted environment variables**, published ports and volumes per application.
@@ -18,7 +18,7 @@ FerroDock deploys applications, Docker Compose stacks and managed databases on y
 - **Self-update:** signed release manifest, a backup before every update, a health-gated switch and automatic rollback.
 - **Interface:** English and Turkish, light and dark themes, works down to phone width, and a Ctrl/Cmd+K command palette.
 
-Not yet: Git push webhooks, inviting team members, remote servers over SSH, metrics charts, notifications and preview deployments. The roadmap is in `docs/adr/0001-architecture.md`.
+Not yet: inviting team members, remote servers over SSH, metrics charts, notifications and preview deployments. The roadmap is in `docs/adr/0001-architecture.md`.
 
 ## Install on a server
 

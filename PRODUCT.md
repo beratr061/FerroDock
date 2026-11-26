@@ -36,14 +36,14 @@ FerroDock is a self-hosted PaaS control plane. It deploys applications, Docker C
 
 - Built so far (phases 0 to 2, release 0.3):
   - Foundation: setup token, sign-in, lockout, scoped API keys, four roles, audit log, REST API with OpenAPI contract.
-  - Applications: image or Git sources (Dockerfile or Compose), blue-green and recreate deploys, cancel, rollback and image pruning. Compose stacks are audited before every deploy unless the owner marks them as trusted.
+  - Applications: image or Git sources (Dockerfile or Compose), blue-green and recreate deploys, push-to-deploy webhooks, cancel, rollback and image pruning. Compose stacks are audited before every deploy unless the owner marks them as trusted.
   - Domains: Traefik routing with Let's Encrypt.
   - Configuration: encrypted variables, ports and volumes.
   - Databases: six managed engines.
   - Backups: scheduled database and volume backups to local disk or S3, plus the panel's own backups.
   - Terminal: a full-featured web terminal.
   - Live view and updates: live status, logs and stats; signed, health-gated self-update with rollback; a command palette.
-- Next (phase 3): Git push webhooks, team member invitations, remote servers over SSH, metrics charts and alerts, notifications, preview deployments, scheduled tasks.
+- Next (phase 3): team member invitations, remote servers over SSH, metrics charts and alerts, notifications, preview deployments, scheduled tasks.
 - Later (phase 4): TOTP, an audit log screen, Nixpacks and static builds, terminal recording, SQLite, Dokploy import.
 - Hierarchy and terminology: organization, project, environment, service (application, compose stack, database), deployment, domain, server.
 - Languages: English and Turkish from day one; every user-facing string is translatable and a new language is added by dropping a locale folder.

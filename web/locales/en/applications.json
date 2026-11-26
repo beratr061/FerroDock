@@ -184,5 +184,28 @@
     "grant": "Mark as trusted",
     "confirm": "Trust this stack with root access",
     "revoke": "Remove trust"
+  },
+  "webhook": {
+    "title": "Push to deploy",
+    "description": "Deploy automatically every time you push to {{branch}}. Works with GitHub, GitLab, Gitea and Forgejo.",
+    "enable": "Turn on",
+    "disable": "Turn off",
+    "rotate": "New secret",
+    "confirmRotate": "Replace the secret",
+    "url": "Webhook URL",
+    "secret": "Secret",
+    "secretOnce": "Copy the secret now. It is not shown again; create a new one if you lose it.",
+    "setup": "In your repository's webhook settings, paste the URL and the secret and choose push events. GitHub: content type application/json. GitLab: put the secret in Secret token. Gitea and Forgejo: POST with application/json.",
+    "noDelivery": "No delivery yet.",
+    "lastDelivery": "Last delivery {{when}}: {{outcome}}",
+    "outcomes": {
+      "deployed": "deployment started",
+      "ping": "test ping received",
+      "ignored_branch": "push to another branch, ignored",
+      "ignored_tag": "tag push, ignored",
+      "ignored_deleted": "branch deleted, ignored",
+      "ignored_event": "not a push event, ignored",
+      "rejected": "rejected, the signature or secret did not match"
+    }
   }
 }

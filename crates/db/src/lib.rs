@@ -9,6 +9,7 @@ pub mod records;
 pub mod repos;
 pub mod runtime_config;
 pub mod variables;
+pub mod webhooks;
 
 #[cfg(feature = "postgres")]
 pub mod pg;
@@ -23,3 +24,4 @@ pub use projects::ProjectRepo;
 pub use repos::{ApiKeyRepo, AuditRepo, IdentityRepo, LoginAttemptRepo, SessionRepo};
 pub use runtime_config::RuntimeConfigRepo;
 pub use variables::VariableRepo;
+pub use webhooks::WebhookRepo;

@@ -155,7 +155,9 @@
     "DATABASE_MEMORY_INVALID": "{{min}} ile {{max}} MiB arasında bellek kullanın.",
     "DATABASE_CPU_INVALID": "{{min}} ile {{max}} binde bir CPU çekirdeği arasında bir değer kullanın.",
     "COMPOSE_OPTION_FORBIDDEN": "{{service}} servisi {{option}} kullanıyor; bu, konteynerin dışındaki sunucuya erişebilir. Kaldırın ya da sahibinden bu stack'i güvenilir olarak işaretlemesini isteyin.",
-    "COMPOSE_TRUST_NOT_APPLICABLE": "Yalnızca compose uygulamaları güvenilir olarak işaretlenebilir."
+    "COMPOSE_TRUST_NOT_APPLICABLE": "Yalnızca compose uygulamaları güvenilir olarak işaretlenebilir.",
+    "WEBHOOK_NOT_APPLICABLE": "Push ile deploy yalnızca Git reposundan derlenen uygulamalarda kullanılabilir.",
+    "WEBHOOK_PAYLOAD_INVALID": "Webhook gövdesi JSON biçiminde bir push olayı değil."
   },
   "terminal": {
     "workspace": "Terminaller",

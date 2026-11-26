@@ -18,6 +18,7 @@ mod setup;
 mod terminal;
 mod updates;
 mod variables;
+mod webhooks;
 
 use axum::Router;
 use axum::routing::{MethodRouter, delete, get, post};
@@ -68,6 +69,7 @@ pub(crate) use updates::{
 pub(crate) use variables::{
     __path_list_variables, __path_replace_variables, __path_reveal_variable,
 };
+pub(crate) use webhooks::WebhookApi;
 
 pub(crate) fn actor<'a>(principal: &'a Principal, client: &'a ClientMeta) -> Actor<'a> {
     Actor {
@@ -209,16 +211,6 @@ fn system_routes() -> Router<AppState> {
         .route("/system/update/rollback", post(updates::roll_back_update))
 }
 
-fn docker_routes() -> Router<AppState> {
-    Router::new()
-        .route("/docker/info", get(docker::docker_info))
-        .route("/docker/containers", get(docker::list_containers))
-        .route(
-            "/docker/containers/{reference}/actions",
-            post(docker::container_action),
-        )
-}
-
 pub fn api_routes(trust_forwarded: bool) -> Router<AppState> {
     let limiter = credential_limiter(trust_forwarded);
     Router::new()
@@ -243,7 +235,8 @@ pub fn api_routes(trust_forwarded: bool) -> Router<AppState> {
         .merge(domain_routes())
         .merge(variable_routes())
         .merge(system_routes())
-        .merge(docker_routes())
+        .merge(docker::docker_routes())
+        .merge(webhooks::webhook_routes(trust_forwarded))
         .merge(databases::database_routes())
         .merge(scheduled_backups::scheduled_backup_routes())
 }

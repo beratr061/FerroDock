@@ -1,0 +1,76 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT application_id, secret_enc, created_at, last_delivery_at, last_outcome\n             FROM application_webhooks WHERE application_id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "application_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "application_webhooks",
+            "name": "application_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "secret_enc",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "application_webhooks",
+            "name": "secret_enc"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "application_webhooks",
+            "name": "created_at"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "last_delivery_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "application_webhooks",
+            "name": "last_delivery_at"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "last_outcome",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "application_webhooks",
+            "name": "last_outcome"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "87a1df27c85517af4c716e13bfaea0c92dcf7dc1871ccc543a65ddb164a58c9f"
+}

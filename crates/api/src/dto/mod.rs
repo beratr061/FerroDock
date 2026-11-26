@@ -12,6 +12,7 @@ mod runtime_config;
 mod scheduled_backups;
 mod updates;
 mod variables;
+mod webhooks;
 mod workloads;
 
 pub use api_keys::{ApiKeyDto, CreateApiKeyRequest, CreatedApiKeyResponse};
@@ -49,4 +50,5 @@ pub use scheduled_backups::{
 };
 pub use updates::{UpdateCheckDto, UpdateOverviewDto, UpdateRecordDto, UpdateStateDto};
 pub use variables::{ReplaceVariablesRequest, RevealedVariableDto, VariableDto, VariableInputDto};
+pub use webhooks::{CreatedWebhookDto, WebhookDeliveryDto, WebhookDto};
 pub use workloads::WorkloadDto;

@@ -10,7 +10,6 @@ use ferrodock_db::pg::PgStore;
 use ferrodock_domain::applications::{ApplicationService, Runtime};
 use ferrodock_domain::audit::AuditLog;
 use ferrodock_domain::auth::{AuthRepos, AuthService};
-use ferrodock_domain::backups::{BackupService, BackupServiceParts};
 use ferrodock_engine::backup::BackupContext;
 use ferrodock_engine::databases::DatabaseContext;
 use ferrodock_engine::scheduled_backups::BackupJobContext;
@@ -23,6 +22,7 @@ use ferrodock_domain::projects::ProjectService;
 use ferrodock_domain::runtime_config::RuntimeConfigService;
 use ferrodock_domain::terminal::TerminalService;
 use ferrodock_domain::variables::VariableService;
+use ferrodock_domain::webhooks::WebhookService;
 use ferrodock_engine::deploy::DeployContext;
 use ferrodock_infra::deploy_log::DeployLogs;
 use ferrodock_infra::docker::DockerEngine;
@@ -150,32 +150,29 @@ fn domain_service(config: &AppConfig, store: &PgStore, audit: AuditLog) -> Domai
     DomainService::new(repos, proxy_routes(config), settings, audit)
 }
 
-fn deployment_service(
+fn deployment_services(
     store: &PgStore,
     deploy: &DeployContext,
     audit: AuditLog,
-) -> DeploymentService {
+) -> (DeploymentService, WebhookService) {
     let repos = DeploymentRepos {
         deployments: Arc::new(store.clone()),
         applications: Arc::new(store.clone()),
         jobs: Arc::new(store.clone()),
     };
-    DeploymentService::new(repos, deploy.logs.clone(), audit, deploy.hub.clone())
-}
-
-fn backup_service(
-    config: &AppConfig,
-    store: &PgStore,
-    auth: AuthService,
-    audit: AuditLog,
-) -> BackupService {
-    BackupService::new(BackupServiceParts {
-        store: backups::store(config),
-        jobs: Arc::new(store.clone()),
-        auth,
+    let deployments = DeploymentService::new(
+        repos,
+        deploy.logs.clone(),
+        audit.clone(),
+        deploy.hub.clone(),
+    );
+    let webhooks = WebhookService::new(
+        (Arc::new(store.clone()), Arc::new(store.clone())),
+        deployments.clone(),
+        deploy.secrets.clone(),
         audit,
-        master_key_path: config.master_key_path.clone(),
-    })
+    );
+    (deployments, webhooks)
 }
 
 fn app_state(
@@ -188,6 +185,7 @@ fn app_state(
     let audit = AuditLog::new(Arc::new(store.clone()));
     let auth = auth_service(config, store);
     let shared = || Arc::new(store.clone());
+    let (deployments, webhooks) = deployment_services(store, deploy, audit.clone());
     AppState {
         auth: auth.clone(),
         docker: deploy.docker.clone(),
@@ -209,9 +207,10 @@ fn app_state(
         runtime_configs: RuntimeConfigService::new((shared(), shared()), audit.clone()),
         databases: database_wiring::service(config, store, databases, audit.clone()),
         scheduled_backups: database_wiring::backup_service(config, store, databases, audit.clone()),
-        deployments: deployment_service(store, deploy, audit.clone()),
+        deployments,
+        webhooks,
         terminal: TerminalService::new(deploy.docker.clone(), shared(), audit.clone()),
-        backups: backup_service(config, store, auth, audit),
+        backups: backups::service(config, store, auth, audit),
         updates,
         health: Arc::new(DatabaseProbe(store.clone())),
         settings: Arc::new(api_settings(config)),

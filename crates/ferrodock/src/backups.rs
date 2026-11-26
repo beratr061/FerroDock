@@ -7,6 +7,10 @@ use ferrodock_core::crypto::SecretBox;
 use ferrodock_core::{AppError, AppResult};
 use ferrodock_db::JobQueue;
 use ferrodock_db::jobs::{LOCAL_QUEUE, NewJob, PANEL_BACKUP_JOB};
+use ferrodock_db::pg::PgStore;
+use ferrodock_domain::audit::AuditLog;
+use ferrodock_domain::auth::AuthService;
+use ferrodock_domain::backups::{BackupService, BackupServiceParts};
 use ferrodock_engine::backup::{BackupContext, DatabaseLocator};
 use ferrodock_infra::backup_store::BackupStore;
 use ferrodock_infra::docker::DockerEngine;
@@ -149,4 +153,19 @@ pub async fn restore(config: &AppConfig, archive: &Path, master_key: &Path) -> A
         "restored backup from FerroDock {} created {} ({} extra files)",
         summary.version, summary.created_at, summary.files
     ))
+}
+
+pub fn service(
+    config: &AppConfig,
+    pg: &PgStore,
+    auth: AuthService,
+    audit: AuditLog,
+) -> BackupService {
+    BackupService::new(BackupServiceParts {
+        store: store(config),
+        jobs: Arc::new(pg.clone()),
+        auth,
+        audit,
+        master_key_path: config.master_key_path.clone(),
+    })
 }

@@ -1,6 +1,7 @@
-use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::http::StatusCode;
+use axum::routing::{get, post};
+use axum::{Json, Router};
 use ferrodock_domain::audit::AuditRecord;
 use ferrodock_domain::auth::Role;
 use ferrodock_infra::docker::ContainerAction;
@@ -82,4 +83,14 @@ pub async fn container_action(
     };
     state.audit.record(&principal, record).await;
     Ok(StatusCode::NO_CONTENT)
+}
+
+pub(crate) fn docker_routes() -> Router<AppState> {
+    Router::new()
+        .route("/docker/info", get(docker_info))
+        .route("/docker/containers", get(list_containers))
+        .route(
+            "/docker/containers/{reference}/actions",
+            post(container_action),
+        )
 }

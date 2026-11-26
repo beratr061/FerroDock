@@ -20,6 +20,20 @@ pub fn random_bytes<const N: usize>() -> [u8; N] {
     buffer
 }
 
+pub fn hex(bytes: &[u8]) -> String {
+    const DIGITS: &[u8; 16] = b"0123456789abcdef";
+    bytes
+        .iter()
+        .flat_map(|byte| {
+            [
+                DIGITS[usize::from(byte >> 4)],
+                DIGITS[usize::from(byte & 0x0f)],
+            ]
+        })
+        .map(char::from)
+        .collect()
+}
+
 #[derive(Clone)]
 pub struct SecretBox {
     cipher: Aes256Gcm,

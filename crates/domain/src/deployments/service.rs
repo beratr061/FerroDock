@@ -6,12 +6,18 @@ use ferrodock_db::jobs::{CancelResult, JobStatus, LOCAL_QUEUE, NewJob};
 use ferrodock_db::{ApplicationRepo, DeploymentRepo, JobQueue};
 use ferrodock_infra::deploy_log::{DeployLogs, LogChunk};
 use ferrodock_infra::realtime::{Hub, Signal};
-use serde_json::json;
+use serde_json::{Value, json};
 
-use crate::audit::{Actor, AuditLog};
+use crate::audit::{Actor, AuditLog, AuditRecord};
 use crate::auth::{Principal, Role};
 
 const HISTORY_LIMIT: i64 = 30;
+
+struct Trigger {
+    organization_id: Id,
+    created_by: Option<Id>,
+    application_id: Id,
+}
 
 #[derive(Clone)]
 pub struct DeploymentRepos {
@@ -50,12 +56,12 @@ impl DeploymentService {
         }
     }
 
-    fn announce(&self, principal: &Principal, deployment: &DeploymentRecord) {
+    fn announce(&self, organization_id: Id, deployment: &DeploymentRecord) {
         let signal = Signal::DeploymentStatus {
             application_id: deployment.application_id,
             deployment_id: deployment.id,
         };
-        self.hub.publish(Some(principal.organization_id), signal);
+        self.hub.publish(Some(organization_id), signal);
     }
 
     pub async fn list(
@@ -134,7 +140,7 @@ impl DeploymentService {
             .change(actor, "deployment.cancelled", id, metadata)
             .await;
         let deployment = self.get(actor.principal, id).await?;
-        self.announce(actor.principal, &deployment);
+        self.announce(actor.principal.organization_id, &deployment);
         Ok(deployment)
     }
 
@@ -145,28 +151,66 @@ impl DeploymentService {
         kind: DeploymentKind,
         rollback_of: Option<Id>,
     ) -> AppResult<DeploymentRecord> {
+        let trigger = Trigger {
+            organization_id: actor.principal.organization_id,
+            created_by: Some(actor.principal.user_id),
+            application_id,
+        };
+        let record = self.queue(trigger, kind, rollback_of).await?;
+        let metadata = json!({ "application_id": application_id, "kind": kind.as_str() });
+        self.audit
+            .change(actor, "deployment.created", record.id, metadata)
+            .await;
+        Ok(record)
+    }
+
+    pub async fn deploy_from_webhook(
+        &self,
+        organization_id: Id,
+        application_id: Id,
+        metadata: Value,
+    ) -> AppResult<DeploymentRecord> {
+        let trigger = Trigger {
+            organization_id,
+            created_by: None,
+            application_id,
+        };
+        let record = self.queue(trigger, DeploymentKind::Deploy, None).await?;
+        let entry = AuditRecord {
+            action: "deployment.webhook",
+            resource_type: "deployment",
+            resource_id: Some(record.id),
+            metadata,
+            ip_address: None,
+        };
+        self.audit.system(organization_id, entry).await;
+        Ok(record)
+    }
+
+    async fn queue(
+        &self,
+        trigger: Trigger,
+        kind: DeploymentKind,
+        rollback_of: Option<Id>,
+    ) -> AppResult<DeploymentRecord> {
         let id = Id::new();
         let job = NewJob {
-            organization_id: Some(actor.principal.organization_id),
+            organization_id: Some(trigger.organization_id),
             kind: DEPLOYMENT_JOB.to_owned(),
             queue: LOCAL_QUEUE.to_owned(),
-            group_key: Some(application_id.to_string()),
+            group_key: Some(trigger.application_id.to_string()),
             payload: json!({ "deployment_id": id }),
         };
         let deployment = NewDeployment {
             id,
-            application_id,
+            application_id: trigger.application_id,
             kind,
             rollback_of,
-            created_by: Some(actor.principal.user_id),
+            created_by: trigger.created_by,
             job,
         };
         let record = self.repos.deployments.create(deployment).await?;
-        self.announce(actor.principal, &record);
-        let metadata = json!({ "application_id": application_id, "kind": kind.as_str() });
-        self.audit
-            .change(actor, "deployment.created", id, metadata)
-            .await;
+        self.announce(trigger.organization_id, &record);
         Ok(record)
     }
 

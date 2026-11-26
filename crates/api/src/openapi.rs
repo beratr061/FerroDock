@@ -32,7 +32,7 @@ use crate::routes::{
     __path_roll_back_update, __path_rollback_deployment, __path_rotate_deploy_key,
     __path_set_compose_trust, __path_sign_in, __path_sign_out, __path_start_update, __path_status,
     __path_terminal, __path_update_application, __path_update_overview, __path_update_project,
-    DatabaseApi, ScheduledBackupApi,
+    DatabaseApi, ScheduledBackupApi, WebhookApi,
 };
 
 #[derive(OpenApi)]
@@ -194,6 +194,7 @@ fn describe_responses(document: &mut utoipa::openapi::OpenApi) {
 fn document() -> utoipa::openapi::OpenApi {
     let mut document = ApiDoc::openapi()
         .merge_from(DatabaseApi::openapi())
+        .merge_from(WebhookApi::openapi())
         .merge_from(ScheduledBackupApi::openapi());
     describe_responses(&mut document);
     document

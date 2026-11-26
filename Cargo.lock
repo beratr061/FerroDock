@@ -1006,6 +1006,7 @@ dependencies = [
  "ferrodock-db",
  "ferrodock-infra",
  "futures-util",
+ "hmac",
  "jiff",
  "serde",
  "serde_json",

@@ -57,9 +57,18 @@ impl AuditLog {
     }
 
     pub async fn record(&self, principal: &Principal, record: AuditRecord<'_>) {
+        self.write(principal.organization_id, Some(principal.user_id), record)
+            .await;
+    }
+
+    pub async fn system(&self, organization_id: Id, record: AuditRecord<'_>) {
+        self.write(organization_id, None, record).await;
+    }
+
+    async fn write(&self, organization_id: Id, actor_id: Option<Id>, record: AuditRecord<'_>) {
         let entry = NewAuditEntry {
-            organization_id: Some(principal.organization_id),
-            actor_id: Some(principal.user_id),
+            organization_id: Some(organization_id),
+            actor_id,
             action: record.action,
             resource_type: record.resource_type,
             resource_id: record.resource_id,

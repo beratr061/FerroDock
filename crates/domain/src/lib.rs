@@ -11,3 +11,4 @@ pub mod scheduled_backups;
 pub mod terminal;
 pub mod text;
 pub mod variables;
+pub mod webhooks;

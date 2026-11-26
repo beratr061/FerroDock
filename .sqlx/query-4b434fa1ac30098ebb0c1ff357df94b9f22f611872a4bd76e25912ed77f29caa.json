@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO application_webhooks (application_id, secret_enc) VALUES ($1, $2)\n             ON CONFLICT (application_id) DO UPDATE SET secret_enc = EXCLUDED.secret_enc,\n             created_at = now(), last_delivery_at = NULL, last_outcome = NULL",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "4b434fa1ac30098ebb0c1ff357df94b9f22f611872a4bd76e25912ed77f29caa"
+}

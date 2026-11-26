@@ -184,5 +184,28 @@
     "grant": "Güvenilir olarak işaretle",
     "confirm": "Bu stack'e root erişimi ver",
     "revoke": "Güveni kaldır"
+  },
+  "webhook": {
+    "title": "Push ile deploy",
+    "description": "{{branch}} branch'ine her push yaptığınızda otomatik deploy edilir. GitHub, GitLab, Gitea ve Forgejo ile çalışır.",
+    "enable": "Aç",
+    "disable": "Kapat",
+    "rotate": "Yeni secret",
+    "confirmRotate": "Secret'ı değiştir",
+    "url": "Webhook URL'si",
+    "secret": "Secret",
+    "secretOnce": "Secret'ı şimdi kopyalayın. Bir daha gösterilmez; kaybederseniz yenisini oluşturun.",
+    "setup": "Reponuzun webhook ayarlarına URL'yi ve secret'ı yapıştırıp push olaylarını seçin. GitHub: content type application/json. GitLab: secret'ı Secret token alanına yazın. Gitea ve Forgejo: POST ve application/json.",
+    "noDelivery": "Henüz istek gelmedi.",
+    "lastDelivery": "Son istek {{when}}: {{outcome}}",
+    "outcomes": {
+      "deployed": "deploy başlatıldı",
+      "ping": "test isteği alındı",
+      "ignored_branch": "başka bir branch'e push, yok sayıldı",
+      "ignored_tag": "tag push'u, yok sayıldı",
+      "ignored_deleted": "branch silindi, yok sayıldı",
+      "ignored_event": "push olayı değil, yok sayıldı",
+      "rejected": "reddedildi, imza veya secret eşleşmedi"
+    }
   }
 }
