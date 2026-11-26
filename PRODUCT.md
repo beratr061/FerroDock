@@ -34,8 +34,17 @@ FerroDock is a self-hosted PaaS control plane. It deploys applications, Docker C
 
 ## Capabilities and Constraints
 
-- Built so far (phase 0): first-owner setup with setup token, sign-in, sessions, account-plus-IP lockout, scoped API keys, audit log, REST API with OpenAPI contract, settings for API keys and appearance.
-- Planned in order: deployments with blue-green and recreate strategies, rollback and image pruning; Traefik domains with Let's Encrypt; web terminal; managed databases and backups; remote servers, metrics, webhooks, preview deployments, notifications; one-click signed self-update.
+- Built so far (phases 0 to 2, release 0.3):
+  - Foundation: setup token, sign-in, lockout, scoped API keys, four roles, audit log, REST API with OpenAPI contract.
+  - Applications: image or Git sources (Dockerfile or Compose), blue-green and recreate deploys, cancel, rollback and image pruning. Compose stacks are audited before every deploy unless the owner marks them as trusted.
+  - Domains: Traefik routing with Let's Encrypt.
+  - Configuration: encrypted variables, ports and volumes.
+  - Databases: six managed engines.
+  - Backups: scheduled database and volume backups to local disk or S3, plus the panel's own backups.
+  - Terminal: a full-featured web terminal.
+  - Live view and updates: live status, logs and stats; signed, health-gated self-update with rollback; a command palette.
+- Next (phase 3): Git push webhooks, team member invitations, remote servers over SSH, metrics charts and alerts, notifications, preview deployments, scheduled tasks.
+- Later (phase 4): TOTP, an audit log screen, Nixpacks and static builds, terminal recording, SQLite, Dokploy import.
 - Hierarchy and terminology: organization, project, environment, service (application, compose stack, database), deployment, domain, server.
 - Languages: English and Turkish from day one; every user-facing string is translatable and a new language is added by dropping a locale folder.
 - Accessibility and reach: fully responsive down to phone width.
@@ -50,7 +59,7 @@ FerroDock is a self-hosted PaaS control plane. It deploys applications, Docker C
 
 ## Evidence on Hand
 
-- Measured: panel container idles at about 18 MiB RSS with a read-only root filesystem and all capabilities dropped; initial JavaScript is about 110 KB gzipped.
+- Measured: panel container idles at about 18 MiB RSS with a read-only root filesystem and all capabilities dropped; initial JavaScript is about 118 KB gzipped, against a 120 KB budget enforced in CI.
 - No users, testimonials, customer logos, benchmarks against competitors or press exist yet; do not fabricate them.
 
 ## Product Principles

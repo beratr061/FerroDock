@@ -4,18 +4,21 @@ A lightweight, self-hosted PaaS control plane. Rust backend, React SPA, one bina
 
 FerroDock deploys applications, Docker Compose stacks and managed databases on your own servers with Traefik routing, automatic HTTPS and live logs, while staying small enough to leave the server's resources to your workloads.
 
-## Status
+## What it does today (0.3)
 
-Phase 0 (foundation) is in place:
+- **Applications** from a Docker image or a Git repository (HTTPS or SSH), built from a Dockerfile or run as a Docker Compose stack. Deployments use blue-green (zero downtime) or recreate, stream their log live, can be cancelled and rolled back, and old images are pruned (the last five successful ones are kept).
+- **Compose stacks are checked before they run.** Options that reach the host are refused, including privileged mode, the Docker socket, host namespaces, devices and files outside the repository. Compose itself runs in a short-lived helper container that cannot see the panel's keys. Only the organization owner can mark a stack as trusted.
+- **Domains** routed through Traefik, with Let's Encrypt certificates, an HTTP to HTTPS redirect, basic auth and a DNS pre-check.
+- **Encrypted environment variables**, published ports and volumes per application.
+- **Managed databases:** PostgreSQL, MySQL, MariaDB, MongoDB, Redis and Valkey, with generated credentials, CPU and memory limits and an optional public port.
+- **Backups:** scheduled database and volume backups to local disk or S3-compatible storage, streamed and encrypted, with restore. The panel also backs itself up daily.
+- **Web terminal** into containers: WebGL rendering, reconnect after a network drop, a mobile key bar.
+- **Live view:** container status, logs and stats over a single WebSocket.
+- **Security:** first-owner setup token, Argon2id passwords, lockout, scoped API keys, roles (owner, admin, developer, viewer), audit log, rate limiting and strict security headers.
+- **Self-update:** signed release manifest, a backup before every update, a health-gated switch and automatic rollback.
+- **Interface:** English and Turkish, light and dark themes, works down to phone width, and a Ctrl/Cmd+K command palette.
 
-- Rust workspace with strict lints, typed errors with i18n-ready error codes, AES-256-GCM secret storage and a generated master key.
-- PostgreSQL schema and migrations for organizations, users, sessions, API keys and audit logs, with compile-time checked queries (`sqlx` offline data in `.sqlx/`).
-- Authentication: first-owner setup, Argon2id passwords, account lockout, HttpOnly session cookies, scoped API keys, CSRF origin checks, per-IP rate limiting and security headers.
-- REST API under `/api/v1` with an OpenAPI 3.1 contract (`openapi.json`) that generates the frontend types.
-- React SPA shell: setup, sign-in, projects, settings and API keys; English and Turkish; light, dark and system themes; responsive down to 375 px.
-- Container image, Docker Compose stack, one-command installer and CI.
-
-Deployments, Traefik routing for apps, managed databases and the terminal arrive in the following phases; see `docs/adr/0001-architecture.md`.
+Not yet: Git push webhooks, inviting team members, remote servers over SSH, metrics charts, notifications and preview deployments. The roadmap is in `docs/adr/0001-architecture.md`.
 
 ## Install on a server
 
