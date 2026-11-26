@@ -35,7 +35,7 @@ services:
       retries: 20
 
   ferrodock:
-    image: ${FERRODOCK_IMAGE:-ghcr.io/beratr061/ferrodock:0.2.1}
+    image: ${FERRODOCK_IMAGE:-ghcr.io/beratr061/ferrodock:0.3.0}
     restart: unless-stopped
     stop_grace_period: 90s
     depends_on:
