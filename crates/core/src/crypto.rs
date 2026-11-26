@@ -2,7 +2,7 @@ use std::fs;
 use std::io::Write;
 use std::path::Path;
 
-use aes_gcm::aead::{Aead, KeyInit};
+use aes_gcm::aead::{Aead, KeyInit, Payload};
 use aes_gcm::{Aes256Gcm, Nonce};
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD_NO_PAD;
@@ -74,6 +74,37 @@ impl SecretBox {
         sealed.extend_from_slice(&nonce_bytes);
         sealed.extend_from_slice(&ciphertext);
         Ok(sealed)
+    }
+
+    pub(crate) fn seal_chunk(
+        &self,
+        nonce: [u8; NONCE_LEN],
+        aad: &[u8],
+        plaintext: &[u8],
+    ) -> AppResult<Vec<u8>> {
+        let payload = Payload {
+            msg: plaintext,
+            aad,
+        };
+        self.cipher
+            .encrypt(&Nonce::from(nonce), payload)
+            .map_err(|_| AppError::validation("ENCRYPTION_FAILED"))
+    }
+
+    pub(crate) fn open_chunk(
+        &self,
+        nonce: [u8; NONCE_LEN],
+        aad: &[u8],
+        ciphertext: &[u8],
+    ) -> Option<Zeroizing<Vec<u8>>> {
+        let payload = Payload {
+            msg: ciphertext,
+            aad,
+        };
+        self.cipher
+            .decrypt(&Nonce::from(nonce), payload)
+            .ok()
+            .map(Zeroizing::new)
     }
 
     pub fn open_bytes(&self, sealed: &[u8]) -> AppResult<Zeroizing<Vec<u8>>> {

@@ -1,4 +1,5 @@
 mod database;
+mod pipeline;
 mod volume;
 mod work;
 

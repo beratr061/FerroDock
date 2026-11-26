@@ -4,6 +4,7 @@ pub mod crypto;
 pub mod error;
 pub mod events;
 pub mod id;
+pub mod sealed_stream;
 pub mod secret;
 
 pub use error::{AppError, AppResult, ErrorKind};

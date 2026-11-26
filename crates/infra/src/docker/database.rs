@@ -29,15 +29,19 @@ struct ExecOutcome {
     exit_code: i64,
 }
 
-fn failure(code: &'static str, outcome: &ExecOutcome) -> AppError {
-    let stderr = String::from_utf8_lossy(&outcome.stderr);
+pub(super) fn exec_failure(code: &'static str, exit_code: i64, stderr: &[u8]) -> AppError {
+    let stderr = String::from_utf8_lossy(stderr);
     let detail: String = stderr.chars().take(MAX_ERROR_OUTPUT).collect();
     AppError::validation(code)
-        .with_param("exit_code", outcome.exit_code)
+        .with_param("exit_code", exit_code)
         .with_param("detail", detail.trim())
 }
 
-fn exec_config(command: Vec<String>, with_input: bool) -> ExecConfig {
+fn failure(code: &'static str, outcome: &ExecOutcome) -> AppError {
+    exec_failure(code, outcome.exit_code, &outcome.stderr)
+}
+
+pub(super) fn exec_config(command: Vec<String>, with_input: bool) -> ExecConfig {
     ExecConfig {
         attach_stdin: Some(with_input),
         attach_stdout: Some(true),
@@ -135,31 +139,6 @@ impl DockerEngine {
             .map_err(docker_error)?;
         outcome.exit_code = details.exit_code.unwrap_or(-1);
         Ok(outcome)
-    }
-
-    pub async fn dump_with(&self, container: &str, script: &str) -> AppResult<Vec<u8>> {
-        let command = vec!["sh".to_owned(), "-c".to_owned(), script.to_owned()];
-        let outcome = self.run_exec(container, command, None).await?;
-        if outcome.exit_code == 0 && !outcome.stdout.is_empty() {
-            Ok(outcome.stdout)
-        } else {
-            Err(failure("BACKUP_DUMP_FAILED", &outcome))
-        }
-    }
-
-    pub async fn restore_with(
-        &self,
-        container: &str,
-        script: &str,
-        input: Vec<u8>,
-    ) -> AppResult<()> {
-        let command = vec!["sh".to_owned(), "-c".to_owned(), script.to_owned()];
-        let outcome = self.run_exec(container, command, Some(input)).await?;
-        if outcome.exit_code == 0 {
-            Ok(())
-        } else {
-            Err(failure("BACKUP_RESTORE_FAILED", &outcome))
-        }
     }
 
     pub async fn pg_dump(&self, target: &DatabaseTarget) -> AppResult<Vec<u8>> {

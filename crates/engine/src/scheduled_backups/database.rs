@@ -25,32 +25,31 @@ impl Work<'_> {
     pub(super) async fn dump_database(
         &self,
         database: &DatabaseRecord,
-    ) -> AppResult<(Vec<u8>, &'static str)> {
+        key: &str,
+    ) -> AppResult<i64> {
         let engine = driver(&database.engine)?;
         let container = self.database_container(database).await?;
-        let dump = self
+        let pipe = self
             .ctx
             .docker
-            .dump_with(&container, &engine.dump_script())
+            .open_pipe(&container, &engine.dump_script(), false)
             .await?;
-        Ok((dump, engine.dump_extension()))
+        self.upload(pipe, key).await
     }
 
     pub(super) async fn restore_database(
         &self,
         database: &DatabaseRecord,
-        dump: Vec<u8>,
+        key: &str,
     ) -> AppResult<()> {
         let container = self.database_container(database).await?;
         match driver(&database.engine)?.restore_method() {
             RestoreMethod::Stream(script) => {
-                self.ctx
-                    .docker
-                    .restore_with(&container, &script, dump)
-                    .await
+                let pipe = self.ctx.docker.open_pipe(&container, &script, true).await?;
+                self.download_into(key, pipe).await
             }
             RestoreMethod::ReplaceDataFile { staging, prepare } => {
-                self.replace_data_file(database, &container, (staging, &prepare), dump)
+                self.replace_data_file(database, &container, (staging, &prepare), key)
                     .await
             }
         }
@@ -61,12 +60,13 @@ impl Work<'_> {
         database: &DatabaseRecord,
         container: &str,
         (staging, prepare): (&str, &str),
-        dump: Vec<u8>,
+        key: &str,
     ) -> AppResult<()> {
         let docker = &self.ctx.docker;
         let engine = driver(&database.engine)?;
         let upload = format!("cat > {staging}");
-        docker.restore_with(container, &upload, dump).await?;
+        let pipe = docker.open_pipe(container, &upload, true).await?;
+        self.download_into(key, pipe).await?;
         docker.stop_workload(container).await?;
         let task = VolumeTask {
             image: format!("{}:{}", engine.image(), database.version),

@@ -2,6 +2,7 @@ use ferrodock_core::{AppError, AppResult, Id};
 use ferrodock_db::backups::{BackupTarget, DestinationRecord, RunOutcome, RunRecord};
 use ferrodock_db::databases::DatabaseRecord;
 use ferrodock_db::jobs::JobRecord;
+use ferrodock_domain::databases::driver;
 use ferrodock_domain::scheduled_backups::{open_destination, storage_scope};
 use ferrodock_infra::docker::application_volume;
 use ferrodock_infra::object_storage::ObjectStorage;
@@ -11,6 +12,7 @@ use time::macros::format_description;
 use super::BackupJobContext;
 
 const SEALED_SUFFIX: &str = "fdenc";
+pub(super) const VOLUME_EXTENSION: &str = "tar.gz";
 
 pub(super) enum Subject {
     Database(Box<DatabaseRecord>),
@@ -93,15 +95,21 @@ impl<'a> Work<'a> {
         })
     }
 
+    fn extension(&self) -> AppResult<&'static str> {
+        match &self.subject {
+            Subject::Database(database) => Ok(driver(&database.engine)?.dump_extension()),
+            Subject::Volume { .. } => Ok(VOLUME_EXTENSION),
+        }
+    }
+
     pub async fn back_up(&self) -> AppResult<RunOutcome> {
-        let (dump, extension) = match &self.subject {
-            Subject::Database(database) => self.dump_database(database).await?,
-            Subject::Volume { docker_volume, .. } => self.archive_volume(docker_volume).await?,
+        let key = object_key(&self.run, self.extension()?)?;
+        let size = match &self.subject {
+            Subject::Database(database) => self.dump_database(database, &key).await?,
+            Subject::Volume { docker_volume, .. } => {
+                self.archive_volume(docker_volume, &key).await?
+            }
         };
-        let sealed = self.ctx.secrets.seal_bytes(&dump)?;
-        let size = i64::try_from(sealed.len()).unwrap_or(i64::MAX);
-        let key = object_key(&self.run, extension)?;
-        self.storage.put(&key, sealed).await?;
         self.prune().await;
         Ok(RunOutcome {
             status: "succeeded",
@@ -116,15 +124,14 @@ impl<'a> Work<'a> {
         let source_id = self.run.source_run_id.ok_or_else(not_found)?;
         let source = self.ctx.runs.run(source_id).await?.ok_or_else(not_found)?;
         let key = source.object_key.ok_or_else(not_found)?;
-        let sealed = self.storage.get(&key).await?;
-        let dump = self.ctx.secrets.open_bytes(&sealed)?.to_vec();
+        self.verify(&key).await?;
         match &self.subject {
-            Subject::Database(database) => self.restore_database(database, dump).await?,
+            Subject::Database(database) => self.restore_database(database, &key).await?,
             Subject::Volume {
                 application_id,
                 docker_volume,
             } => {
-                self.restore_volume(*application_id, docker_volume, dump)
+                self.restore_volume(*application_id, docker_volume, &key)
                     .await?;
             }
         }

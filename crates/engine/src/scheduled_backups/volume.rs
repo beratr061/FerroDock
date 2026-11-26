@@ -8,7 +8,6 @@ const MOUNT_POINT: &str = "/volume";
 const ARCHIVE_SCRIPT: &str = "exec tar -czf - -C /volume .";
 const EXTRACT_SCRIPT: &str =
     "find /volume -mindepth 1 -maxdepth 1 -exec rm -rf {} + && exec tar -xzf - -C /volume";
-const EXTENSION: &str = "tar.gz";
 
 fn task(docker_volume: &str) -> VolumeTask {
     VolumeTask {
@@ -20,24 +19,24 @@ fn task(docker_volume: &str) -> VolumeTask {
 }
 
 impl Work<'_> {
-    pub(super) async fn archive_volume(
-        &self,
-        docker_volume: &str,
-    ) -> AppResult<(Vec<u8>, &'static str)> {
+    pub(super) async fn archive_volume(&self, docker_volume: &str, key: &str) -> AppResult<i64> {
         let docker = &self.ctx.docker;
         let helper = docker
             .start_volume_helper(&task(docker_volume), true)
             .await?;
-        let archive = docker.dump_with(&helper, ARCHIVE_SCRIPT).await;
+        let uploaded = match docker.open_pipe(&helper, ARCHIVE_SCRIPT, false).await {
+            Ok(pipe) => self.upload(pipe, key).await,
+            Err(error) => Err(error),
+        };
         docker.remove_volume_helper(&helper).await;
-        Ok((archive?, EXTENSION))
+        uploaded
     }
 
     pub(super) async fn restore_volume(
         &self,
         application_id: Id,
         docker_volume: &str,
-        archive: Vec<u8>,
+        key: &str,
     ) -> AppResult<()> {
         let docker = &self.ctx.docker;
         let running: Vec<String> = docker
@@ -50,19 +49,22 @@ impl Work<'_> {
         for id in &running {
             docker.stop_workload(id).await?;
         }
-        let restored = self.extract(docker_volume, archive).await;
+        let restored = self.extract(docker_volume, key).await;
         for id in &running {
             docker.start_workload(id).await?;
         }
         restored
     }
 
-    async fn extract(&self, docker_volume: &str, archive: Vec<u8>) -> AppResult<()> {
+    async fn extract(&self, docker_volume: &str, key: &str) -> AppResult<()> {
         let docker = &self.ctx.docker;
         let helper = docker
             .start_volume_helper(&task(docker_volume), false)
             .await?;
-        let extracted = docker.restore_with(&helper, EXTRACT_SCRIPT, archive).await;
+        let extracted = match docker.open_pipe(&helper, EXTRACT_SCRIPT, true).await {
+            Ok(pipe) => self.download_into(key, pipe).await,
+            Err(error) => Err(error),
+        };
         docker.remove_volume_helper(&helper).await;
         extracted
     }

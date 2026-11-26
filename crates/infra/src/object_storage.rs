@@ -2,14 +2,17 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use ferrodock_core::{AppError, AppResult};
-use futures_util::TryStreamExt;
+use futures_util::stream::BoxStream;
+use futures_util::{StreamExt, TryStreamExt};
 use object_store::aws::AmazonS3Builder;
 use object_store::local::LocalFileSystem;
 use object_store::path::Path;
-use object_store::{ObjectStore, ObjectStoreExt, PutPayload};
+use object_store::{ObjectStore, ObjectStoreExt, PutPayload, WriteMultipart};
 use zeroize::Zeroizing;
 
 const PROBE_KEY: &str = ".ferrodock-probe";
+const PART_SIZE: usize = 8 * 1024 * 1024;
+const PARTS_IN_FLIGHT: usize = 2;
 
 #[derive(Debug, Clone)]
 pub struct S3Target {
@@ -95,6 +98,28 @@ impl ObjectStorage {
             .map_err(storage_error)
     }
 
+    pub async fn writer(&self, key: &str) -> AppResult<ObjectWriter> {
+        let location = self.location(key)?;
+        let upload = self
+            .store
+            .put_multipart(&location)
+            .await
+            .map_err(storage_error)?;
+        Ok(ObjectWriter {
+            upload: WriteMultipart::new_with_chunk_size(upload, PART_SIZE),
+            written: 0,
+        })
+    }
+
+    pub async fn reader(&self, key: &str) -> AppResult<BoxStream<'static, AppResult<Vec<u8>>>> {
+        let location = self.location(key)?;
+        let result = self.store.get(&location).await.map_err(storage_error)?;
+        Ok(result
+            .into_stream()
+            .map(|chunk| chunk.map(|bytes| bytes.to_vec()).map_err(storage_error))
+            .boxed())
+    }
+
     pub async fn get(&self, key: &str) -> AppResult<Vec<u8>> {
         let location = self.location(key)?;
         let result = self.store.get(&location).await.map_err(storage_error)?;
@@ -128,6 +153,35 @@ impl ObjectStorage {
             .into_iter()
             .map(|meta| meta.location.to_string())
             .collect())
+    }
+}
+
+#[derive(Debug)]
+pub struct ObjectWriter {
+    upload: WriteMultipart,
+    written: u64,
+}
+
+impl ObjectWriter {
+    pub async fn write(&mut self, bytes: &[u8]) -> AppResult<()> {
+        self.upload
+            .wait_for_capacity(PARTS_IN_FLIGHT)
+            .await
+            .map_err(storage_error)?;
+        self.upload.write(bytes);
+        self.written += bytes.len() as u64;
+        Ok(())
+    }
+
+    pub async fn finish(self) -> AppResult<u64> {
+        self.upload.finish().await.map_err(storage_error)?;
+        Ok(self.written)
+    }
+
+    pub async fn abort(self) {
+        if let Err(error) = self.upload.abort().await {
+            tracing::warn!(%error, "multipart upload not aborted");
+        }
     }
 }
 
