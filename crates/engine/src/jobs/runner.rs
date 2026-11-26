@@ -6,6 +6,7 @@ use ferrodock_core::AppResult;
 use ferrodock_db::JobQueue;
 use ferrodock_db::jobs::{JobOutcome, JobRecord};
 use tokio_util::sync::CancellationToken;
+use tokio_util::task::TaskTracker;
 
 use super::{JobHandler, JobSignal};
 
@@ -17,6 +18,7 @@ pub struct RunnerConfig {
     pub poll_interval: Duration,
     pub cancel_check_interval: Duration,
     pub cancel_grace: Duration,
+    pub drain_timeout: Duration,
 }
 
 #[derive(Clone)]
@@ -25,6 +27,8 @@ pub struct JobRunner {
     handlers: Arc<HashMap<&'static str, Arc<dyn JobHandler>>>,
     signal: JobSignal,
     config: Arc<RunnerConfig>,
+    tasks: TaskTracker,
+    interrupt: CancellationToken,
 }
 
 impl std::fmt::Debug for JobRunner {
@@ -42,6 +46,8 @@ impl JobRunner {
             handlers: Arc::new(HashMap::new()),
             signal,
             config: Arc::new(config),
+            tasks: TaskTracker::new(),
+            interrupt: CancellationToken::new(),
         }
     }
 
@@ -54,13 +60,27 @@ impl JobRunner {
     pub async fn run(self, shutdown: CancellationToken) -> AppResult<()> {
         self.recover_interrupted().await?;
         while !shutdown.is_cancelled() {
-            self.drain(&shutdown).await;
+            self.drain().await;
             tokio::select! {
                 () = shutdown.cancelled() => {}
                 () = self.signal.wait(self.config.poll_interval) => {}
             }
         }
+        self.finish_running().await;
         Ok(())
+    }
+
+    async fn finish_running(&self) {
+        self.tasks.close();
+        let drained = tokio::time::timeout(self.config.drain_timeout, self.tasks.wait()).await;
+        if drained.is_err() {
+            tracing::warn!(
+                running = self.tasks.len(),
+                "interrupting jobs; they run again after restart"
+            );
+            self.interrupt.cancel();
+            self.tasks.wait().await;
+        }
     }
 
     async fn recover_interrupted(&self) -> AppResult<()> {
@@ -71,7 +91,7 @@ impl JobRunner {
         Ok(())
     }
 
-    async fn drain(&self, shutdown: &CancellationToken) {
+    async fn drain(&self) {
         let config = &self.config;
         loop {
             match self
@@ -79,7 +99,7 @@ impl JobRunner {
                 .claim(&config.queue, &config.worker_id, config.concurrency)
                 .await
             {
-                Ok(Some(job)) => self.spawn(job, shutdown.child_token()),
+                Ok(Some(job)) => self.spawn(job, self.interrupt.child_token()),
                 Ok(None) => break,
                 Err(error) => {
                     tracing::warn!(code = error.code(), "job claim failed");
@@ -91,8 +111,13 @@ impl JobRunner {
 
     fn spawn(&self, job: JobRecord, cancel: CancellationToken) {
         let runner = self.clone();
-        tokio::spawn(async move {
+        self.tasks.spawn(async move {
             let outcome = runner.execute(&job, cancel).await;
+            if runner.interrupt.is_cancelled()
+                && let Err(error) = runner.repo.release(job.id).await
+            {
+                tracing::error!(code = error.code(), job = %job.id, "job release failed");
+            }
             if let Err(error) = runner.repo.complete(job.id, outcome).await {
                 tracing::error!(code = error.code(), job = %job.id, "job completion failed");
             }

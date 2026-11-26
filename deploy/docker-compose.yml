@@ -37,6 +37,7 @@ services:
   ferrodock:
     image: ${FERRODOCK_IMAGE:-ghcr.io/beratr061/ferrodock:0.2.0}
     restart: unless-stopped
+    stop_grace_period: 90s
     depends_on:
       postgres:
         condition: service_healthy

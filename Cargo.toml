@@ -19,6 +19,7 @@ ferrodock-infra = { path = "crates/infra", version = "0.2.0" }
 aes-gcm = "0.11.1"
 argon2 = "0.6.0"
 async-trait = "0.1.92"
+bcrypt = "0.19.3"
 axum = { version = "0.8.9", features = ["macros", "ws"] }
 axum-extra = { version = "0.12.6", features = ["cookie", "typed-header"] }
 base64 = "0.23.1"

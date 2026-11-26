@@ -26,7 +26,9 @@ pub use deployments::{
 pub use docker::{
     ContainerActionDto, ContainerActionRequest, ContainerDto, ContainerListQuery, EngineInfoDto,
 };
-pub use domains::{CreateDomainRequest, DnsCheckDto, DnsVerdictDto, DomainDto, DomainListDto};
+pub use domains::{
+    BasicAuthRequest, CreateDomainRequest, DnsCheckDto, DnsVerdictDto, DomainDto, DomainListDto,
+};
 pub use password::Password;
 pub use projects::{
     CreateEnvironmentRequest, CreateProjectRequest, EnvironmentDto, ProjectDto,

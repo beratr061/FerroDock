@@ -11,7 +11,7 @@ use ferrodock_domain::applications::{
 };
 use ferrodock_domain::audit::{Actor, AuditLog};
 use ferrodock_domain::auth::{AuthRepos, AuthService, Principal, SetupInput};
-use ferrodock_domain::domains::{DomainService, DomainSettings, NewDomainInput};
+use ferrodock_domain::domains::{BasicAuthInput, DomainService, DomainSettings, NewDomainInput};
 use ferrodock_domain::projects::{NewProjectInput, ProjectService};
 use ferrodock_infra::docker::{DockerEngine, application_key};
 use ferrodock_infra::proxy::ProxyRoutes;
@@ -92,6 +92,7 @@ fn domain(host: &str) -> NewDomainInput {
         container_port: 8080,
         https: true,
         service: None,
+        basic_auth: None,
     }
 }
 
@@ -128,6 +129,18 @@ async fn domains_publish_routes_and_stay_unique(pool: PgPool) -> AppResult<()> {
     let file = dir.join(format!("app-{}.yml", application_key(web)));
     let routes = tokio::fs::read_to_string(&file).await.unwrap_or_default();
     assert!(routes.contains("Host(`shop.example.com`)"));
+
+    let mut guarded = domain("admin.example.com");
+    guarded.basic_auth = Some(BasicAuthInput {
+        username: "ops".to_owned(),
+        password: Zeroizing::new("long-enough-secret".to_owned()),
+    });
+    let protected = domains.add(actor, web, guarded).await?;
+    assert_eq!(protected.basic_auth_user.as_deref(), Some("ops"));
+    let routes = tokio::fs::read_to_string(&file).await.unwrap_or_default();
+    assert!(routes.contains("\"ops:$2"));
+    assert!(!routes.contains("long-enough-secret"));
+    domains.remove(actor, web, protected.id).await?;
 
     let elsewhere = domains.add(actor, api, domain("shop.example.com")).await;
     assert_eq!(elsewhere.err().map(|e| e.code()), Some("DOMAIN_TAKEN"));

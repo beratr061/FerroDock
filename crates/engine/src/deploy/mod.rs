@@ -1,4 +1,5 @@
 mod artifact;
+mod cleanup;
 mod context;
 mod release;
 mod traffic;
@@ -70,30 +71,10 @@ impl DeployHandler {
             log,
             cancel,
         };
-        let artifact = run.deliver().await?;
-        let current = artifact.image_ref.clone();
-        ctx.deployments
-            .record_artifact(deployment.id, artifact)
-            .await?;
-        self.prune(application.id, &current).await;
-        Ok(())
-    }
-
-    async fn prune(&self, application_id: Id, current: &str) {
-        let Ok(successful) = self.ctx.deployments.successful(application_id).await else {
-            return;
-        };
-        let references: Vec<String> = successful.into_iter().filter_map(|d| d.image_ref).collect();
-        let kept: Vec<&str> = std::iter::once(current)
-            .chain(references.iter().map(String::as_str))
-            .take(KEPT_IMAGES)
-            .collect();
-        for reference in references
-            .iter()
-            .filter(|r| r.starts_with("fd/") && !kept.contains(&r.as_str()))
-        {
-            self.ctx.docker.remove_image(reference).await;
-        }
+        let delivered = run.deliver().await;
+        let current = self.record(deployment.id, delivered).await;
+        self.clean_up(application.id, current.as_ref().ok()).await;
+        current.map(|_| ())
     }
 }
 

@@ -20,7 +20,7 @@ pub struct ApplicationService {
     repo: Arc<dyn ApplicationRepo>,
     secrets: SecretBox,
     audit: AuditLog,
-    runtime: Runtime,
+    pub(super) runtime: Runtime,
 }
 
 impl std::fmt::Debug for ApplicationService {

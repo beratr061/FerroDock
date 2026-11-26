@@ -9,6 +9,7 @@ mod images;
 mod logs;
 mod naming;
 mod port_probe;
+mod prune;
 mod readiness;
 mod updater;
 mod workloads;

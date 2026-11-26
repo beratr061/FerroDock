@@ -39,6 +39,7 @@ export function DomainRow({ applicationId, domain }: { applicationId: string; do
           </a>
           <p className="font-mono text-[12px] text-subtle">
             {domain.service ? `${t("domains.serviceLabel", { service: domain.service })} · ` : null}
+            {domain.basic_auth_user ? `${t("domains.protectedLabel", { user: domain.basic_auth_user })} · ` : null}
             {t("domains.portLabel", { port: domain.container_port })}
           </p>
         </div>

@@ -12,7 +12,7 @@ use ferrodock_domain::audit::AuditLog;
 use ferrodock_domain::auth::{AuthRepos, AuthService};
 use ferrodock_domain::backups::{BackupService, BackupServiceParts};
 use ferrodock_engine::backup::BackupContext;
-use ferrodock_engine::updater::UpdateLauncher;
+use ferrodock_engine::updater::{ManifestClient, UpdateLauncher};
 
 use crate::backups;
 use ferrodock_domain::deployments::{DeploymentRepos, DeploymentService};
@@ -177,15 +177,16 @@ fn update_launcher(
     store: &PgStore,
     deploy: &DeployContext,
     backup: BackupContext,
-) -> UpdateLauncher {
-    UpdateLauncher {
+) -> AppResult<UpdateLauncher> {
+    let user_agent = concat!("ferrodock/", env!("CARGO_PKG_VERSION"));
+    Ok(UpdateLauncher {
         docker: deploy.docker.clone(),
         jobs: Arc::new(store.clone()),
         backup,
         status_file: config.master_key_path.with_file_name("update-status.json"),
         host_config_dir: config.host_config_dir.clone(),
-        manifest_url: config.update_manifest_url.clone(),
-    }
+        manifest: ManifestClient::new(&config.update_manifest_url, user_agent)?,
+    })
 }
 
 fn app_state(
@@ -229,7 +230,7 @@ pub async fn build(config: &AppConfig) -> AppResult<Wired> {
     let store = connect(config).await?;
     let deploy = deploy_context(config, &store, secrets.clone())?;
     let backup = backups::context(config, deploy.docker.clone(), secrets)?;
-    let updates = update_launcher(config, &store, &deploy, backup.clone());
+    let updates = update_launcher(config, &store, &deploy, backup.clone())?;
     let state = app_state(config, &store, &deploy, updates);
     Ok(Wired {
         state,

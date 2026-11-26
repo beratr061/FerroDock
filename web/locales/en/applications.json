@@ -99,7 +99,13 @@
     },
     "service": "Compose service",
     "serviceHint": "The service name from your compose file.",
-    "serviceLabel": "service {{service}}"
+    "serviceLabel": "service {{service}}",
+    "protect": "Require a password",
+    "authUser": "Username",
+    "authUserInvalid": "Use up to 64 characters without spaces or colons.",
+    "authPassword": "Password",
+    "authPasswordHint": "8 to 72 characters. Only a bcrypt hash is stored.",
+    "protectedLabel": "password for {{user}}"
   },
   "variables": {
     "title": "Environment variables",
@@ -124,5 +130,14 @@
   "terminal": {
     "open": "Terminal",
     "unavailable": "Start a deployment first; the terminal needs a running container."
+  },
+  "logs": {
+    "title": "Logs",
+    "description": "Live output of the running container. The last 300 lines load first and new lines stream in as they are written.",
+    "container": "Container",
+    "empty": "No containers yet. Deploy the application to see its logs.",
+    "waiting": "Waiting for output…",
+    "closed": "The log stream ended. The container stopped or was replaced.",
+    "follow": "Back to live"
   }
 }

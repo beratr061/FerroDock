@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, application_id, host, path_prefix, container_port, https, service, created_at\n             FROM domains WHERE application_id = $1 ORDER BY host, path_prefix",
+  "query": "SELECT id, application_id, host, path_prefix, container_port, https, service,\n                    basic_auth_user, basic_auth_hash, created_at\n             FROM domains WHERE application_id = $1 ORDER BY host, path_prefix",
   "describe": {
     "columns": [
       {
@@ -82,6 +82,28 @@
       },
       {
         "ordinal": 7,
+        "name": "basic_auth_user",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "domains",
+            "name": "basic_auth_user"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "basic_auth_hash",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "domains",
+            "name": "basic_auth_hash"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
         "name": "created_at",
         "type_info": "Timestamptz",
         "origin": {
@@ -105,8 +127,10 @@
       false,
       false,
       true,
+      true,
+      true,
       false
     ]
   },
-  "hash": "6353313a1f983ea84b112638a9eb08b3d0dfb439d512ed228d9466694404bb05"
+  "hash": "e5a75d1b780b98553f3f54d1549167261a7df6e456c16985a60b61c8c2dd9031"
 }

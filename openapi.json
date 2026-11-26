@@ -675,6 +675,66 @@
         }
       }
     },
+    "/api/v1/applications/{id}/logs": {
+      "get": {
+        "tags": [
+          "applications"
+        ],
+        "description": "Streams the output of one of the application's containers over WebSocket; each text frame is a JSON object with source (stdout or stderr) and text",
+        "operationId": "container_logs",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "container",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tail",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "101": {},
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/applications/{id}/variables": {
       "get": {
         "tags": [
@@ -2387,6 +2447,22 @@
           }
         }
       },
+      "BasicAuthRequest": {
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "properties": {
+          "password": {
+            "type": "string",
+            "format": "password"
+          },
+          "username": {
+            "type": "string"
+          }
+        }
+      },
       "BuildKindDto": {
         "type": "string",
         "enum": [
@@ -2524,6 +2600,16 @@
           "container_port"
         ],
         "properties": {
+          "basic_auth": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BasicAuthRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "container_port": {
             "type": "integer",
             "format": "int32",
@@ -2741,6 +2827,12 @@
           "created_at"
         ],
         "properties": {
+          "basic_auth_user": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "container_port": {
             "type": "integer",
             "format": "int32",

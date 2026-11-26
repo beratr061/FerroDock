@@ -13,6 +13,7 @@ use serde_json::json;
 use crate::audit::{Actor, AuditLog};
 use crate::auth::{Principal, Role};
 
+use super::basic_auth::{BasicAuthInput, hash_credential};
 use super::routes::{is_compose, publish_routes};
 
 #[derive(Debug, Clone)]
@@ -22,6 +23,7 @@ pub struct NewDomainInput {
     pub container_port: u16,
     pub https: bool,
     pub service: Option<String>,
+    pub basic_auth: Option<BasicAuthInput>,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -119,6 +121,7 @@ impl DomainService {
         if input.container_port == 0 {
             return Err(AppError::validation("DOMAIN_PORT_INVALID"));
         }
+        let credential = hash_credential(input.basic_auth).await?;
         let domain = NewDomain {
             id: Id::new(),
             application_id,
@@ -127,6 +130,8 @@ impl DomainService {
             container_port: input.container_port,
             https: input.https,
             service: compose_service(&application, input.service.as_deref())?,
+            basic_auth_user: credential.as_ref().map(|c| c.username.clone()),
+            basic_auth_hash: credential.map(|c| c.hash),
         };
         let record = self.domains.create(domain).await.map_err(taken)?;
         self.sync(&application).await?;

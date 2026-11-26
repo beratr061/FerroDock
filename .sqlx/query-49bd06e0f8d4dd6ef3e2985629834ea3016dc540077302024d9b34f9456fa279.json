@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE jobs SET status = 'queued', locked_by = NULL, started_at = NULL\n             WHERE id = $1 AND status = 'running' AND NOT cancel_requested",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "49bd06e0f8d4dd6ef3e2985629834ea3016dc540077302024d9b34f9456fa279"
+}

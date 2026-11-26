@@ -18,7 +18,7 @@ pub struct UpdateLauncher {
     pub backup: BackupContext,
     pub status_file: PathBuf,
     pub host_config_dir: String,
-    pub manifest_url: String,
+    pub manifest: ManifestClient,
 }
 
 impl std::fmt::Debug for UpdateLauncher {
@@ -35,9 +35,7 @@ impl UpdateLauncher {
     }
 
     pub async fn check(&self) -> AppResult<UpdateStatus> {
-        let user_agent = concat!("ferrodock/", env!("CARGO_PKG_VERSION"));
-        let client = ManifestClient::new(&self.manifest_url, user_agent)?;
-        check_for_update(&client, &release_key()?, &running_version()).await
+        check_for_update(&self.manifest, &release_key()?, &running_version()).await
     }
 
     async fn current_image(&self) -> AppResult<String> {

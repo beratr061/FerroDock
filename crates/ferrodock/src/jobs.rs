@@ -6,9 +6,11 @@ use ferrodock_db::pg::{JobSignals, PgStore};
 use ferrodock_engine::backup::{BackupContext, BackupHandler};
 use ferrodock_engine::deploy::{DeployContext, DeployHandler};
 use ferrodock_engine::jobs::{JobRunner, JobSignal, RunnerConfig};
+use tokio::task::JoinHandle;
 use tokio_util::sync::CancellationToken;
 
 const RECONNECT_DELAY: Duration = Duration::from_secs(5);
+const DRAIN_TIMEOUT: Duration = Duration::from_secs(60);
 
 pub fn start(
     store: &PgStore,
@@ -16,7 +18,7 @@ pub fn start(
     backup: BackupContext,
     concurrency: u32,
     shutdown: &CancellationToken,
-) {
+) -> JoinHandle<()> {
     let signal = JobSignal::default();
     let config = RunnerConfig {
         queue: LOCAL_QUEUE.to_owned(),
@@ -25,17 +27,18 @@ pub fn start(
         poll_interval: Duration::from_secs(5),
         cancel_check_interval: Duration::from_secs(2),
         cancel_grace: Duration::from_secs(15),
+        drain_timeout: DRAIN_TIMEOUT,
     };
     let runner = JobRunner::new(Arc::new(store.clone()), config, signal.clone())
         .register(Arc::new(DeployHandler::new(deploy)))
         .register(Arc::new(BackupHandler::new(backup)));
+    tokio::spawn(forward_signals(store.clone(), signal, shutdown.clone()));
     let runner_shutdown = shutdown.clone();
     tokio::spawn(async move {
         if let Err(error) = runner.run(runner_shutdown).await {
             tracing::error!(code = error.code(), "job runner stopped");
         }
-    });
-    tokio::spawn(forward_signals(store.clone(), signal, shutdown.clone()));
+    })
 }
 
 async fn forward_signals(store: PgStore, signal: JobSignal, shutdown: CancellationToken) {

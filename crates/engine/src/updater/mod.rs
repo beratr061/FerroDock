@@ -48,14 +48,7 @@ pub async fn check_for_update(
     key: &VerifyingKey,
     current: &Version,
 ) -> AppResult<UpdateStatus> {
-    let body = match client.fetch(None).await? {
-        Fetched::Body { body, .. } => body,
-        Fetched::NotModified => {
-            return Ok(UpdateStatus::UpToDate {
-                current: current.clone(),
-            });
-        }
-    };
+    let body = client.latest().await?;
     let manifest = parse_envelope(&body)?.verify(key)?;
     Ok(evaluate(current, &manifest))
 }

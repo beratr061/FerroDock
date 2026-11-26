@@ -99,7 +99,13 @@
     },
     "service": "Compose servisi",
     "serviceHint": "Compose dosyanızdaki servis adı.",
-    "serviceLabel": "servis {{service}}"
+    "serviceLabel": "servis {{service}}",
+    "protect": "Parola iste",
+    "authUser": "Kullanıcı adı",
+    "authUserInvalid": "Boşluk ve iki nokta içermeyen, en fazla 64 karakter kullanın.",
+    "authPassword": "Parola",
+    "authPasswordHint": "8 ile 72 karakter arası. Yalnızca bcrypt özeti saklanır.",
+    "protectedLabel": "{{user}} için parola"
   },
   "variables": {
     "title": "Ortam değişkenleri",
@@ -124,5 +130,14 @@
   "terminal": {
     "open": "Terminal",
     "unavailable": "Önce dağıtın; terminal için çalışan bir konteyner gerekir."
+  },
+  "logs": {
+    "title": "Loglar",
+    "description": "Çalışan konteynerin canlı çıktısı. Önce son 300 satır yüklenir, yeni satırlar yazıldıkça akar.",
+    "container": "Konteyner",
+    "empty": "Henüz konteyner yok. Loglarını görmek için uygulamayı deploy edin.",
+    "waiting": "Çıktı bekleniyor…",
+    "closed": "Log akışı sona erdi. Konteyner durdu ya da yenisiyle değişti.",
+    "follow": "Canlıya dön"
   }
 }

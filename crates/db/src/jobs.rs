@@ -89,6 +89,7 @@ pub trait JobQueue: Send + Sync + 'static {
     async fn request_cancel(&self, id: Id) -> AppResult<CancelResult>;
     async fn cancel_requested(&self, id: Id) -> AppResult<bool>;
     async fn fail_interrupted(&self, queue: &str) -> AppResult<u64>;
+    async fn release(&self, id: Id) -> AppResult<()>;
     async fn find(&self, id: Id) -> AppResult<Option<JobRecord>>;
     async fn active_count(&self, kind: &str) -> AppResult<i64>;
 }

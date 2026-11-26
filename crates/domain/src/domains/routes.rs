@@ -25,7 +25,13 @@ pub fn routes_for(application: &ApplicationRecord, domains: Vec<DomainRecord>) -
     domains
         .into_iter()
         .filter_map(|domain| {
+            let basic_auth = domain
+                .basic_auth_user
+                .as_ref()
+                .zip(domain.basic_auth_hash.as_ref())
+                .map(|(user, hash)| format!("{user}:{hash}"));
             Some(Route {
+                basic_auth,
                 key: short_key(domain.id, 8),
                 target: target(application, &domain)?,
                 host: domain.host,

@@ -18,6 +18,14 @@ export function applicationsQuery(projectId: string) {
   });
 }
 
+export function containersQuery(applicationId: string) {
+  return queryOptions({
+    queryKey: ["application-containers", applicationId],
+    queryFn: () =>
+      unwrap(api.GET("/api/v1/applications/{id}/containers", { params: { path: { id: applicationId } } })),
+  });
+}
+
 export function applicationQuery(id: string) {
   return queryOptions({
     queryKey: [...APPLICATIONS_KEY, id],

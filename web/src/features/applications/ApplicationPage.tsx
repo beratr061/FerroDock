@@ -12,6 +12,7 @@ import { ContainerTerminal } from "./ContainerTerminal";
 import { DeploymentsPanel } from "./deployments/DeploymentsPanel";
 import { DeployKeyPanel } from "./DeployKeyPanel";
 import { DomainsPanel } from "./domains/DomainsPanel";
+import { LogsPanel } from "./logs/LogsPanel";
 import { VariablesPanel } from "./variables/VariablesPanel";
 import { isCompose, sourceSummary } from "./sourceForm";
 
@@ -46,6 +47,7 @@ export function ApplicationPage() {
             {data.description ? <p className="max-w-2xl text-muted">{data.description}</p> : null}
           </header>
           <DeploymentsPanel application={data} />
+          <LogsPanel applicationId={data.id} />
           <VariablesPanel applicationId={data.id} />
           <DomainsPanel applicationId={data.id} compose={isCompose(data)} />
           <DeployKeyPanel application={data} />

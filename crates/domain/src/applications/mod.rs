@@ -1,4 +1,5 @@
 mod keys;
+mod logs;
 mod model;
 mod runtime;
 mod service;

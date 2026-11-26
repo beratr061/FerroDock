@@ -23,6 +23,10 @@ impl JobHandler for Handler {
     async fn run(&self, _job: &JobRecord, cancel: CancellationToken) -> AppResult<()> {
         match self.0 {
             "fail" => Err(AppError::validation("BUILD_FAILED")),
+            "slow" => {
+                tokio::time::sleep(Duration::from_millis(200)).await;
+                Ok(())
+            }
             "wait" => {
                 cancel.cancelled().await;
                 Err(AppError::validation("STOPPED"))
@@ -43,6 +47,12 @@ fn job(kind: &str, group: Option<&str>) -> NewJob {
 }
 
 fn start_runner(store: Arc<PgStore>) -> CancellationToken {
+    spawn_runner(store).0
+}
+
+fn spawn_runner(
+    store: Arc<PgStore>,
+) -> (CancellationToken, tokio::task::JoinHandle<AppResult<()>>) {
     let config = RunnerConfig {
         queue: QUEUE.to_owned(),
         worker_id: "test".to_owned(),
@@ -50,14 +60,15 @@ fn start_runner(store: Arc<PgStore>) -> CancellationToken {
         poll_interval: Duration::from_millis(100),
         cancel_check_interval: Duration::from_millis(50),
         cancel_grace: Duration::from_secs(1),
+        drain_timeout: Duration::from_millis(600),
     };
-    let runner = ["ok", "fail", "wait"].into_iter().fold(
+    let runner = ["ok", "fail", "wait", "slow"].into_iter().fold(
         JobRunner::new(store, config, JobSignal::default()),
         |runner, kind| runner.register(Arc::new(Handler(kind))),
     );
     let shutdown = CancellationToken::new();
-    tokio::spawn(runner.run(shutdown.clone()));
-    shutdown
+    let handle = tokio::spawn(runner.run(shutdown.clone()));
+    (shutdown, handle)
 }
 
 async fn settle(store: &PgStore, id: Id, wanted: JobStatus) -> AppResult<JobRecord> {
@@ -128,5 +139,22 @@ async fn interrupted_jobs_are_failed_on_startup(pool: PgPool) -> AppResult<()> {
     let failed = settle(&store, orphan.id, JobStatus::Failed).await?;
     assert_eq!(failed.error_code.as_deref(), Some("JOB_INTERRUPTED"));
     shutdown.cancel();
+    Ok(())
+}
+
+#[sqlx::test(migrator = "ferrodock_db::pg::MIGRATOR")]
+async fn shutdown_finishes_short_jobs_and_requeues_the_rest(pool: PgPool) -> AppResult<()> {
+    let store = Arc::new(PgStore::from_pool(pool));
+    let (shutdown, runner) = spawn_runner(Arc::clone(&store));
+    let stuck = store.enqueue(job("wait", None)).await?;
+    settle(&store, stuck.id, JobStatus::Running).await?;
+    let short = store.enqueue(job("slow", None)).await?;
+    settle(&store, short.id, JobStatus::Running).await?;
+    shutdown.cancel();
+    runner.await.map_err(AppError::internal)??;
+    let short = store.find(short.id).await?.map(|record| record.status);
+    let stuck = store.find(stuck.id).await?.map(|record| record.status);
+    assert_eq!(short, Some(JobStatus::Succeeded));
+    assert_eq!(stuck, Some(JobStatus::Queued));
     Ok(())
 }

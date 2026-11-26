@@ -1,3 +1,4 @@
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use ferrodock_core::{AppError, AppResult, ErrorKind};
@@ -17,6 +18,13 @@ pub enum Fetched {
 pub struct ManifestClient {
     http: reqwest::Client,
     url: String,
+    cached: Arc<Mutex<Option<CachedManifest>>>,
+}
+
+#[derive(Debug, Clone)]
+struct CachedManifest {
+    etag: String,
+    body: String,
 }
 
 fn unavailable(error: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> AppError {
@@ -35,7 +43,37 @@ impl ManifestClient {
         Ok(Self {
             http,
             url: url.into(),
+            cached: Arc::default(),
         })
+    }
+
+    fn cached(&self) -> Option<CachedManifest> {
+        self.cached.lock().ok().and_then(|guard| guard.clone())
+    }
+
+    fn remember(&self, etag: Option<String>, body: &str) {
+        if let (Some(etag), Ok(mut guard)) = (etag, self.cached.lock()) {
+            *guard = Some(CachedManifest {
+                etag,
+                body: body.to_owned(),
+            });
+        }
+    }
+
+    pub async fn latest(&self) -> AppResult<String> {
+        let cached = self.cached();
+        match self
+            .fetch(cached.as_ref().map(|entry| entry.etag.as_str()))
+            .await?
+        {
+            Fetched::Body { body, etag } => {
+                self.remember(etag, &body);
+                Ok(body)
+            }
+            Fetched::NotModified => cached
+                .map(|entry| entry.body)
+                .ok_or_else(|| unavailable("not modified without a cached manifest")),
+        }
     }
 
     pub async fn fetch(&self, etag: Option<&str>) -> AppResult<Fetched> {

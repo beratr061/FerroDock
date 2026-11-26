@@ -14,6 +14,8 @@ struct DomainRow {
     container_port: i32,
     https: bool,
     service: Option<String>,
+    basic_auth_user: Option<String>,
+    basic_auth_hash: Option<String>,
     created_at: OffsetDateTime,
 }
 
@@ -29,6 +31,8 @@ impl TryFrom<DomainRow> for DomainRecord {
             container_port: u16::try_from(row.container_port).map_err(AppError::internal)?,
             https: row.https,
             service: row.service,
+            basic_auth_user: row.basic_auth_user,
+            basic_auth_hash: row.basic_auth_hash,
             created_at: row.created_at,
         })
     }
@@ -39,17 +43,20 @@ impl DomainRepo for PgStore {
     async fn create(&self, domain: NewDomain) -> AppResult<DomainRecord> {
         let row = sqlx::query_as!(
             DomainRow,
-            "INSERT INTO domains (id, application_id, host, path_prefix, container_port, https, service)
-             VALUES ($1, $2, $3, $4, $5, $6, $7)
+            "INSERT INTO domains (id, application_id, host, path_prefix, container_port, https, service,
+                                  basic_auth_user, basic_auth_hash)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
              RETURNING id, application_id, host, path_prefix, container_port, https, service,
-                       created_at",
+                       basic_auth_user, basic_auth_hash, created_at",
             domain.id.as_uuid(),
             domain.application_id.as_uuid(),
             domain.host,
             domain.path_prefix,
             i32::from(domain.container_port),
             domain.https,
-            domain.service
+            domain.service,
+            domain.basic_auth_user,
+            domain.basic_auth_hash
         )
         .fetch_one(&self.pool)
         .await
@@ -60,7 +67,8 @@ impl DomainRepo for PgStore {
     async fn list(&self, application_id: Id) -> AppResult<Vec<DomainRecord>> {
         let rows = sqlx::query_as!(
             DomainRow,
-            "SELECT id, application_id, host, path_prefix, container_port, https, service, created_at
+            "SELECT id, application_id, host, path_prefix, container_port, https, service,
+                    basic_auth_user, basic_auth_hash, created_at
              FROM domains WHERE application_id = $1 ORDER BY host, path_prefix",
             application_id.as_uuid()
         )

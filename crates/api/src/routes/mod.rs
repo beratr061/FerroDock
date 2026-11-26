@@ -7,6 +7,7 @@ mod docker;
 mod domains;
 mod environments;
 mod health;
+mod logs;
 mod projects;
 mod realtime;
 mod setup;
@@ -45,6 +46,7 @@ pub(crate) use domains::{
 };
 pub(crate) use environments::{__path_create_environment, __path_delete_environment};
 pub(crate) use health::__path_check;
+pub(crate) use logs::__path_container_logs;
 pub(crate) use projects::{
     __path_create_project, __path_delete_project, __path_get_project, __path_list_projects,
     __path_update_project,
@@ -119,6 +121,7 @@ fn application_routes() -> Router<AppState> {
             "/applications/{id}/containers",
             get(applications::application_containers),
         )
+        .route("/applications/{id}/logs", get(logs::container_logs))
         .route(
             "/applications/{id}/deploy-key",
             post(applications::rotate_deploy_key),

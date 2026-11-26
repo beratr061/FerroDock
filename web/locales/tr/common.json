@@ -109,7 +109,9 @@
     "DOMAIN_SERVICE_REQUIRED": "Bu domainin yönleneceği compose servis adını girin, örneğin web.",
     "DOMAIN_SERVICE_UNSUPPORTED": "Servis adı yalnızca compose uygulamalarında kullanılır.",
     "PORT_NOT_LISTENING": "Konteyner başladı ama {{port}} portunu dinleyen bir şey yok. Konteyner portunu kontrol edin.",
-    "COMPOSE_CONFIG_INVALID": "Docker Compose dosyayı okuyamadı. Sözdizimini ve değişkenleri kontrol edin."
+    "COMPOSE_CONFIG_INVALID": "Docker Compose dosyayı okuyamadı. Sözdizimini ve değişkenleri kontrol edin.",
+    "DOMAIN_AUTH_USER_INVALID": "Boşluk ve iki nokta içermeyen, en fazla 64 karakterlik bir kullanıcı adı girin.",
+    "DOMAIN_AUTH_PASSWORD_INVALID": "8 ile 72 karakter arası bir parola girin."
   },
   "terminal": {
     "label": "{{name}} terminali",

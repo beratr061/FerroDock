@@ -15,6 +15,7 @@ pub struct Route {
     pub port: u16,
     pub https: bool,
     pub target: String,
+    pub basic_auth: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -31,13 +32,21 @@ fn rule(route: &Route) -> String {
     }
 }
 
+fn auth_middleware(app: &str, route: &Route) -> Option<String> {
+    route
+        .basic_auth
+        .as_ref()
+        .map(|_| format!("fd-{app}-{}-auth", route.key))
+}
+
 fn insert_routers(routers: &mut Map<String, Value>, app: &str, route: &Route, service: &str) {
     let name = format!("fd-{app}-{}", route.key);
     let redirect = format!("fd-{app}-https");
+    let guarded: Vec<String> = auth_middleware(app, route).into_iter().collect();
     if route.https {
         routers.insert(
             name.clone(),
-            json!({ "rule": rule(route), "entryPoints": [SECURE_ENTRYPOINT], "service": service, "tls": { "certResolver": CERT_RESOLVER } }),
+            json!({ "rule": rule(route), "entryPoints": [SECURE_ENTRYPOINT], "middlewares": guarded, "service": service, "tls": { "certResolver": CERT_RESOLVER } }),
         );
         routers.insert(
             format!("{name}-http"),
@@ -46,9 +55,23 @@ fn insert_routers(routers: &mut Map<String, Value>, app: &str, route: &Route, se
     } else {
         routers.insert(
             name,
-            json!({ "rule": rule(route), "entryPoints": [PLAIN_ENTRYPOINT], "service": service }),
+            json!({ "rule": rule(route), "entryPoints": [PLAIN_ENTRYPOINT], "middlewares": guarded, "service": service }),
         );
     }
+}
+
+fn middlewares(app: &str, entries: &[Route]) -> Map<String, Value> {
+    let mut middlewares = Map::new();
+    middlewares.insert(
+        format!("fd-{app}-https"),
+        json!({ "redirectScheme": { "scheme": "https", "permanent": true } }),
+    );
+    for route in entries {
+        if let (Some(name), Some(user)) = (auth_middleware(app, route), &route.basic_auth) {
+            middlewares.insert(name, json!({ "basicAuth": { "users": [user] } }));
+        }
+    }
+    middlewares
 }
 
 pub fn render(app: &str, entries: &[Route]) -> Value {
@@ -63,8 +86,7 @@ pub fn render(app: &str, entries: &[Route]) -> Value {
         );
         insert_routers(&mut routers, app, route, &service);
     }
-    let redirect = json!({ format!("fd-{app}-https"): { "redirectScheme": { "scheme": "https", "permanent": true } } });
-    json!({ "http": { "routers": routers, "services": services, "middlewares": redirect } })
+    json!({ "http": { "routers": routers, "services": services, "middlewares": middlewares(app, entries) } })
 }
 
 impl ProxyRoutes {
@@ -110,6 +132,7 @@ mod tests {
             port: 8080,
             https,
             target: "web-abc-d1".to_owned(),
+            basic_auth: None,
         }
     }
 
@@ -136,5 +159,23 @@ mod tests {
         let router = &config["http"]["routers"]["fd-abc-d1"];
         assert_eq!(router["entryPoints"][0], "web");
         assert!(router.get("tls").is_none());
+    }
+
+    #[test]
+    fn guards_both_entrypoints_with_basic_auth() {
+        let guarded = Route {
+            basic_auth: Some("ops:$2b$10$hash".to_owned()),
+            ..route(false, "/")
+        };
+        let config = render("abc", &[guarded]);
+        let router = &config["http"]["routers"]["fd-abc-d1"];
+        assert_eq!(router["middlewares"][0], "fd-abc-d1-auth");
+        let users = &config["http"]["middlewares"]["fd-abc-d1-auth"]["basicAuth"]["users"];
+        assert_eq!(users[0], "ops:$2b$10$hash");
+        let open = render("abc", &[route(true, "/")]);
+        assert_eq!(
+            open["http"]["routers"]["fd-abc-d1"]["middlewares"],
+            json!([])
+        );
     }
 }

@@ -1,7 +1,7 @@
 use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
-use ferrodock_domain::domains::NewDomainInput;
+use ferrodock_domain::domains::{BasicAuthInput, NewDomainInput};
 use uuid::Uuid;
 
 use super::actor;
@@ -57,6 +57,10 @@ pub async fn create_domain(
         container_port: request.container_port,
         https: request.https.unwrap_or(true),
         service: request.service,
+        basic_auth: request.basic_auth.map(|auth| BasicAuthInput {
+            username: auth.username,
+            password: auth.password.into_inner(),
+        }),
     };
     let domain = state
         .domains

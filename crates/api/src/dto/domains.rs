@@ -4,6 +4,8 @@ use time::OffsetDateTime;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
+use super::Password;
+
 #[derive(Debug, Serialize, ToSchema)]
 pub struct DomainDto {
     pub id: Uuid,
@@ -12,6 +14,7 @@ pub struct DomainDto {
     pub container_port: u16,
     pub https: bool,
     pub service: Option<String>,
+    pub basic_auth_user: Option<String>,
     #[serde(with = "time::serde::rfc3339")]
     #[schema(value_type = String, format = DateTime)]
     pub created_at: OffsetDateTime,
@@ -30,6 +33,14 @@ pub struct CreateDomainRequest {
     pub container_port: u16,
     pub https: Option<bool>,
     pub service: Option<String>,
+    pub basic_auth: Option<BasicAuthRequest>,
+}
+
+#[derive(Debug, Deserialize, ToSchema)]
+pub struct BasicAuthRequest {
+    pub username: String,
+    #[schema(value_type = String, format = Password)]
+    pub password: Password,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, ToSchema)]
@@ -57,6 +68,7 @@ impl From<Domain> for DomainDto {
             container_port: domain.container_port,
             https: domain.https,
             service: domain.service,
+            basic_auth_user: domain.basic_auth_user,
             created_at: domain.created_at,
         }
     }

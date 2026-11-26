@@ -1,3 +1,4 @@
+use std::future::IntoFuture;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::Duration;
@@ -6,12 +7,12 @@ use ferrodock_core::config::AppConfig;
 use ferrodock_core::{AppError, AppResult};
 use ferrodock_domain::auth::AuthService;
 use tokio::net::TcpListener;
-
 use tokio_util::sync::CancellationToken;
 
 use crate::{backups, container_events, jobs, wiring};
 
 const SESSION_PURGE_INTERVAL: Duration = Duration::from_secs(3600);
+const HTTP_DRAIN_TIMEOUT: Duration = Duration::from_secs(10);
 
 pub fn print_openapi() -> AppResult<()> {
     let spec = ferrodock_api::openapi_json().map_err(AppError::internal)?;
@@ -23,7 +24,7 @@ pub async fn run(config: AppConfig) -> AppResult<()> {
     let wired = wiring::build(&config).await?;
     spawn_session_purger(wired.state.auth.clone());
     let background = CancellationToken::new();
-    jobs::start(
+    let runner = jobs::start(
         &wired.store,
         wired.deploy.clone(),
         wired.backup.clone(),
@@ -41,19 +42,45 @@ pub async fn run(config: AppConfig) -> AppResult<()> {
         .map_err(AppError::internal)?;
     let served = serve_http(listener, wired.state).await;
     background.cancel();
+    let _ = runner.await;
     wired.store.close().await;
     served?;
     Ok(())
 }
 
 async fn serve_http(listener: TcpListener, state: ferrodock_api::AppState) -> AppResult<()> {
+    log_address(&listener)?;
+    let app = ferrodock_api::router(state).into_make_service_with_connect_info::<SocketAddr>();
+    let stopping = stop_on_signal();
+    let http = axum::serve(listener, app)
+        .with_graceful_shutdown(stopping.clone().cancelled_owned())
+        .into_future();
+    tokio::select! {
+        outcome = http => outcome.map_err(AppError::internal),
+        () = deadline_after(&stopping) => Ok(()),
+    }
+}
+
+fn log_address(listener: &TcpListener) -> AppResult<()> {
     let address = listener.local_addr().map_err(AppError::internal)?;
     tracing::info!(%address, "ferrodock is listening");
-    let app = ferrodock_api::router(state).into_make_service_with_connect_info::<SocketAddr>();
-    axum::serve(listener, app)
-        .with_graceful_shutdown(shutdown_signal())
-        .await
-        .map_err(AppError::internal)
+    Ok(())
+}
+
+fn stop_on_signal() -> CancellationToken {
+    let stopping = CancellationToken::new();
+    let signalled = stopping.clone();
+    tokio::spawn(async move {
+        shutdown_signal().await;
+        signalled.cancel();
+    });
+    stopping
+}
+
+async fn deadline_after(stopping: &CancellationToken) {
+    stopping.cancelled().await;
+    tokio::time::sleep(HTTP_DRAIN_TIMEOUT).await;
+    tracing::warn!("closing connections that stayed open after shutdown");
 }
 
 fn spawn_session_purger(auth: AuthService) {

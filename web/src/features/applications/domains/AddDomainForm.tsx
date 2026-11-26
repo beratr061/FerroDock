@@ -5,14 +5,8 @@ import { errorMessage } from "@/shared/lib/errors";
 import { Button, InlineAlert, TextField } from "@/shared/ui";
 
 import { useAddDomain } from "./api";
-
-interface FormValues {
-  host: string;
-  port: string;
-  path: string;
-  https: boolean;
-  service: string;
-}
+import { BasicAuthFields } from "./BasicAuthFields";
+import { EMPTY_DOMAIN_FORM, type DomainFormValues } from "./formValues";
 
 interface AddDomainFormProps {
   applicationId: string;
@@ -23,9 +17,7 @@ interface AddDomainFormProps {
 export function AddDomainForm({ applicationId, compose, onDone }: AddDomainFormProps) {
   const { t } = useTranslation("applications");
   const add = useAddDomain(applicationId);
-  const { register, handleSubmit, formState } = useForm<FormValues>({
-    defaultValues: { host: "", port: "80", path: "", https: true, service: "" },
-  });
+  const { register, handleSubmit, formState, control } = useForm<DomainFormValues>({ defaultValues: EMPTY_DOMAIN_FORM });
   const required = t("validation.required", { ns: "auth" });
 
   const onSubmit = handleSubmit((values) => {
@@ -35,6 +27,7 @@ export function AddDomainForm({ applicationId, compose, onDone }: AddDomainFormP
       path_prefix: values.path.trim() === "" ? null : values.path,
       https: values.https,
       service: compose ? values.service.trim() : null,
+      basic_auth: values.protect ? { username: values.authUser.trim(), password: values.authPassword } : null,
     };
     add.mutate(body, { onSuccess: onDone });
   });
@@ -70,11 +63,18 @@ export function AddDomainForm({ applicationId, compose, onDone }: AddDomainFormP
           {...register("service", { required: true })}
         />
       ) : null}
+      <BasicAuthFields control={control} register={register} errors={formState.errors} />
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <label className="inline-flex items-center gap-2 text-text">
-          <input type="checkbox" className="size-4 accent-current" {...register("https")} />
-          {t("domains.https")}
-        </label>
+        <div className="flex flex-wrap gap-x-5 gap-y-2">
+          <label className="inline-flex items-center gap-2 text-text">
+            <input type="checkbox" className="size-4 accent-current" {...register("https")} />
+            {t("domains.https")}
+          </label>
+          <label className="inline-flex items-center gap-2 text-text">
+            <input type="checkbox" className="size-4 accent-current" {...register("protect")} />
+            {t("domains.protect")}
+          </label>
+        </div>
         <div className="flex gap-2">
           <Button variant="ghost" onClick={onDone}>
             {t("actions.cancel", { ns: "common" })}

@@ -3,17 +3,10 @@ import { TerminalWindowIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 
 import { useTranslation } from "@/shared/i18n";
-import { api, unwrap } from "@/shared/api/client";
 import { TerminalDrawer } from "@/shared/terminal";
 import { Button } from "@/shared/ui";
 
-function containersQuery(applicationId: string) {
-  return {
-    queryKey: ["application-containers", applicationId],
-    queryFn: () =>
-      unwrap(api.GET("/api/v1/applications/{id}/containers", { params: { path: { id: applicationId } } })),
-  };
-}
+import { containersQuery } from "./api";
 
 export function ContainerTerminal({ applicationId }: { applicationId: string }) {
   const { t } = useTranslation("applications");

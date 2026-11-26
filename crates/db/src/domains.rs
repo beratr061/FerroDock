@@ -11,6 +11,8 @@ pub struct DomainRecord {
     pub container_port: u16,
     pub https: bool,
     pub service: Option<String>,
+    pub basic_auth_user: Option<String>,
+    pub basic_auth_hash: Option<String>,
     pub created_at: OffsetDateTime,
 }
 
@@ -23,6 +25,8 @@ pub struct NewDomain {
     pub container_port: u16,
     pub https: bool,
     pub service: Option<String>,
+    pub basic_auth_user: Option<String>,
+    pub basic_auth_hash: Option<String>,
 }
 
 #[async_trait]

@@ -10,7 +10,7 @@ async-trait = { workspace = true }
 ferrodock-db = { workspace = true }
 ferrodock-domain = { workspace = true }
 ferrodock-infra = { workspace = true }
-tokio-util = "0.7.20"
+tokio-util = { version = "0.7.20", features = ["rt"] }
 tracing = { workspace = true }
 base64 = { workspace = true }
 ed25519-dalek = "3.0.0"
