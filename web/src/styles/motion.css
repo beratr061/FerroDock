@@ -19,7 +19,12 @@
 }
 
 .terminal-drawer {
+  height: min(60dvh, 560px);
   animation: drawer-rise var(--dur-transition) var(--ease-out) both;
+}
+
+.terminal-drawer-maximized {
+  height: 100dvh;
 }
 
 .terminal-host .xterm {

@@ -5,10 +5,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "@/shared/i18n";
 import { ApiError } from "@/shared/api/client";
 import { errorMessage } from "@/shared/lib/errors";
-import { TerminalDrawer } from "@/shared/terminal";
+import { openTerminal } from "@/shared/terminal";
 import { EmptyState, InlineAlert } from "@/shared/ui";
 
-import { containersQuery, engineInfoQuery, type Container } from "./api";
+import { containersQuery, engineInfoQuery } from "./api";
 import { ContainerRow } from "./ContainerRow";
 
 function ListSkeleton() {
@@ -24,7 +24,6 @@ function ListSkeleton() {
 export function ServersPage() {
   const { t } = useTranslation("servers");
   const [includeStopped, setIncludeStopped] = useState(false);
-  const [shell, setShell] = useState<Container | null>(null);
   const engine = useQuery(engineInfoQuery);
   const containers = useQuery(containersQuery(includeStopped));
   const forbidden = containers.error instanceof ApiError && containers.error.status === 403;
@@ -70,12 +69,11 @@ export function ServersPage() {
         {containers.data && containers.data.length > 0 ? (
           <ul className="rounded-panel border border-border bg-surface">
             {containers.data.map((container) => (
-              <ContainerRow key={container.id} container={container} onTerminal={() => setShell(container)} />
+              <ContainerRow key={container.id} container={container} onTerminal={() => openTerminal(container.id, container.name)} />
             ))}
           </ul>
         ) : null}
       </section>
-      {shell ? <TerminalDrawer container={shell.id} title={shell.name} onClose={() => setShell(null)} /> : null}
     </div>
   );
 }

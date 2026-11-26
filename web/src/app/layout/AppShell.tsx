@@ -1,5 +1,6 @@
 import { Outlet } from "@tanstack/react-router";
 
+import { TerminalHost } from "@/shared/terminal";
 import { Logo } from "@/shared/ui";
 
 import { BottomNav } from "./BottomNav";
@@ -22,6 +23,7 @@ export function AppShell() {
         </div>
       </main>
       <BottomNav />
+      <TerminalHost />
     </div>
   );
 }

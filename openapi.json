@@ -3695,13 +3695,21 @@
         "tags": [
           "terminal"
         ],
-        "description": "Opens an interactive shell in a running container over WebSocket. Binary frames start with 0x00 for terminal bytes or 0x01 for JSON control messages (resize, exit)",
+        "description": "Opens an interactive shell in a running container over WebSocket, or resumes one of your shells with session. Binary frames start with 0x00 for terminal bytes or 0x01 for JSON control messages (session, resize, exit). A shell keeps running for ten minutes after the connection drops and replays its last 64 KiB on resume",
         "operationId": "terminal",
         "parameters": [
           {
             "name": "container",
             "in": "query",
-            "required": true,
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "session",
+            "in": "query",
+            "required": false,
             "schema": {
               "type": "string"
             }

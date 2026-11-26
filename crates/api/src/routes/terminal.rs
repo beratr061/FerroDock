@@ -3,11 +3,12 @@ use std::time::Duration;
 use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
 use axum::extract::{Query, State};
 use axum::response::Response;
-use ferrodock_domain::terminal::TerminalService;
-use ferrodock_infra::docker::{ShellSession, ShellSize};
+use ferrodock_core::AppError;
+use ferrodock_domain::terminal::{Attachment, TerminalEvent, TerminalService};
+use ferrodock_infra::docker::ShellSize;
 use serde::Deserialize;
 use serde_json::json;
-use tokio::io::AsyncWriteExt;
+use tokio::sync::broadcast::error::RecvError;
 use utoipa::IntoParams;
 
 use super::actor;
@@ -24,7 +25,8 @@ const PING_INTERVAL: Duration = Duration::from_secs(20);
 #[derive(Debug, Deserialize, IntoParams)]
 #[into_params(parameter_in = Query)]
 pub struct TerminalQuery {
-    pub container: String,
+    pub container: Option<String>,
+    pub session: Option<String>,
     pub cols: Option<u16>,
     pub rows: Option<u16>,
 }
@@ -46,7 +48,7 @@ fn size(columns: Option<u16>, rows: Option<u16>) -> ShellSize {
     get,
     path = "/api/v1/terminal",
     tag = "terminal",
-    description = "Opens an interactive shell in a running container over WebSocket. Binary frames start with 0x00 for terminal bytes or 0x01 for JSON control messages (resize, exit)",
+    description = "Opens an interactive shell in a running container over WebSocket, or resumes one of your shells with session. Binary frames start with 0x00 for terminal bytes or 0x01 for JSON control messages (session, resize, exit). A shell keeps running for ten minutes after the connection drops and replays its last 64 KiB on resume",
     params(TerminalQuery),
     responses(
         (status = 101),
@@ -62,15 +64,25 @@ pub async fn terminal(
     client: ClientMeta,
     Query(query): Query<TerminalQuery>,
 ) -> ApiResult<Response> {
-    let size = size(query.cols, query.rows);
-    let session = state
-        .terminal
-        .open(actor(&principal, &client), &query.container, size)
-        .await?;
+    let wanted = size(query.cols, query.rows);
+    let attachment = match (&query.session, &query.container) {
+        (Some(session), _) => {
+            let attachment = state.terminal.resume(&principal, session)?;
+            let _ = state.terminal.resize(&attachment.session, wanted).await;
+            attachment
+        }
+        (None, Some(container)) => {
+            state
+                .terminal
+                .open(actor(&principal, &client), container, wanted)
+                .await?
+        }
+        (None, None) => return Err(AppError::validation("TERMINAL_TARGET_MISSING").into()),
+    };
     let service = state.terminal.clone();
     Ok(upgrade
         .max_message_size(MAX_FRAME)
-        .on_upgrade(move |socket| relay(socket, session, service)))
+        .on_upgrade(move |socket| relay(socket, attachment, service)))
 }
 
 fn framed(kind: u8, payload: &[u8]) -> Message {
@@ -80,15 +92,17 @@ fn framed(kind: u8, payload: &[u8]) -> Message {
     Message::Binary(frame.into())
 }
 
-async fn apply_input(session: &mut ShellSession, service: &TerminalService, frame: &[u8]) -> bool {
+fn control(value: &serde_json::Value) -> Message {
+    framed(CONTROL, value.to_string().as_bytes())
+}
+
+async fn apply_input(attachment: &Attachment, service: &TerminalService, frame: &[u8]) -> bool {
     match frame.split_first() {
-        Some((&DATA, bytes)) => {
-            session.input.write_all(bytes).await.is_ok() && session.input.flush().await.is_ok()
-        }
+        Some((&DATA, bytes)) => service.write(&attachment.session, bytes).await.is_ok(),
         Some((&CONTROL, json)) => {
             if let Ok(Control::Resize { cols, rows }) = serde_json::from_slice(json) {
                 let _ = service
-                    .resize(&session.exec_id, size(Some(cols), Some(rows)))
+                    .resize(&attachment.session, size(Some(cols), Some(rows)))
                     .await;
             }
             true
@@ -97,39 +111,61 @@ async fn apply_input(session: &mut ShellSession, service: &TerminalService, fram
     }
 }
 
-async fn finish(socket: &mut WebSocket, exec_id: &str, service: &TerminalService) {
-    let code = service.exit_code(exec_id).await;
-    let exit = json!({ "type": "exit", "code": code }).to_string();
-    let _ = socket.send(framed(CONTROL, exit.as_bytes())).await;
+async fn finish(socket: &mut WebSocket, code: Option<i64>) {
+    let _ = socket
+        .send(control(&json!({ "type": "exit", "code": code })))
+        .await;
     let _ = socket.send(Message::Close(None)).await;
 }
 
-async fn relay(mut socket: WebSocket, mut session: ShellSession, service: TerminalService) {
+async fn greet(socket: &mut WebSocket, attachment: &Attachment) -> bool {
+    let hello = json!({ "type": "session", "id": attachment.session.id });
+    if socket.send(control(&hello)).await.is_err() {
+        return false;
+    }
+    attachment.replay.is_empty() || socket.send(framed(DATA, &attachment.replay)).await.is_ok()
+}
+
+async fn forward_event(socket: &mut WebSocket, event: Result<TerminalEvent, RecvError>) -> bool {
+    match event {
+        Ok(TerminalEvent::Output(bytes)) => socket.send(framed(DATA, &bytes)).await.is_ok(),
+        Ok(TerminalEvent::Exit(code)) => {
+            finish(socket, code).await;
+            false
+        }
+        Err(RecvError::Lagged(_)) => true,
+        Err(RecvError::Closed) => false,
+    }
+}
+
+async fn forward_input(
+    incoming: Option<Result<Message, axum::Error>>,
+    attachment: &Attachment,
+    service: &TerminalService,
+) -> bool {
+    match incoming {
+        Some(Ok(Message::Binary(frame))) => apply_input(attachment, service, &frame).await,
+        Some(Ok(Message::Close(_)) | Err(_)) | None => false,
+        Some(Ok(_)) => true,
+    }
+}
+
+async fn relay(mut socket: WebSocket, mut attachment: Attachment, service: TerminalService) {
+    if !greet(&mut socket, &attachment).await {
+        return;
+    }
+    if let Some(exit) = attachment.exit {
+        return finish(&mut socket, exit.code).await;
+    }
     let mut ping = tokio::time::interval(PING_INTERVAL);
     loop {
-        tokio::select! {
-            chunk = futures_util::StreamExt::next(&mut session.output) => match chunk {
-                Some(Ok(bytes)) => {
-                    if socket.send(framed(DATA, &bytes)).await.is_err() {
-                        return;
-                    }
-                }
-                _ => return finish(&mut socket, &session.exec_id, &service).await,
-            },
-            incoming = socket.recv() => match incoming {
-                Some(Ok(Message::Binary(frame))) => {
-                    if !apply_input(&mut session, &service, &frame).await {
-                        return;
-                    }
-                }
-                Some(Ok(Message::Close(_)) | Err(_)) | None => return,
-                Some(Ok(_)) => {}
-            },
-            _ = ping.tick() => {
-                if socket.send(Message::Ping(Vec::new().into())).await.is_err() {
-                    return;
-                }
-            }
+        let open = tokio::select! {
+            event = attachment.events.recv() => forward_event(&mut socket, event).await,
+            incoming = socket.recv() => forward_input(incoming, &attachment, &service).await,
+            _ = ping.tick() => socket.send(Message::Ping(Vec::new().into())).await.is_ok(),
+        };
+        if !open {
+            return;
         }
     }
 }

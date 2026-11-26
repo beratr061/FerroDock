@@ -1,19 +1,31 @@
+mod live;
+mod registry;
+mod replay;
+
 use std::sync::Arc;
 
 use ferrodock_core::{AppError, AppResult, Id};
 use ferrodock_db::ApplicationRepo;
-use ferrodock_infra::docker::{DockerEngine, ShellSession, ShellSize, ShellTarget};
+use ferrodock_infra::docker::{DockerEngine, ShellSize, ShellTarget};
 use serde_json::json;
+use tokio::io::AsyncWriteExt;
 use uuid::Uuid;
 
 use crate::audit::{Actor, AuditLog, AuditRecord};
-use crate::auth::Role;
+use crate::auth::{Principal, Role};
+
+pub use live::{Attachment, LiveSession, ShellExit, TerminalEvent};
+pub use registry::MAX_SESSIONS_PER_USER;
+
+use self::live::Owner;
+use self::registry::{SessionRegistry, new_session_id};
 
 #[derive(Clone)]
 pub struct TerminalService {
     docker: DockerEngine,
     applications: Arc<dyn ApplicationRepo>,
     audit: AuditLog,
+    sessions: SessionRegistry,
 }
 
 impl std::fmt::Debug for TerminalService {
@@ -32,6 +44,7 @@ impl TerminalService {
             docker,
             applications,
             audit,
+            sessions: SessionRegistry::default(),
         }
     }
 
@@ -57,10 +70,19 @@ impl TerminalService {
         actor: Actor<'_>,
         reference: &str,
         size: ShellSize,
-    ) -> AppResult<ShellSession> {
+    ) -> AppResult<Attachment> {
         let target = self.docker.shell_target(reference).await?;
         let application_id = self.authorize(actor, &target).await?;
-        let session = self.docker.open_shell(&target, size).await?;
+        self.sessions.reserve(actor.principal.user_id)?;
+        let shell = self.docker.open_shell(&target, size).await?;
+        let owner = Owner {
+            user_id: actor.principal.user_id,
+            organization_id: actor.principal.organization_id,
+        };
+        let session = LiveSession::new(new_session_id(), owner, shell.exec_id, shell.input);
+        let attachment = session.attach();
+        tokio::spawn(session.clone().pump(shell.output, self.docker.clone()));
+        self.sessions.insert(session);
         let record = AuditRecord {
             action: "terminal.opened",
             resource_type: "container",
@@ -69,14 +91,23 @@ impl TerminalService {
             ip_address: actor.ip_address,
         };
         self.audit.record(actor.principal, record).await;
-        Ok(session)
+        Ok(attachment)
     }
 
-    pub async fn resize(&self, exec_id: &str, size: ShellSize) -> AppResult<()> {
-        self.docker.resize_shell(exec_id, size).await
+    pub fn resume(&self, principal: &Principal, session_id: &str) -> AppResult<Attachment> {
+        let session =
+            self.sessions
+                .find(session_id, principal.user_id, principal.organization_id)?;
+        Ok(session.attach())
     }
 
-    pub async fn exit_code(&self, exec_id: &str) -> Option<i64> {
-        self.docker.shell_exit_code(exec_id).await
+    pub async fn write(&self, session: &LiveSession, bytes: &[u8]) -> AppResult<()> {
+        let mut input = session.input.lock().await;
+        input.write_all(bytes).await.map_err(AppError::internal)?;
+        input.flush().await.map_err(AppError::internal)
+    }
+
+    pub async fn resize(&self, session: &LiveSession, size: ShellSize) -> AppResult<()> {
+        self.docker.resize_shell(&session.exec_id, size).await
     }
 }

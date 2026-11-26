@@ -29,7 +29,7 @@ interface HistoryProps {
 function DeploymentHistory({ list, selected, targets, onSelect }: HistoryProps) {
   const liveId = list.find((deployment) => deployment.status === "succeeded")?.id;
   return (
-    <div className="grid gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+    <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
       <ul className="max-h-80 overflow-auto rounded-panel border border-border bg-surface">
         {list.map((deployment) => (
           <DeploymentRow
