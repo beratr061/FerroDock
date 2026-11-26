@@ -19,14 +19,14 @@ export function SegmentedControl<T extends string>({ label, value, segments, onC
   return (
     <fieldset className="flex flex-col gap-1.5">
       <legend className="mb-1.5 font-medium text-text">{label}</legend>
-      <div className="inline-flex w-fit flex-wrap gap-1 rounded-control border border-border bg-surface-raised p-1">
+      <div className="inline-flex w-fit flex-wrap gap-1 rounded-pill border border-border bg-bg p-1">
         {segments.map((segment) => (
           <label
             key={segment.value}
             className={cx(
-              "press cursor-pointer rounded-control px-3 py-1.5 text-[13px] transition-colors duration-150",
+              "press cursor-pointer rounded-pill px-3.5 py-1.5 font-medium transition-colors duration-150",
               "has-focus-visible:outline-2 has-focus-visible:outline-focus",
-              segment.value === value ? "bg-surface text-text" : "text-muted hover:text-text",
+              segment.value === value ? "bg-surface-raised text-text" : "text-subtle hover:text-text",
             )}
           >
             <input

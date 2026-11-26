@@ -20,7 +20,7 @@ export function StatusBadge({ tone, label, live = false }: StatusBadgeProps) {
   return (
     <span
       className={cx(
-        "inline-flex h-6 items-center gap-1.5 rounded-control border px-2 text-[12px] font-medium whitespace-nowrap",
+        "inline-flex h-[22px] items-center gap-1.5 rounded-pill border px-2 text-xs whitespace-nowrap",
         "transition-colors duration-200 ease-out",
         TONES[tone],
       )}

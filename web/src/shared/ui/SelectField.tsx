@@ -32,7 +32,7 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(funct
           id={selectId}
           className={cx(
             "h-10 w-full appearance-none rounded-control border border-border-strong",
-            "bg-surface pr-9 pl-3 text-text hover:border-text focus:border-text",
+            "bg-surface pr-9 pl-3 text-text hover:border-muted focus:border-focus",
           )}
           {...rest}
         >

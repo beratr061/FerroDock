@@ -18,14 +18,14 @@ export function Sidebar() {
           <Logo />
         </span>
       </div>
-      <nav aria-label={t("nav.label")} className="flex flex-1 flex-col gap-1 px-2.5 py-3">
+      <nav aria-label={t("nav.label")} className="flex flex-1 flex-col gap-0.5 px-2.5 py-3">
         {NAV_ITEMS.map(({ to, key, Icon }) => (
           <Link
             key={to}
             to={to}
             title={t(`nav.${key}`)}
-            className="press flex h-10 items-center gap-3 rounded-control px-3 text-muted hover:bg-surface-hover hover:text-text"
-            activeProps={{ className: "bg-surface-raised text-text font-medium" }}
+            className="press flex h-8 items-center gap-2.5 rounded-control px-2.5 text-muted hover:bg-surface-raised hover:text-text"
+            activeProps={{ className: "bg-surface-hover text-text font-medium" }}
           >
             <Icon aria-hidden size={20} />
             <span className="hidden lg:inline">{t(`nav.${key}`)}</span>

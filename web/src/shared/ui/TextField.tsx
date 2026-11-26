@@ -28,9 +28,9 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function T
         aria-invalid={error ? true : undefined}
         aria-describedby={message ? messageId : undefined}
         className={cx(
-          "h-10 rounded-control border bg-surface px-3 text-text placeholder:text-subtle",
+          "h-10 rounded-control border bg-surface px-3 py-2 text-text placeholder:text-subtle",
           "transition-colors duration-200 ease-out",
-          error ? "border-danger" : "border-border-strong hover:border-text focus:border-text",
+          error ? "border-danger" : "border-border-strong hover:border-muted focus:border-focus",
         )}
         {...rest}
       />

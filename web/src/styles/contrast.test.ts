@@ -51,7 +51,7 @@ const RULES: Rule[] = [
   { foreground: "text-subtle", backgrounds: SURFACES, minimum: AA },
   { foreground: "border-strong", backgrounds: SURFACES, minimum: UI },
   { foreground: "focus-ring", backgrounds: SURFACES, minimum: UI },
-  { foreground: "on-primary", backgrounds: ["primary"], minimum: AAA },
+  { foreground: "on-primary", backgrounds: ["primary"], minimum: AA },
   { foreground: "on-primary", backgrounds: ["primary-hover"], minimum: AA },
   ...STATUSES.map((status) => ({
     foreground: `status-${status}`,

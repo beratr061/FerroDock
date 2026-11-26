@@ -39,7 +39,7 @@ export function ApplicationTabs({ applicationId, active }: ApplicationTabsProps)
 
   return (
     <nav ref={strip} aria-label={t("tabs.label")} className="-mx-1 overflow-x-auto overflow-y-hidden border-b border-border">
-      <div role="tablist" className="flex w-max gap-1 px-1">
+      <div role="tablist" className="flex w-max gap-1 px-1 pb-3">
         {APPLICATION_TABS.map((tab) => {
           const TabIcon = ICONS[tab];
           const selected = tab === active;
@@ -53,8 +53,8 @@ export function ApplicationTabs({ applicationId, active }: ApplicationTabsProps)
               search={{ tab }}
               replace
               className={cx(
-                "press -mb-px flex items-center gap-2 border-b-2 px-3 py-2.5 whitespace-nowrap",
-                selected ? "border-text font-medium text-text" : "border-transparent text-muted hover:text-text",
+                "press flex items-center gap-2 rounded-pill px-3.5 py-1.5 font-medium whitespace-nowrap transition-colors duration-150",
+                selected ? "bg-surface-raised text-text" : "text-subtle hover:text-text",
               )}
             >
               <TabIcon size={16} aria-hidden />

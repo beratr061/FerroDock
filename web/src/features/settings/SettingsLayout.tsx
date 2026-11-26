@@ -20,8 +20,8 @@ export function SettingsLayout() {
             <Link
               key={section.to}
               to={section.to}
-              className="press rounded-control px-3 py-2 whitespace-nowrap text-muted hover:bg-surface-hover hover:text-text"
-              activeProps={{ className: "bg-surface-raised text-text font-medium" }}
+              className="press rounded-control px-2.5 py-1.5 whitespace-nowrap text-muted hover:bg-surface-raised hover:text-text"
+              activeProps={{ className: "bg-surface-hover text-text font-medium" }}
             >
               {t(`${section.key}.title`)}
             </Link>

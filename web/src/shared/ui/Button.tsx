@@ -6,8 +6,8 @@ type Variant = "primary" | "secondary" | "ghost" | "danger";
 
 const VARIANTS: Record<Variant, string> = {
   primary: "bg-primary text-on-primary hover:bg-primary-hover",
-  secondary: "bg-surface text-text border border-border-strong hover:bg-surface-hover",
-  ghost: "text-muted hover:bg-surface-hover hover:text-text",
+  secondary: "bg-surface text-text border border-border hover:bg-surface-raised",
+  ghost: "text-text hover:bg-surface-raised",
   danger: "bg-danger-tint text-danger border border-danger-border hover:bg-surface-hover",
 };
 
@@ -33,7 +33,7 @@ export function Button({
       disabled={disabled === true || busy}
       aria-busy={busy}
       className={cx(
-        "press inline-flex h-9 items-center justify-center gap-2 rounded-control px-3.5",
+        "press inline-flex h-9 items-center justify-center gap-2 rounded-control px-3.5 py-2 leading-[1.2]",
         "font-medium whitespace-nowrap select-none disabled:cursor-not-allowed",
         "disabled:opacity-100 disabled:bg-surface-raised disabled:text-subtle disabled:border-border",
         VARIANTS[variant],
