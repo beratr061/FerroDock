@@ -1,5 +1,7 @@
 use axum::Json;
+use axum::http::StatusCode;
 use utoipa::OpenApi;
+use utoipa::openapi::RefOr;
 
 use crate::dto::{
     ApiKeyDto, ApplicationDto, BackupDto, BackupRequestedDto, BasicAuthRequest, BuildKindDto,
@@ -154,10 +156,44 @@ use crate::routes::{
 )]
 struct ApiDoc;
 
+fn reason(status: &str) -> &'static str {
+    status
+        .parse::<u16>()
+        .ok()
+        .and_then(|code| StatusCode::from_u16(code).ok())
+        .and_then(|code| code.canonical_reason())
+        .unwrap_or("Response")
+}
+
+fn describe_responses(document: &mut utoipa::openapi::OpenApi) {
+    for item in document.paths.paths.values_mut() {
+        let operations = [
+            &mut item.get,
+            &mut item.put,
+            &mut item.post,
+            &mut item.delete,
+            &mut item.patch,
+            &mut item.head,
+            &mut item.options,
+        ];
+        for operation in operations.into_iter().flatten() {
+            for (status, response) in &mut operation.responses.responses {
+                if let RefOr::T(response) = response
+                    && response.description.is_empty()
+                {
+                    reason(status).clone_into(&mut response.description);
+                }
+            }
+        }
+    }
+}
+
 fn document() -> utoipa::openapi::OpenApi {
-    ApiDoc::openapi()
+    let mut document = ApiDoc::openapi()
         .merge_from(DatabaseApi::openapi())
-        .merge_from(ScheduledBackupApi::openapi())
+        .merge_from(ScheduledBackupApi::openapi());
+    describe_responses(&mut document);
+    document
 }
 
 pub fn openapi_json() -> Result<String, serde_json::Error> {
@@ -166,4 +202,26 @@ pub fn openapi_json() -> Result<String, serde_json::Error> {
 
 pub async fn serve() -> Json<utoipa::openapi::OpenApi> {
     Json(document())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn every_response_has_a_description() {
+        let document = document();
+        for (path, item) in &document.paths.paths {
+            let operations = [&item.get, &item.put, &item.post, &item.delete, &item.patch];
+            for operation in operations.into_iter().flatten() {
+                for (status, response) in &operation.responses.responses {
+                    if let RefOr::T(response) = response {
+                        assert!(!response.description.is_empty(), "{path} {status}");
+                    }
+                }
+            }
+        }
+        assert_eq!(reason("404"), "Not Found");
+        assert_eq!(reason("101"), "Switching Protocols");
+    }
 }
