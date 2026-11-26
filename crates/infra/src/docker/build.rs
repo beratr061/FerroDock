@@ -67,9 +67,10 @@ fn compose_run<'a>(
     for file in files {
         arguments.extend(["-f".to_owned(), file.to_string_lossy().into_owned()]);
     }
+    let project_directory = compose.file.parent().unwrap_or(compose.directory);
     arguments.extend([
         "--project-directory".to_owned(),
-        compose.directory.to_string_lossy().into_owned(),
+        project_directory.to_string_lossy().into_owned(),
     ]);
     arguments.extend(action.iter().map(|part| (*part).to_owned()));
     ComposeRun {
