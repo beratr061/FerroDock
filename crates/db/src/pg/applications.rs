@@ -65,7 +65,7 @@ impl ApplicationRepo for PgStore {
             "SELECT a.id, a.environment_id, e.project_id, a.name, a.slug, a.description,
              a.source_kind, a.git_url, a.git_branch, a.build_kind, a.build_path, a.build_context,
              a.image, a.deploy_key_public, a.deploy_key_private_enc, a.strategy,
-             a.created_at, a.updated_at
+             a.active_container, a.created_at, a.updated_at
              FROM applications a
              JOIN environments e ON e.id = a.environment_id
              JOIN projects p ON p.id = e.project_id
@@ -86,7 +86,7 @@ impl ApplicationRepo for PgStore {
             "SELECT a.id, a.environment_id, e.project_id, a.name, a.slug, a.description,
              a.source_kind, a.git_url, a.git_branch, a.build_kind, a.build_path, a.build_context,
              a.image, a.deploy_key_public, a.deploy_key_private_enc, a.strategy,
-             a.created_at, a.updated_at
+             a.active_container, a.created_at, a.updated_at
              FROM applications a
              JOIN environments e ON e.id = a.environment_id
              JOIN projects p ON p.id = e.project_id
@@ -129,6 +129,18 @@ impl ApplicationRepo for PgStore {
         self.load(id).await
     }
 
+    async fn set_active_container(&self, id: Id, container: Option<&str>) -> AppResult<()> {
+        sqlx::query!(
+            "UPDATE applications SET active_container = $2 WHERE id = $1",
+            id.as_uuid(),
+            container
+        )
+        .execute(&self.pool)
+        .await
+        .map(|_| ())
+        .map_err(db_error)
+    }
+
     async fn delete(&self, id: Id) -> AppResult<bool> {
         sqlx::query!("DELETE FROM applications WHERE id = $1", id.as_uuid())
             .execute(&self.pool)
@@ -145,7 +157,7 @@ impl PgStore {
             "SELECT a.id, a.environment_id, e.project_id, a.name, a.slug, a.description,
              a.source_kind, a.git_url, a.git_branch, a.build_kind, a.build_path, a.build_context,
              a.image, a.deploy_key_public, a.deploy_key_private_enc, a.strategy,
-             a.created_at, a.updated_at
+             a.active_container, a.created_at, a.updated_at
              FROM applications a JOIN environments e ON e.id = a.environment_id
              WHERE a.id = $1",
             id.as_uuid()

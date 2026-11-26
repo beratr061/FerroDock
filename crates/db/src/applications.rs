@@ -34,6 +34,7 @@ pub struct ApplicationRecord {
     pub source: SourceRecord,
     pub deploy_key: Option<DeployKeyRecord>,
     pub strategy: String,
+    pub active_container: Option<String>,
     pub created_at: OffsetDateTime,
     pub updated_at: OffsetDateTime,
 }
@@ -70,5 +71,6 @@ pub trait ApplicationRepo: Send + Sync + 'static {
     ) -> AppResult<Vec<ApplicationRecord>>;
     async fn find(&self, organization_id: Id, id: Id) -> AppResult<Option<ApplicationRecord>>;
     async fn update(&self, id: Id, fields: ApplicationFields) -> AppResult<ApplicationRecord>;
+    async fn set_active_container(&self, id: Id, container: Option<&str>) -> AppResult<()>;
     async fn delete(&self, id: Id) -> AppResult<bool>;
 }

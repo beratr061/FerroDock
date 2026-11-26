@@ -1,6 +1,7 @@
 mod artifact;
 mod context;
 mod release;
+mod traffic;
 
 use std::sync::Arc;
 
@@ -13,7 +14,7 @@ use ferrodock_infra::realtime::LogSignal;
 use tokio_util::sync::CancellationToken;
 use uuid::Uuid;
 
-use self::artifact::{Job, Prepared};
+use self::artifact::Job;
 pub use self::context::{DeployContext, KEPT_IMAGES, Names};
 use crate::jobs::JobHandler;
 
@@ -69,13 +70,7 @@ impl DeployHandler {
             log,
             cancel,
         };
-        let artifact = match run.prepare().await? {
-            Prepared::Compose(artifact) => artifact,
-            Prepared::Image(artifact) => {
-                run.release(&artifact.image_id).await?;
-                artifact
-            }
-        };
+        let artifact = run.deliver().await?;
         let current = artifact.image_ref.clone();
         ctx.deployments
             .record_artifact(deployment.id, artifact)

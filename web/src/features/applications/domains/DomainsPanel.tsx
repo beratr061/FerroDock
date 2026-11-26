@@ -10,7 +10,7 @@ import { AddDomainForm } from "./AddDomainForm";
 import { DomainRow } from "./DomainRow";
 import { domainsQuery } from "./api";
 
-export function DomainsPanel({ applicationId }: { applicationId: string }) {
+export function DomainsPanel({ applicationId, compose }: { applicationId: string; compose: boolean }) {
   const { t } = useTranslation("applications");
   const domains = useQuery(domainsQuery(applicationId));
   const [adding, setAdding] = useState(false);
@@ -35,7 +35,7 @@ export function DomainsPanel({ applicationId }: { applicationId: string }) {
       {domains.data?.proxy_enabled === false ? <InlineAlert tone="warning">{t("domains.proxyDisabled")}</InlineAlert> : null}
       {domains.isError ? <InlineAlert tone="danger">{errorMessage(domains.error, t)}</InlineAlert> : null}
       <div className="overflow-hidden rounded-panel border border-border bg-surface">
-        {adding ? <AddDomainForm applicationId={applicationId} onDone={() => setAdding(false)} /> : null}
+        {adding ? <AddDomainForm applicationId={applicationId} compose={compose} onDone={() => setAdding(false)} /> : null}
         {domains.data && list.length === 0 && !adding ? <p className="px-4 py-6 text-muted">{t("domains.empty")}</p> : null}
         <ul>
           {list.map((domain) => (

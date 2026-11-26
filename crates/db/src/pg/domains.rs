@@ -13,6 +13,7 @@ struct DomainRow {
     path_prefix: String,
     container_port: i32,
     https: bool,
+    service: Option<String>,
     created_at: OffsetDateTime,
 }
 
@@ -27,6 +28,7 @@ impl TryFrom<DomainRow> for DomainRecord {
             path_prefix: row.path_prefix,
             container_port: u16::try_from(row.container_port).map_err(AppError::internal)?,
             https: row.https,
+            service: row.service,
             created_at: row.created_at,
         })
     }
@@ -37,15 +39,17 @@ impl DomainRepo for PgStore {
     async fn create(&self, domain: NewDomain) -> AppResult<DomainRecord> {
         let row = sqlx::query_as!(
             DomainRow,
-            "INSERT INTO domains (id, application_id, host, path_prefix, container_port, https)
-             VALUES ($1, $2, $3, $4, $5, $6)
-             RETURNING id, application_id, host, path_prefix, container_port, https, created_at",
+            "INSERT INTO domains (id, application_id, host, path_prefix, container_port, https, service)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)
+             RETURNING id, application_id, host, path_prefix, container_port, https, service,
+                       created_at",
             domain.id.as_uuid(),
             domain.application_id.as_uuid(),
             domain.host,
             domain.path_prefix,
             i32::from(domain.container_port),
-            domain.https
+            domain.https,
+            domain.service
         )
         .fetch_one(&self.pool)
         .await
@@ -56,7 +60,7 @@ impl DomainRepo for PgStore {
     async fn list(&self, application_id: Id) -> AppResult<Vec<DomainRecord>> {
         let rows = sqlx::query_as!(
             DomainRow,
-            "SELECT id, application_id, host, path_prefix, container_port, https, created_at
+            "SELECT id, application_id, host, path_prefix, container_port, https, service, created_at
              FROM domains WHERE application_id = $1 ORDER BY host, path_prefix",
             application_id.as_uuid()
         )

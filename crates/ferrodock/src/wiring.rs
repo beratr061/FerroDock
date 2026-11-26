@@ -104,6 +104,8 @@ fn deploy_context(
         applications: Arc::new(store.clone()),
         deployments: Arc::new(store.clone()),
         variables: Arc::new(store.clone()),
+        domains: Arc::new(store.clone()),
+        proxy: proxy_routes(config),
         secrets,
         logs: DeployLogs::new(config.data_dir.join("deployments")),
         data_dir: config.data_dir.clone(),

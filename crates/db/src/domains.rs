@@ -10,6 +10,7 @@ pub struct DomainRecord {
     pub path_prefix: String,
     pub container_port: u16,
     pub https: bool,
+    pub service: Option<String>,
     pub created_at: OffsetDateTime,
 }
 
@@ -21,6 +22,7 @@ pub struct NewDomain {
     pub path_prefix: String,
     pub container_port: u16,
     pub https: bool,
+    pub service: Option<String>,
 }
 
 #[async_trait]

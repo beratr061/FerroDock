@@ -60,3 +60,7 @@ export function sourceSummary(application: Application): string {
   const source = application.source;
   return source.kind === "image" ? source.image : `${source.url} · ${source.branch}`;
 }
+
+export function isCompose(application: Application): boolean {
+  return application.source.kind === "git" && application.source.build_kind === "compose";
+}

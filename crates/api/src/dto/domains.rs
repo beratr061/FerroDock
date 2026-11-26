@@ -11,6 +11,7 @@ pub struct DomainDto {
     pub path_prefix: String,
     pub container_port: u16,
     pub https: bool,
+    pub service: Option<String>,
     #[serde(with = "time::serde::rfc3339")]
     #[schema(value_type = String, format = DateTime)]
     pub created_at: OffsetDateTime,
@@ -28,6 +29,7 @@ pub struct CreateDomainRequest {
     pub path_prefix: Option<String>,
     pub container_port: u16,
     pub https: Option<bool>,
+    pub service: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, ToSchema)]
@@ -54,6 +56,7 @@ impl From<Domain> for DomainDto {
             path_prefix: domain.path_prefix,
             container_port: domain.container_port,
             https: domain.https,
+            service: domain.service,
             created_at: domain.created_at,
         }
     }

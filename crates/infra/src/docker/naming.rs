@@ -13,6 +13,10 @@ pub fn compose_project(application_id: Id) -> String {
     format!("fd-{}", application_key(application_id))
 }
 
+pub fn compose_service_alias(application_id: Id, service: &str) -> String {
+    format!("fd-{}-{service}", application_key(application_id))
+}
+
 pub fn network_alias(application_id: Id) -> String {
     format!("fd-{}", application_key(application_id))
 }

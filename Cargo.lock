@@ -953,6 +953,7 @@ dependencies = [
  "ed25519-dalek",
  "ferrodock-core",
  "ferrodock-db",
+ "ferrodock-domain",
  "ferrodock-infra",
  "reqwest",
  "rustls",

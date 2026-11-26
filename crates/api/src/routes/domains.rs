@@ -56,6 +56,7 @@ pub async fn create_domain(
         path_prefix: request.path_prefix,
         container_port: request.container_port,
         https: request.https.unwrap_or(true),
+        service: request.service,
     };
     let domain = state
         .domains

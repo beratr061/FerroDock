@@ -96,7 +96,10 @@
       "unverified": "Kayıt çözümleniyor ama karşılaştırma için bu sunucunun genel adresi ayarlı değil.",
       "points_elsewhere": "Kayıt başka bir adresi gösteriyor. HTTPS beklemeden önce A veya AAAA kaydını güncelleyin.",
       "unresolved": "Henüz A veya AAAA kaydı yok. Bu sunucuyu gösteren bir kayıt oluşturun."
-    }
+    },
+    "service": "Compose servisi",
+    "serviceHint": "Compose dosyanızdaki servis adı.",
+    "serviceLabel": "servis {{service}}"
   },
   "variables": {
     "title": "Ortam değişkenleri",

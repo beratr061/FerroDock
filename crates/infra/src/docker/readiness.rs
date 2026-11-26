@@ -1,9 +1,12 @@
 use std::time::{Duration, Instant};
 
-use bollard::models::{ContainerState, ContainerStateStatusEnum, HealthStatusEnum};
+use bollard::models::{
+    ContainerInspectResponse, ContainerState, ContainerStateStatusEnum, HealthStatusEnum,
+};
 use ferrodock_core::{AppError, AppResult};
 use tokio_util::sync::CancellationToken;
 
+use super::port_probe::{PortState, probe, probe_target};
 use super::{DockerEngine, docker_error};
 use crate::process::cancelled;
 
@@ -50,28 +53,74 @@ fn assess(state: &ContainerState, elapsed: Duration) -> Readiness {
     }
 }
 
+struct PortGate {
+    preferred: Option<u16>,
+    enabled: bool,
+    closed_port: Option<u16>,
+}
+
+impl PortGate {
+    async fn assess(&mut self, details: &ContainerInspectResponse) -> Readiness {
+        let Some(target) = probe_target(details, self.preferred).filter(|_| self.enabled) else {
+            return Readiness::Ready;
+        };
+        match probe(target).await {
+            PortState::Open => Readiness::Ready,
+            PortState::Closed => {
+                self.closed_port = Some(target.port());
+                Readiness::Waiting
+            }
+            PortState::Unreachable => {
+                tracing::info!(
+                    port = target.port(),
+                    "container port not reachable from the panel; skipping the port check"
+                );
+                self.enabled = false;
+                Readiness::Ready
+            }
+        }
+    }
+
+    fn timeout_error(&self) -> AppError {
+        match self.closed_port {
+            Some(port) => AppError::validation("PORT_NOT_LISTENING").with_param("port", port),
+            None => AppError::validation("READINESS_TIMEOUT"),
+        }
+    }
+}
+
 impl DockerEngine {
     pub async fn wait_ready(
         &self,
         id: &str,
+        port: Option<u16>,
         timeout: Duration,
         cancel: &CancellationToken,
     ) -> AppResult<()> {
         let started = Instant::now();
+        let mut gate = PortGate {
+            preferred: port,
+            enabled: true,
+            closed_port: None,
+        };
         loop {
             let details = self
                 .client
                 .inspect_container(id, None)
                 .await
                 .map_err(docker_error)?;
-            let state = details.state.unwrap_or_default();
-            match assess(&state, started.elapsed()) {
+            let state = details.state.clone().unwrap_or_default();
+            let readiness = match assess(&state, started.elapsed()) {
+                Readiness::Ready if !has_healthcheck(&state) => gate.assess(&details).await,
+                other => other,
+            };
+            match readiness {
                 Readiness::Ready => return Ok(()),
                 Readiness::Failed(code, exit_code) => {
                     return Err(AppError::validation(code).with_param("exit_code", exit_code));
                 }
                 Readiness::Waiting if started.elapsed() >= timeout => {
-                    return Err(AppError::validation("READINESS_TIMEOUT"));
+                    return Err(gate.timeout_error());
                 }
                 Readiness::Waiting => {}
             }

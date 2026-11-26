@@ -59,6 +59,9 @@ load_previous_settings() {
     if [ -z "${FERRODOCK_PANEL_PORT:-}" ] && [ -n "$previous_port" ]; then
         PANEL_PORT="$previous_port"
     fi
+    if [ -z "$ACME_EMAIL" ] && [ -f "$CONFIG_DIR/traefik/traefik.yml" ]; then
+        ACME_EMAIL=$(sed -n "s/^ *email: *//p" "$CONFIG_DIR/traefik/traefik.yml" | head -n 1)
+    fi
 }
 
 required_ports() {
@@ -146,6 +149,10 @@ write_panel_env() {
     password=$(cat "$CONFIG_DIR/secrets/postgres_password")
     secure=false
     [ -z "$PANEL_DOMAIN" ] || secure=true
+    managed='^FERRODOCK_(DATABASE_URL|SECURE_COOKIES|TRUST_FORWARDED_FOR|SETUP_TOKEN|LOG_JSON|PROXY|PUBLIC_IP|PUBLIC_URL)='
+    previous_env=$(cat "$CONFIG_DIR/ferrodock.env" 2>/dev/null || true)
+    public_ip=$(printf '%s\n' "$previous_env" | sed -n 's/^FERRODOCK_PUBLIC_IP=//p' | head -n 1)
+    [ -n "$public_ip" ] || public_ip=$(detect_public_ip)
     umask 077
     {
         echo "FERRODOCK_DATABASE_URL=postgres://ferrodock:${password}@postgres:5432/ferrodock"
@@ -154,13 +161,11 @@ write_panel_env() {
         echo "FERRODOCK_SETUP_TOKEN=$(cat "$CONFIG_DIR/setup-token")"
         echo "FERRODOCK_LOG_JSON=true"
         echo "FERRODOCK_PROXY=${PROXY_MODE}"
-        public_ip=$(detect_public_ip)
-        if [ -n "$public_ip" ]; then
-            echo "FERRODOCK_PUBLIC_IP=${public_ip}"
-        fi
+        [ -z "$public_ip" ] || echo "FERRODOCK_PUBLIC_IP=${public_ip}"
         if [ -n "$PANEL_DOMAIN" ]; then
             echo "FERRODOCK_PUBLIC_URL=https://${PANEL_DOMAIN}"
         fi
+        printf '%s\n' "$previous_env" | grep -Ev "$managed" | grep -v '^$' || true
     } > "$CONFIG_DIR/ferrodock.env"
 }
 

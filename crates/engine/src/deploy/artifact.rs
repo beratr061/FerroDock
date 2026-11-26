@@ -145,7 +145,9 @@ impl Job<'_> {
             variables: self.variables,
             file: &contained_path(&directory, &git.build_path)?,
             directory: &directory,
+            application_id: self.application.id,
         };
+        self.ctx.docker.ensure_network().await?;
         compose_up(compose, self.log, self.cancel).await?;
         Ok(DeploymentArtifact {
             image_ref: format!("compose:{project}"),

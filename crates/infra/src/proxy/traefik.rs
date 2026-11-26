@@ -14,6 +14,7 @@ pub struct Route {
     pub path_prefix: String,
     pub port: u16,
     pub https: bool,
+    pub target: String,
 }
 
 #[derive(Debug, Clone)]
@@ -50,14 +51,15 @@ fn insert_routers(routers: &mut Map<String, Value>, app: &str, route: &Route, se
     }
 }
 
-pub fn render(app: &str, alias: &str, entries: &[Route]) -> Value {
+pub fn render(app: &str, entries: &[Route]) -> Value {
     let mut routers = Map::new();
     let mut services = Map::new();
     for route in entries {
-        let service = format!("fd-{app}-p{}", route.port);
+        let service = format!("fd-{app}-{}", route.key);
+        let url = format!("http://{}:{}", route.target, route.port);
         services.insert(
             service.clone(),
-            json!({ "loadBalancer": { "servers": [{ "url": format!("http://{alias}:{}", route.port) }] } }),
+            json!({ "loadBalancer": { "servers": [{ "url": url }] } }),
         );
         insert_routers(&mut routers, app, route, &service);
     }
@@ -74,7 +76,7 @@ impl ProxyRoutes {
         self.dir.is_some()
     }
 
-    pub async fn publish(&self, app: &str, alias: &str, routes: &[Route]) -> AppResult<()> {
+    pub async fn publish(&self, app: &str, routes: &[Route]) -> AppResult<()> {
         let Some(dir) = &self.dir else { return Ok(()) };
         let target = dir.join(format!("app-{app}.yml"));
         if routes.is_empty() {
@@ -85,8 +87,7 @@ impl ProxyRoutes {
                 _ => Ok(()),
             };
         }
-        let body =
-            serde_json::to_vec_pretty(&render(app, alias, routes)).map_err(AppError::internal)?;
+        let body = serde_json::to_vec_pretty(&render(app, routes)).map_err(AppError::internal)?;
         let staging = dir.join(format!(".app-{app}.yml.tmp"));
         tokio::fs::write(&staging, body)
             .await
@@ -108,12 +109,13 @@ mod tests {
             path_prefix: path.to_owned(),
             port: 8080,
             https,
+            target: "web-abc-d1".to_owned(),
         }
     }
 
     #[test]
     fn renders_https_with_redirect() {
-        let config = render("abc", "fd-abc", &[route(true, "/api")]);
+        let config = render("abc", &[route(true, "/api")]);
         let router = &config["http"]["routers"]["fd-abc-d1"];
         assert_eq!(
             router["rule"],
@@ -124,13 +126,13 @@ mod tests {
             config["http"]["routers"]["fd-abc-d1-http"]["middlewares"][0],
             "fd-abc-https"
         );
-        let url = &config["http"]["services"]["fd-abc-p8080"]["loadBalancer"]["servers"][0]["url"];
-        assert_eq!(url, "http://fd-abc:8080");
+        let url = &config["http"]["services"]["fd-abc-d1"]["loadBalancer"]["servers"][0]["url"];
+        assert_eq!(url, "http://web-abc-d1:8080");
     }
 
     #[test]
     fn renders_plain_http_without_tls() {
-        let config = render("abc", "fd-abc", &[route(false, "/")]);
+        let config = render("abc", &[route(false, "/")]);
         let router = &config["http"]["routers"]["fd-abc-d1"];
         assert_eq!(router["entryPoints"][0], "web");
         assert!(router.get("tls").is_none());

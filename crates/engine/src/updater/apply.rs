@@ -38,7 +38,7 @@ async fn switch(docker: &DockerEngine, layout: &InstallLayout) -> AppResult<()> 
         .await?
         .ok_or_else(|| AppError::validation("UPDATE_PANEL_NOT_FOUND"))?;
     docker
-        .wait_ready(&container, HEALTH_TIMEOUT, &CancellationToken::new())
+        .wait_ready(&container, None, HEALTH_TIMEOUT, &CancellationToken::new())
         .await
 }
 

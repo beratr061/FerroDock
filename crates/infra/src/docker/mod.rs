@@ -1,4 +1,5 @@
 mod build;
+mod compose_override;
 mod containers;
 mod database;
 mod events;
@@ -7,6 +8,7 @@ mod image;
 mod images;
 mod logs;
 mod naming;
+mod port_probe;
 mod readiness;
 mod updater;
 mod workloads;
@@ -23,7 +25,9 @@ pub use exec::{ShellInput, ShellOutput, ShellSession, ShellSize, ShellTarget};
 pub use image::validate_image;
 pub use images::WORKLOAD_NETWORK;
 pub use logs::{LogLine, LogQuery, LogStream};
-pub use naming::{application_key, compose_project, network_alias, short_key};
+pub use naming::{
+    application_key, compose_project, compose_service_alias, network_alias, short_key,
+};
 pub use updater::{UPDATER_NAME, UpdaterSpec};
 pub use workloads::{APPLICATION_LABEL, DEPLOYMENT_LABEL, WorkloadContainer, WorkloadSpec};
 

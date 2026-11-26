@@ -8,6 +8,7 @@ rust-version.workspace = true
 [dependencies]
 async-trait = { workspace = true }
 ferrodock-db = { workspace = true }
+ferrodock-domain = { workspace = true }
 ferrodock-infra = { workspace = true }
 tokio-util = "0.7.20"
 tracing = { workspace = true }

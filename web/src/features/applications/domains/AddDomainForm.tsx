@@ -11,13 +11,20 @@ interface FormValues {
   port: string;
   path: string;
   https: boolean;
+  service: string;
 }
 
-export function AddDomainForm({ applicationId, onDone }: { applicationId: string; onDone: () => void }) {
+interface AddDomainFormProps {
+  applicationId: string;
+  compose: boolean;
+  onDone: () => void;
+}
+
+export function AddDomainForm({ applicationId, compose, onDone }: AddDomainFormProps) {
   const { t } = useTranslation("applications");
   const add = useAddDomain(applicationId);
   const { register, handleSubmit, formState } = useForm<FormValues>({
-    defaultValues: { host: "", port: "80", path: "", https: true },
+    defaultValues: { host: "", port: "80", path: "", https: true, service: "" },
   });
   const required = t("validation.required", { ns: "auth" });
 
@@ -27,6 +34,7 @@ export function AddDomainForm({ applicationId, onDone }: { applicationId: string
       container_port: Number(values.port),
       path_prefix: values.path.trim() === "" ? null : values.path,
       https: values.https,
+      service: compose ? values.service.trim() : null,
     };
     add.mutate(body, { onSuccess: onDone });
   });
@@ -52,6 +60,16 @@ export function AddDomainForm({ applicationId, onDone }: { applicationId: string
         />
         <TextField label={t("domains.path")} placeholder="/" spellCheck={false} {...register("path")} />
       </div>
+      {compose ? (
+        <TextField
+          label={t("domains.service")}
+          placeholder="web"
+          hint={t("domains.serviceHint")}
+          spellCheck={false}
+          error={formState.errors.service ? required : undefined}
+          {...register("service", { required: true })}
+        />
+      ) : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <label className="inline-flex items-center gap-2 text-text">
           <input type="checkbox" className="size-4 accent-current" {...register("https")} />

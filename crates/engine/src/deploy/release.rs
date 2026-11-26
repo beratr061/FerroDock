@@ -18,22 +18,15 @@ impl Job<'_> {
         if recreate {
             self.stop_previous(&previous).await?;
         }
-        let spec = WorkloadSpec {
-            name: self.names.container(),
-            image: image.to_owned(),
-            application_id: self.application.id.to_string(),
-            deployment_id: self.deployment.id.to_string(),
-            alias: self.names.alias(),
-            env: self
-                .variables
-                .iter()
-                .map(|(key, value)| format!("{key}={value}"))
-                .collect(),
-        };
+        let spec = self.workload_spec(image);
         self.log
             .step(&format!("Starting container {}", spec.name))
             .await;
-        match self.start_and_verify(&spec).await {
+        let outcome = match self.start_and_verify(&spec).await {
+            Ok(id) => self.switch_or_discard(&id, &spec.name).await,
+            Err(error) => Err(error),
+        };
+        match outcome {
             Ok(()) => {
                 self.retire(&previous).await;
                 Ok(())
@@ -47,6 +40,29 @@ impl Job<'_> {
         }
     }
 
+    fn workload_spec(&self, image: &str) -> WorkloadSpec {
+        WorkloadSpec {
+            name: self.names.container(),
+            image: image.to_owned(),
+            application_id: self.application.id.to_string(),
+            deployment_id: self.deployment.id.to_string(),
+            alias: self.names.alias(),
+            env: self
+                .variables
+                .iter()
+                .map(|(key, value)| format!("{key}={value}"))
+                .collect(),
+        }
+    }
+
+    async fn switch_or_discard(&self, id: &str, name: &str) -> AppResult<()> {
+        let switched = self.switch_traffic(name).await;
+        if switched.is_err() {
+            let _ = self.ctx.docker.remove_workload(id).await;
+        }
+        switched
+    }
+
     async fn stop_previous(&self, previous: &[WorkloadContainer]) -> AppResult<()> {
         for container in previous.iter().filter(|container| container.running) {
             self.log.step("Stopping previous container").await;
@@ -55,20 +71,23 @@ impl Job<'_> {
         Ok(())
     }
 
-    async fn start_and_verify(&self, spec: &WorkloadSpec) -> AppResult<()> {
+    async fn start_and_verify(&self, spec: &WorkloadSpec) -> AppResult<String> {
         let docker = &self.ctx.docker;
+        let port = self.probe_port().await;
         let id = docker.run_workload(spec).await?;
         self.log
             .step("Waiting for the container to become ready")
             .await;
-        let ready = docker.wait_ready(&id, READINESS_TIMEOUT, self.cancel).await;
+        let ready = docker
+            .wait_ready(&id, port, READINESS_TIMEOUT, self.cancel)
+            .await;
         if ready.is_err() && !self.cancel.is_cancelled() {
             self.show_container_output(&id).await;
         }
         if ready.is_err() {
             let _ = docker.remove_workload(&id).await;
         }
-        ready
+        ready.map(|()| id)
     }
 
     async fn show_container_output(&self, id: &str) {

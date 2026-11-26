@@ -13,7 +13,7 @@ import { DeploymentsPanel } from "./deployments/DeploymentsPanel";
 import { DeployKeyPanel } from "./DeployKeyPanel";
 import { DomainsPanel } from "./domains/DomainsPanel";
 import { VariablesPanel } from "./variables/VariablesPanel";
-import { sourceSummary } from "./sourceForm";
+import { isCompose, sourceSummary } from "./sourceForm";
 
 export function ApplicationPage() {
   const { t } = useTranslation("applications");
@@ -47,7 +47,7 @@ export function ApplicationPage() {
           </header>
           <DeploymentsPanel application={data} />
           <VariablesPanel applicationId={data.id} />
-          <DomainsPanel applicationId={data.id} />
+          <DomainsPanel applicationId={data.id} compose={isCompose(data)} />
           <DeployKeyPanel application={data} />
           <ApplicationSettings application={data} />
         </>

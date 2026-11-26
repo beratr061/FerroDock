@@ -105,7 +105,11 @@
     "UPDATE_NOTHING_TO_ROLL_BACK": "There is no earlier version to return to.",
     "UPDATE_PANEL_NOT_FOUND": "The panel container managed by the installer was not found; updates need an installed panel.",
     "UPDATE_KEY_NOT_CONFIGURED": "This build has no release key, so updates cannot be verified.",
-    "UPDATE_MANIFEST_INVALID": "The release manifest could not be verified."
+    "UPDATE_MANIFEST_INVALID": "The release manifest could not be verified.",
+    "DOMAIN_SERVICE_REQUIRED": "Enter the compose service name this domain should reach, such as web.",
+    "DOMAIN_SERVICE_UNSUPPORTED": "Only compose applications take a service name.",
+    "PORT_NOT_LISTENING": "The container started but nothing listened on port {{port}}. Check the container port.",
+    "COMPOSE_CONFIG_INVALID": "Docker Compose could not read the compose file. Check its syntax and variables."
   },
   "terminal": {
     "label": "Terminal for {{name}}",

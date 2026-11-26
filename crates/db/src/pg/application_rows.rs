@@ -21,6 +21,7 @@ pub(super) struct ApplicationRow {
     pub(super) deploy_key_public: Option<String>,
     pub(super) deploy_key_private_enc: Option<String>,
     pub(super) strategy: String,
+    pub(super) active_container: Option<String>,
     pub(super) created_at: OffsetDateTime,
     pub(super) updated_at: OffsetDateTime,
 }
@@ -96,6 +97,7 @@ impl TryFrom<ApplicationRow> for ApplicationRecord {
             source,
             deploy_key,
             strategy: row.strategy,
+            active_container: row.active_container,
             created_at: row.created_at,
             updated_at: row.updated_at,
         })

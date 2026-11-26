@@ -4,11 +4,12 @@ use std::sync::Arc;
 use ferrodock_core::AppResult;
 use ferrodock_core::Id;
 use ferrodock_core::crypto::SecretBox;
-use ferrodock_db::{ApplicationRepo, DeploymentRepo, VariableRepo};
+use ferrodock_db::{ApplicationRepo, DeploymentRepo, DomainRepo, VariableRepo};
 use ferrodock_infra::deploy_log::DeployLogs;
 use ferrodock_infra::docker::{
     DockerEngine, application_key, compose_project, network_alias, short_key,
 };
+use ferrodock_infra::proxy::ProxyRoutes;
 use ferrodock_infra::realtime::{Hub, Signal};
 
 pub const KEPT_IMAGES: usize = 5;
@@ -19,6 +20,8 @@ pub struct DeployContext {
     pub applications: Arc<dyn ApplicationRepo>,
     pub deployments: Arc<dyn DeploymentRepo>,
     pub variables: Arc<dyn VariableRepo>,
+    pub domains: Arc<dyn DomainRepo>,
+    pub proxy: ProxyRoutes,
     pub secrets: SecretBox,
     pub logs: DeployLogs,
     pub hub: Hub,

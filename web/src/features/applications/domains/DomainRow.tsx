@@ -37,7 +37,10 @@ export function DomainRow({ applicationId, domain }: { applicationId: string; do
             {address(domain)}
             <ArrowSquareOutIcon size={14} aria-hidden className="text-subtle" />
           </a>
-          <p className="font-mono text-[12px] text-subtle">{t("domains.portLabel", { port: domain.container_port })}</p>
+          <p className="font-mono text-[12px] text-subtle">
+            {domain.service ? `${t("domains.serviceLabel", { service: domain.service })} · ` : null}
+            {t("domains.portLabel", { port: domain.container_port })}
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="ghost" busy={dns.isPending} onClick={() => dns.mutate(domain.id)}>

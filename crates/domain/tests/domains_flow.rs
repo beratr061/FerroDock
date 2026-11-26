@@ -91,6 +91,7 @@ fn domain(host: &str) -> NewDomainInput {
         path_prefix: None,
         container_port: 8080,
         https: true,
+        service: None,
     }
 }
 

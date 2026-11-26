@@ -96,7 +96,10 @@
       "unverified": "The record resolves, but this server's public address is not configured to compare.",
       "points_elsewhere": "The record points to another address. Update the A or AAAA record before expecting HTTPS.",
       "unresolved": "No A or AAAA record yet. Create one that points to this server."
-    }
+    },
+    "service": "Compose service",
+    "serviceHint": "The service name from your compose file.",
+    "serviceLabel": "service {{service}}"
   },
   "variables": {
     "title": "Environment variables",

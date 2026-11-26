@@ -105,7 +105,11 @@
     "UPDATE_NOTHING_TO_ROLL_BACK": "Dönülecek önceki bir sürüm yok.",
     "UPDATE_PANEL_NOT_FOUND": "Kurulumun yönettiği panel konteyneri bulunamadı; güncelleme için kurulu bir panel gerekir.",
     "UPDATE_KEY_NOT_CONFIGURED": "Bu derlemede sürüm anahtarı yok, güncellemeler doğrulanamaz.",
-    "UPDATE_MANIFEST_INVALID": "Sürüm manifesti doğrulanamadı."
+    "UPDATE_MANIFEST_INVALID": "Sürüm manifesti doğrulanamadı.",
+    "DOMAIN_SERVICE_REQUIRED": "Bu domainin yönleneceği compose servis adını girin, örneğin web.",
+    "DOMAIN_SERVICE_UNSUPPORTED": "Servis adı yalnızca compose uygulamalarında kullanılır.",
+    "PORT_NOT_LISTENING": "Konteyner başladı ama {{port}} portunu dinleyen bir şey yok. Konteyner portunu kontrol edin.",
+    "COMPOSE_CONFIG_INVALID": "Docker Compose dosyayı okuyamadı. Sözdizimini ve değişkenleri kontrol edin."
   },
   "terminal": {
     "label": "{{name}} terminali",

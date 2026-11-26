@@ -1,9 +1,10 @@
 use std::path::Path;
 
-use ferrodock_core::AppResult;
+use ferrodock_core::{AppError, AppResult, Id};
 use tokio::process::Command;
 use tokio_util::sync::CancellationToken;
 
+use super::compose_override::{OVERRIDE_FILE, render_override};
 use crate::deploy_log::DeployLog;
 use crate::process::{capture, isolated, run_logged};
 
@@ -23,6 +24,7 @@ pub struct ComposeUp<'a> {
     pub variables: &'a [(String, String)],
     pub file: &'a Path,
     pub directory: &'a Path,
+    pub application_id: Id,
 }
 
 fn docker() -> Command {
@@ -51,20 +53,41 @@ pub async fn build_image(
     run_logged(command, log, cancel, "IMAGE_BUILD_FAILED").await
 }
 
+fn compose_command(compose: &ComposeUp<'_>, files: &[&Path]) -> Command {
+    let mut command = docker();
+    command.args(["compose", "-p", compose.project]);
+    for file in files {
+        command.arg("-f").arg(file);
+    }
+    command
+        .arg("--project-directory")
+        .arg(compose.directory)
+        .envs(compose.variables.iter().map(|(key, value)| (key, value)));
+    command
+}
+
+async fn write_override(compose: &ComposeUp<'_>) -> AppResult<std::path::PathBuf> {
+    let mut inspect = compose_command(compose, &[compose.file]);
+    inspect.args(["config", "--format", "json"]);
+    let rendered = capture(inspect, "COMPOSE_CONFIG_INVALID").await?;
+    let document = render_override(&rendered, compose.application_id)?;
+    let path = compose.directory.join(OVERRIDE_FILE);
+    tokio::fs::write(&path, document)
+        .await
+        .map_err(AppError::internal)?;
+    Ok(path)
+}
+
 pub async fn compose_up(
     compose: ComposeUp<'_>,
     log: &DeployLog,
     cancel: &CancellationToken,
 ) -> AppResult<()> {
-    let mut command = docker();
+    let override_file = write_override(&compose).await?;
+    let mut command = compose_command(&compose, &[compose.file, &override_file]);
     command
-        .args(["compose", "-p", compose.project, "-f"])
-        .arg(compose.file)
-        .arg("--project-directory")
-        .arg(compose.directory)
         .args(["up", "-d", "--build", "--remove-orphans", "--wait"])
-        .args(["--wait-timeout", COMPOSE_WAIT_SECONDS])
-        .envs(compose.variables.iter().map(|(key, value)| (key, value)));
+        .args(["--wait-timeout", COMPOSE_WAIT_SECONDS]);
     log.step(&format!("Starting compose project {}", compose.project))
         .await;
     run_logged(command, log, cancel, "COMPOSE_UP_FAILED").await

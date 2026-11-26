@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, application_id, host, path_prefix, container_port, https, created_at\n             FROM domains WHERE application_id = $1 ORDER BY host, path_prefix",
+  "query": "SELECT id, application_id, host, path_prefix, container_port, https, service, created_at\n             FROM domains WHERE application_id = $1 ORDER BY host, path_prefix",
   "describe": {
     "columns": [
       {
@@ -71,6 +71,17 @@
       },
       {
         "ordinal": 6,
+        "name": "service",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "domains",
+            "name": "service"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
         "name": "created_at",
         "type_info": "Timestamptz",
         "origin": {
@@ -93,8 +104,9 @@
       false,
       false,
       false,
+      true,
       false
     ]
   },
-  "hash": "25ddc7bb98f122da3f3cdac26cc4d66f3c7c8c4d675ba627b351765662b1cef9"
+  "hash": "6353313a1f983ea84b112638a9eb08b3d0dfb439d512ed228d9466694404bb05"
 }
