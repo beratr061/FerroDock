@@ -25,7 +25,7 @@ async fn secrets_stay_hidden_and_survive_updates(pool: PgPool) -> AppResult<()> 
         principal: &owner,
         ip_address: None,
     };
-    let app = common::image_application(&store, actor).await?;
+    let app = common::application_in(&store, actor, "Shop").await?;
     let variables = VariableService::new(
         (store.clone(), store.clone()),
         common::secrets()?,

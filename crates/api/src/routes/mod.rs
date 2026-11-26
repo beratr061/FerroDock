@@ -10,6 +10,7 @@ mod health;
 mod logs;
 mod projects;
 mod realtime;
+mod runtime_config;
 mod setup;
 mod terminal;
 mod updates;
@@ -52,6 +53,7 @@ pub(crate) use projects::{
     __path_update_project,
 };
 pub(crate) use realtime::__path_realtime;
+pub(crate) use runtime_config::{__path_get_runtime_config, __path_replace_runtime_config};
 pub(crate) use setup::{__path_complete, __path_status};
 pub(crate) use terminal::__path_terminal;
 pub(crate) use updates::{
@@ -171,6 +173,10 @@ fn variable_routes() -> Router<AppState> {
         .route(
             "/applications/{id}/variables/{key}/reveal",
             post(variables::reveal_variable),
+        )
+        .route(
+            "/applications/{id}/runtime",
+            get(runtime_config::get_runtime_config).put(runtime_config::replace_runtime_config),
         )
 }
 

@@ -9,6 +9,7 @@ mod identity;
 mod jobs;
 mod login_attempts;
 mod projects;
+mod runtime_config;
 mod sessions;
 mod variables;
 

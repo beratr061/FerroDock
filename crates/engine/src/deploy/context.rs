@@ -4,7 +4,7 @@ use std::sync::Arc;
 use ferrodock_core::AppResult;
 use ferrodock_core::Id;
 use ferrodock_core::crypto::SecretBox;
-use ferrodock_db::{ApplicationRepo, DeploymentRepo, DomainRepo, VariableRepo};
+use ferrodock_db::{ApplicationRepo, DeploymentRepo, DomainRepo, RuntimeConfigRepo, VariableRepo};
 use ferrodock_infra::deploy_log::DeployLogs;
 use ferrodock_infra::docker::{
     DockerEngine, application_key, compose_project, network_alias, short_key,
@@ -21,6 +21,7 @@ pub struct DeployContext {
     pub deployments: Arc<dyn DeploymentRepo>,
     pub variables: Arc<dyn VariableRepo>,
     pub domains: Arc<dyn DomainRepo>,
+    pub runtime_configs: Arc<dyn RuntimeConfigRepo>,
     pub proxy: ProxyRoutes,
     pub secrets: SecretBox,
     pub logs: DeployLogs,
@@ -63,6 +64,10 @@ impl Names {
             "{}-{}-{}",
             self.slug, self.application_key, self.deployment_key
         )
+    }
+
+    pub fn volume(&self, name: &str) -> String {
+        format!("fd-{}-{name}", self.application_key)
     }
 
     pub fn alias(&self) -> String {

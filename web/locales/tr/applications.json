@@ -139,5 +139,30 @@
     "waiting": "Çıktı bekleniyor…",
     "closed": "Log akışı sona erdi. Konteyner durdu ya da yenisiyle değişti.",
     "follow": "Canlıya dön"
+  },
+  "runtime": {
+    "title": "Depolama ve portlar",
+    "description": "Volume'ler veriyi deploy'lar arasında korur; bind mount sunucudaki bir klasörü paylaşır ve admin rolü ister. Yayınlanan portlar proxy'yi atlayıp sunucu portunu doğrudan konteynere açar. Değişiklikler bir sonraki deploy'da uygulanır.",
+    "composeNote": "Compose uygulamaları volume ve portlarını compose dosyasında tanımlar.",
+    "mounts": "Mount'lar",
+    "ports": "Yayınlanan portlar",
+    "noMounts": "Mount yok. Konteyner içine yazılan dosyalar bir sonraki deploy'da kaybolur.",
+    "noPorts": "Yayınlanan port yok. HTTP servislerine proxy üzerinden ulaşmak için domain kullanın.",
+    "kind": "Tür",
+    "volume": "Volume",
+    "bind": "Bind mount",
+    "volumeName": "Volume adı",
+    "hostPath": "Sunucu yolu",
+    "containerPath": "Konteyner yolu",
+    "readOnly": "Salt okunur",
+    "publishedPort": "Sunucu portu",
+    "targetPort": "Konteyner portu",
+    "protocol": "Protokol",
+    "addMount": "Mount ekle",
+    "addPort": "Port ekle",
+    "remove": "Kaldır",
+    "save": "Depolama ve portları kaydet",
+    "sharedVolume": "Blue-green deploy'da eski ve yeni konteyner kısa bir süre birlikte çalışır, ikisi de aynı volume'e yazar. Veritabanları ve tek yazarlı veriler için stratejiyi recreate yapın.",
+    "portsRecreate": "Bir sunucu portu yalnızca bir konteynere ait olabilir; bu yüzden bu uygulamanın deploy'ları trafiği devretmek yerine çalışan konteyneri değiştirir."
   }
 }

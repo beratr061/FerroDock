@@ -12,6 +12,7 @@ use ferrodock_core::AppResult;
 use futures_util::StreamExt;
 
 use super::images::WORKLOAD_NETWORK;
+use super::workload_storage::{WorkloadMount, WorkloadPort, exposed_ports, with_storage};
 use super::{DockerEngine, MANAGED_LABEL, docker_error, is_not_modified};
 
 pub const APPLICATION_LABEL: &str = "ferrodock.application";
@@ -27,6 +28,8 @@ pub struct WorkloadSpec {
     pub deployment_id: String,
     pub alias: String,
     pub env: Vec<String>,
+    pub mounts: Vec<WorkloadMount>,
+    pub ports: Vec<WorkloadPort>,
 }
 
 #[derive(Debug, Clone)]
@@ -54,15 +57,20 @@ fn container_body(spec: &WorkloadSpec) -> ContainerCreateBody {
         image: Some(spec.image.clone()),
         env: Some(spec.env.clone()),
         labels: Some(labels(spec)),
-        host_config: Some(HostConfig {
-            restart_policy: Some(RestartPolicy {
-                name: Some(RestartPolicyNameEnum::UNLESS_STOPPED),
-                maximum_retry_count: None,
-            }),
-            init: Some(true),
-            network_mode: Some(WORKLOAD_NETWORK.to_owned()),
-            ..HostConfig::default()
-        }),
+        exposed_ports: exposed_ports(&spec.ports),
+        host_config: Some(with_storage(
+            HostConfig {
+                restart_policy: Some(RestartPolicy {
+                    name: Some(RestartPolicyNameEnum::UNLESS_STOPPED),
+                    maximum_retry_count: None,
+                }),
+                init: Some(true),
+                network_mode: Some(WORKLOAD_NETWORK.to_owned()),
+                ..HostConfig::default()
+            },
+            &spec.mounts,
+            &spec.ports,
+        )),
         networking_config: Some(NetworkingConfig {
             endpoints_config: Some(HashMap::from([(WORKLOAD_NETWORK.to_owned(), endpoint)])),
         }),

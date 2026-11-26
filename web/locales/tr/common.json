@@ -111,7 +111,18 @@
     "PORT_NOT_LISTENING": "Konteyner başladı ama {{port}} portunu dinleyen bir şey yok. Konteyner portunu kontrol edin.",
     "COMPOSE_CONFIG_INVALID": "Docker Compose dosyayı okuyamadı. Sözdizimini ve değişkenleri kontrol edin.",
     "DOMAIN_AUTH_USER_INVALID": "Boşluk ve iki nokta içermeyen, en fazla 64 karakterlik bir kullanıcı adı girin.",
-    "DOMAIN_AUTH_PASSWORD_INVALID": "8 ile 72 karakter arası bir parola girin."
+    "DOMAIN_AUTH_PASSWORD_INVALID": "8 ile 72 karakter arası bir parola girin.",
+    "RUNTIME_MOUNT_TARGET_INVALID": "/var/lib/data gibi \"..\" içermeyen mutlak bir konteyner yolu girin.",
+    "RUNTIME_VOLUME_NAME_INVALID": "Volume adları küçük harf, rakam, nokta, tire ve alt çizgi içerir.",
+    "RUNTIME_BIND_PATH_INVALID": "/srv/uploads gibi \"..\" içermeyen mutlak bir sunucu yolu girin.",
+    "RUNTIME_BIND_PATH_FORBIDDEN": "Bu sunucu yolu Docker veya FerroDock için ayrılmış, mount edilemez.",
+    "RUNTIME_MOUNT_DUPLICATE": "Her konteyner yolu yalnızca bir kez mount edilebilir.",
+    "RUNTIME_PORT_INVALID": "1 ile 65535 arasında portlar girin.",
+    "RUNTIME_PORT_RESERVED": "80 ve 443 portları proxy'ye ait. Bunun yerine domain ekleyin.",
+    "RUNTIME_PORT_DUPLICATE": "Her sunucu portu ve protokol yalnızca bir kez yayınlanabilir.",
+    "RUNTIME_PORT_TAKEN": "Bu sunucu portunu başka bir uygulama zaten yayınlıyor.",
+    "RUNTIME_TOO_MANY": "En fazla {{max}} mount ve {{max}} port kullanın.",
+    "RUNTIME_COMPOSE_UNSUPPORTED": "Compose uygulamaları volume ve portlarını compose dosyasında tanımlar."
   },
   "terminal": {
     "label": "{{name}} terminali",

@@ -48,10 +48,14 @@ pub async fn sign_up_owner(store: &Arc<PgStore>) -> AppResult<Principal> {
     auth.authenticate_session(&signed_in.token).await
 }
 
-pub async fn image_application(store: &Arc<PgStore>, actor: Actor<'_>) -> AppResult<Id> {
+pub async fn application_in(
+    store: &Arc<PgStore>,
+    actor: Actor<'_>,
+    project: &str,
+) -> AppResult<Id> {
     let audit = AuditLog::new(store.clone());
     let project_input = NewProjectInput {
-        name: "Shop".to_owned(),
+        name: project.to_owned(),
         description: None,
     };
     let project = ProjectService::new(store.clone(), audit.clone())

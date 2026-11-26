@@ -18,6 +18,7 @@ use crate::backups;
 use ferrodock_domain::deployments::{DeploymentRepos, DeploymentService};
 use ferrodock_domain::domains::{DomainService, DomainSettings};
 use ferrodock_domain::projects::ProjectService;
+use ferrodock_domain::runtime_config::RuntimeConfigService;
 use ferrodock_domain::terminal::TerminalService;
 use ferrodock_domain::variables::VariableService;
 use ferrodock_engine::deploy::DeployContext;
@@ -105,6 +106,7 @@ fn deploy_context(
         deployments: Arc::new(store.clone()),
         variables: Arc::new(store.clone()),
         domains: Arc::new(store.clone()),
+        runtime_configs: Arc::new(store.clone()),
         proxy: proxy_routes(config),
         secrets,
         logs: DeployLogs::new(config.data_dir.join("deployments")),
@@ -216,6 +218,7 @@ fn app_state(
             deploy.secrets.clone(),
             audit.clone(),
         ),
+        runtime_configs: RuntimeConfigService::new((shared(), shared()), audit.clone()),
         deployments: deployment_service(store, deploy, audit.clone()),
         terminal: TerminalService::new(deploy.docker.clone(), shared(), audit.clone()),
         backups: backup_service(config, store, auth, audit),

@@ -2,6 +2,7 @@ mod artifact;
 mod cleanup;
 mod context;
 mod release;
+mod storage;
 mod traffic;
 
 use std::sync::Arc;

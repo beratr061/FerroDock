@@ -7,6 +7,7 @@ mod docker;
 mod domains;
 mod password;
 mod projects;
+mod runtime_config;
 mod updates;
 mod variables;
 mod workloads;
@@ -34,6 +35,7 @@ pub use projects::{
     CreateEnvironmentRequest, CreateProjectRequest, EnvironmentDto, ProjectDto,
     UpdateProjectRequest,
 };
+pub use runtime_config::{MountDto, MountKindDto, PortDto, ProtocolDto, RuntimeConfigDto};
 pub use updates::{UpdateCheckDto, UpdateOverviewDto, UpdateRecordDto, UpdateStateDto};
 pub use variables::{ReplaceVariablesRequest, RevealedVariableDto, VariableDto, VariableInputDto};
 pub use workloads::WorkloadDto;

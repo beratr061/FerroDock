@@ -5,6 +5,7 @@ pub mod backups;
 pub mod deployments;
 pub mod domains;
 pub mod projects;
+pub mod runtime_config;
 pub mod terminal;
 pub mod text;
 pub mod variables;

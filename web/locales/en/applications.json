@@ -139,5 +139,30 @@
     "waiting": "Waiting for output…",
     "closed": "The log stream ended. The container stopped or was replaced.",
     "follow": "Back to live"
+  },
+  "runtime": {
+    "title": "Storage and ports",
+    "description": "Volumes keep data across deployments; bind mounts share a folder from the server and need the admin role. Published ports open a host port straight to the container, outside the proxy. Changes apply on the next deployment.",
+    "composeNote": "Compose applications declare volumes and ports in their compose file.",
+    "mounts": "Mounts",
+    "ports": "Published ports",
+    "noMounts": "No mounts. Files written inside the container are lost on the next deployment.",
+    "noPorts": "No published ports. Use a domain to reach HTTP services through the proxy.",
+    "kind": "Type",
+    "volume": "Volume",
+    "bind": "Bind mount",
+    "volumeName": "Volume name",
+    "hostPath": "Server path",
+    "containerPath": "Container path",
+    "readOnly": "Read-only",
+    "publishedPort": "Server port",
+    "targetPort": "Container port",
+    "protocol": "Protocol",
+    "addMount": "Add mount",
+    "addPort": "Add port",
+    "remove": "Remove",
+    "save": "Save storage and ports",
+    "sharedVolume": "Blue-green deploys run the old and new container side by side for a moment, so both write to the same volume. Switch the strategy to recreate for databases and other single-writer data.",
+    "portsRecreate": "A host port can only belong to one container, so deployments of this application replace the running container instead of switching traffic."
   }
 }

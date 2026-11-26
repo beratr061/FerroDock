@@ -4,6 +4,7 @@ use ferrodock_core::AppResult;
 use ferrodock_infra::docker::{WorkloadContainer, WorkloadSpec};
 
 use super::artifact::Job;
+use super::storage::Storage;
 
 const READINESS_TIMEOUT: Duration = Duration::from_secs(180);
 
@@ -14,11 +15,12 @@ impl Job<'_> {
         let previous = docker
             .application_workloads(&self.application.id.to_string())
             .await?;
-        let recreate = self.application.strategy != "blue_green";
+        let storage = self.storage().await?;
+        let recreate = self.replaces_running(&storage).await;
         if recreate {
             self.stop_previous(&previous).await?;
         }
-        let spec = self.workload_spec(image);
+        let spec = self.workload_spec(image, storage);
         self.log
             .step(&format!("Starting container {}", spec.name))
             .await;
@@ -40,7 +42,7 @@ impl Job<'_> {
         }
     }
 
-    fn workload_spec(&self, image: &str) -> WorkloadSpec {
+    fn workload_spec(&self, image: &str, storage: Storage) -> WorkloadSpec {
         WorkloadSpec {
             name: self.names.container(),
             image: image.to_owned(),
@@ -52,6 +54,8 @@ impl Job<'_> {
                 .iter()
                 .map(|(key, value)| format!("{key}={value}"))
                 .collect(),
+            mounts: storage.mounts,
+            ports: storage.ports,
         }
     }
 

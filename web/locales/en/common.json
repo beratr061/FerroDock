@@ -111,7 +111,18 @@
     "PORT_NOT_LISTENING": "The container started but nothing listened on port {{port}}. Check the container port.",
     "COMPOSE_CONFIG_INVALID": "Docker Compose could not read the compose file. Check its syntax and variables.",
     "DOMAIN_AUTH_USER_INVALID": "Use a username of up to 64 characters without spaces or colons.",
-    "DOMAIN_AUTH_PASSWORD_INVALID": "Use a password of 8 to 72 characters."
+    "DOMAIN_AUTH_PASSWORD_INVALID": "Use a password of 8 to 72 characters.",
+    "RUNTIME_MOUNT_TARGET_INVALID": "Use an absolute container path such as /var/lib/data, without \"..\".",
+    "RUNTIME_VOLUME_NAME_INVALID": "Volume names use lowercase letters, digits, dots, dashes and underscores.",
+    "RUNTIME_BIND_PATH_INVALID": "Use an absolute server path such as /srv/uploads, without \"..\".",
+    "RUNTIME_BIND_PATH_FORBIDDEN": "This server path is reserved for Docker or FerroDock and cannot be mounted.",
+    "RUNTIME_MOUNT_DUPLICATE": "Each container path can be mounted only once.",
+    "RUNTIME_PORT_INVALID": "Enter ports between 1 and 65535.",
+    "RUNTIME_PORT_RESERVED": "Ports 80 and 443 belong to the proxy. Add a domain instead.",
+    "RUNTIME_PORT_DUPLICATE": "Each server port and protocol can be published only once.",
+    "RUNTIME_PORT_TAKEN": "Another application already publishes this server port.",
+    "RUNTIME_TOO_MANY": "Use at most {{max}} mounts and {{max}} ports.",
+    "RUNTIME_COMPOSE_UNSUPPORTED": "Compose applications declare volumes and ports in their compose file."
   },
   "terminal": {
     "label": "Terminal for {{name}}",

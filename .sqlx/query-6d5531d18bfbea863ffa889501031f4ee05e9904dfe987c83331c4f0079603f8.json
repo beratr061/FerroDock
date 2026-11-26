@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT published_port, target_port, protocol FROM application_ports\n             WHERE application_id = $1 ORDER BY published_port, protocol",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "published_port",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "application_ports",
+            "name": "published_port"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "target_port",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "application_ports",
+            "name": "target_port"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "protocol",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "application_ports",
+            "name": "protocol"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "6d5531d18bfbea863ffa889501031f4ee05e9904dfe987c83331c4f0079603f8"
+}

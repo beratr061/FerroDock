@@ -9,6 +9,7 @@ use ferrodock_domain::backups::BackupService;
 use ferrodock_domain::deployments::DeploymentService;
 use ferrodock_domain::domains::DomainService;
 use ferrodock_domain::projects::ProjectService;
+use ferrodock_domain::runtime_config::RuntimeConfigService;
 use ferrodock_domain::terminal::TerminalService;
 use ferrodock_domain::variables::VariableService;
 use ferrodock_engine::updater::UpdateLauncher;
@@ -39,6 +40,7 @@ pub struct AppState {
     pub deployments: DeploymentService,
     pub domains: DomainService,
     pub variables: VariableService,
+    pub runtime_configs: RuntimeConfigService,
     pub terminal: TerminalService,
     pub backups: BackupService,
     pub updates: UpdateLauncher,

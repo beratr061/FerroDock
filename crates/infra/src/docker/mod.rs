@@ -12,6 +12,7 @@ mod port_probe;
 mod prune;
 mod readiness;
 mod updater;
+mod workload_storage;
 mod workloads;
 
 use bollard::Docker;
@@ -30,6 +31,7 @@ pub use naming::{
     application_key, compose_project, compose_service_alias, network_alias, short_key,
 };
 pub use updater::{UPDATER_NAME, UpdaterSpec};
+pub use workload_storage::{MountSource, WorkloadMount, WorkloadPort};
 pub use workloads::{APPLICATION_LABEL, DEPLOYMENT_LABEL, WorkloadContainer, WorkloadSpec};
 
 const MAX_REFERENCE_LEN: usize = 128;
