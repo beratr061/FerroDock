@@ -69,10 +69,10 @@
 
 @keyframes breathe {
   from {
-    opacity: 1;
+    background-color: var(--surface-raised);
   }
   to {
-    opacity: 0.55;
+    background-color: var(--surface-hover);
   }
 }
 

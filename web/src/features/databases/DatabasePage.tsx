@@ -49,7 +49,7 @@ function Header({ database }: { database: Database }) {
       <div className="flex min-w-0 flex-col gap-1">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-xl text-text">{database.name}</h1>
-          <StatusBadge tone={statusTone(database)} label={t(statusKey(database))} live={database.running} />
+          <StatusBadge tone={statusTone(database)} label={t(statusKey(database))} />
         </div>
         <p className="truncate font-mono text-[12px] text-subtle">{engineSummary(database)}</p>
       </div>

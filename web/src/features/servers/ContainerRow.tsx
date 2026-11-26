@@ -57,7 +57,6 @@ export function ContainerRow({ container, onTerminal }: { container: Container; 
         <StatusBadge
           tone={TONE_BY_STATE[container.state] ?? "neutral"}
           label={t(`state.${container.state}`, { defaultValue: container.state })}
-          live={running}
         />
         {action.isError ? <p className="text-[12px] text-danger">{errorMessage(action.error, t)}</p> : null}
       </div>

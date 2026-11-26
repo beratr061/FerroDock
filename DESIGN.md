@@ -60,7 +60,7 @@ Shadows appear only on floating layers (palette, menus).
 
 ## Accent
 
-Lavender `#5e6ad2` is the only chromatic accent: primary buttons, focus rings, the brand mark and link emphasis. It is never a section background or card fill. Status colours (success, warning, danger, info) are the only other hues, each with an opaque tint and border pre-blended over surface-1.
+Lavender `#5e6ad2` is the only chromatic accent: primary buttons, focus rings, the brand mark and link emphasis. It is never a section background or card fill. Status colours (success, warning, danger, info) are the only other hues, and they never fill a surface: they appear as text, icons, a small status dot or a 1px border. Every fill is a solid surface token; translucent fills (alpha modifiers, `opacity-*`, `rgba`, `color-mix`, tints) are blocked by `web/src/styles/fills.test.ts`.
 
 ## Type
 
@@ -68,10 +68,12 @@ Inter stands in for Linear's proprietary families; JetBrains Mono for Linear Mon
 
 ## Components
 
-- **Buttons**: 36px high, 8px 14px padding, 8px radius, 14px/500 label. Primary is lavender with white text; secondary is surface-1 with a hairline; ghost is plain text that lifts to surface-2 on hover; danger uses the danger tint.
+- **Buttons**: 36px high, 8px 14px padding, 8px radius, 14px/500 label. Primary is lavender with white text; secondary is surface-1 with a hairline; ghost is plain text that lifts to surface-2 on hover; danger is surface-1 with danger text and border.
 - **Inputs and selects**: surface-1, 8px radius, 8px 12px padding; the focus border and 2px focus ring use the lavender focus colour.
 - **Tabs and segmented controls**: pills. Unselected is subtle text on the canvas; selected lifts to surface-2.
-- **Status badges**: 22px pills with a caption-size label.
+- **Status badges**: 22px surface-2 pills with ink-muted caption text and a 6px dot in the status colour.
+- **Alerts**: surface-2 with a status-coloured border and icon; the message stays in ink.
+- **Skeletons**: alternate between surface-2 and surface-3 instead of fading.
 - **Panels**: surface-1, 12px radius, hairline border.
 - **Navigation**: 32px rows, 8px radius; hover lifts to surface-2, the active item to surface-3.
 

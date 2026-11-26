@@ -30,7 +30,7 @@ function DatabaseRow({ database }: { database: Database }) {
           <p className="truncate font-medium text-text">{database.name}</p>
           <p className="truncate font-mono text-[12px] text-subtle">{engineSummary(database)}</p>
         </div>
-        <StatusBadge tone={statusTone(database)} label={t(statusKey(database))} live={database.running} />
+        <StatusBadge tone={statusTone(database)} label={t(statusKey(database))} />
         <CaretRightIcon size={16} aria-hidden className="text-subtle group-hover:text-text" />
       </Link>
     </li>

@@ -45,7 +45,6 @@ export function DeploymentRow({ deployment, live, selected, canRollback, onSelec
           <StatusBadge
             tone={TONES[deployment.status]}
             label={live ? t("deployments.status.live") : t(`deployments.status.${deployment.status}`)}
-            live={live || isActive(deployment.status)}
           />
         </span>
         <span className="min-w-0">
