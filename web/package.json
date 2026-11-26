@@ -11,6 +11,7 @@
     "typecheck": "pnpm api:types && tsc --noEmit -p .",
     "lint": "eslint . && stylelint \"src/**/*.css\"",
     "test": "vitest run",
+    "e2e": "playwright test",
     "api:types": "openapi-typescript ../openapi.json -o src/shared/api/schema.d.ts",
     "size": "node scripts/initial-size.mjs"
   },
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@playwright/test": "1.64.1",
     "@tailwindcss/vite": "4.3.5",
     "@tanstack/router-plugin": "1.169.0",
     "@types/node": "24.19.2",

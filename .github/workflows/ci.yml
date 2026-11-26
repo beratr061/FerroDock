@@ -93,6 +93,35 @@ jobs:
         with:
           context: .
           push: false
+          load: true
           tags: ferrodock:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Install the built image
+        run: sudo FERRODOCK_IMAGE=ferrodock:ci FERRODOCK_LOCAL_ASSETS="$GITHUB_WORKSPACE/deploy" sh deploy/install.sh
+      - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: web/package.json
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+        working-directory: web
+      - run: pnpm exec playwright install --with-deps chromium
+        working-directory: web
+      - name: End-to-end tests
+        working-directory: web
+        env:
+          FD_E2E_URL: http://127.0.0.1:3000
+        run: |
+          token="$(sudo cat /etc/ferrodock/setup-token)"
+          echo "::add-mask::$token"
+          FD_SETUP_TOKEN="$token" pnpm e2e
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: e2e-results
+          path: web/test-results
+          retention-days: 7

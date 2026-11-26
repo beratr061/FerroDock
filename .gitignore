@@ -8,6 +8,9 @@ lcov.info
 /web/dist
 /web/coverage
 /web/.vite
+/web/e2e/.auth
+/web/test-results
+/web/playwright-report
 *.tsbuildinfo
 /web/src/shared/api/schema.d.ts
 /openapi.generated.json

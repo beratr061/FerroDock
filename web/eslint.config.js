@@ -10,7 +10,7 @@ const layerPolicies = [
 ];
 
 export default tseslint.config(
-  { ignores: ["dist", "public", "src/shared/api/schema.d.ts"] },
+  { ignores: ["dist", "public", "src/shared/api/schema.d.ts", "test-results", "playwright-report"] },
   js.configs.recommended,
   ...tseslint.configs.strict,
   {

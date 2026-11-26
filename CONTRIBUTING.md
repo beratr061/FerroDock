@@ -23,6 +23,24 @@ Copy `web/locales/en` to `web/locales/<code>`, translate the values and set the 
 
 Implement the corresponding trait in its own file and register it in the registry next to the trait. Existing implementations stay untouched.
 
+## End-to-end tests
+
+`web/e2e` holds Playwright tests that drive a real panel: setup, a project, an
+image deployment with its logs and a shell, a managed database, and a check that
+no page is wider than a phone or desktop screen. CI runs them against a fresh
+install of the image it just built.
+
+To run them yourself, install a panel (for example with `deploy/install.sh`),
+then from `web/`:
+
+```sh
+pnpm exec playwright install chromium
+FD_E2E_URL=http://127.0.0.1:3000 FD_SETUP_TOKEN="$(sudo cat /etc/ferrodock/setup-token)" pnpm e2e
+```
+
+Without `FD_SETUP_TOKEN` the setup step is skipped, so the suite can be rerun
+against a panel that is already set up; names are unique per run.
+
 ## Pull requests
 
 Each pull request runs formatting, clippy, code rules, tests, sqlx and OpenAPI drift checks, cargo-deny, frontend lint, build and bundle size budget. Security-sensitive changes get a security review before merge.
