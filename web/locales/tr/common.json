@@ -120,9 +120,19 @@
     "RUNTIME_PORT_INVALID": "1 ile 65535 arasında portlar girin.",
     "RUNTIME_PORT_RESERVED": "80 ve 443 portları proxy'ye ait. Bunun yerine domain ekleyin.",
     "RUNTIME_PORT_DUPLICATE": "Her sunucu portu ve protokol yalnızca bir kez yayınlanabilir.",
-    "RUNTIME_PORT_TAKEN": "Bu sunucu portunu başka bir uygulama zaten yayınlıyor.",
+    "RUNTIME_PORT_TAKEN": "Bu sunucu portu zaten başka bir uygulama ya da bir veritabanı tarafından yayınlanıyor.",
     "RUNTIME_TOO_MANY": "En fazla {{max}} mount ve {{max}} port kullanın.",
-    "RUNTIME_COMPOSE_UNSUPPORTED": "Compose uygulamaları volume ve portlarını compose dosyasında tanımlar."
+    "RUNTIME_COMPOSE_UNSUPPORTED": "Compose uygulamaları volume ve portlarını compose dosyasında tanımlar.",
+    "DATABASE_ENGINE_INVALID": "Desteklenen veritabanı motorlarından birini seçin.",
+    "DATABASE_NAME_INVALID": "En fazla {{max}} karakterlik bir ad girin.",
+    "DATABASE_IDENTIFIER_INVALID": "Veritabanı adı küçük harf, rakam ve alt çizgiden oluşur (en fazla {{max}}).",
+    "DATABASE_USERNAME_INVALID": "Kullanıcı adı küçük harf, rakam ve alt çizgiden oluşur ve root olamaz.",
+    "DATABASE_VERSION_INVALID": "Bu sürüm desteklenmiyor. Şunlardan birini seçin: {{supported}}.",
+    "DATABASE_PORT_INVALID": "{{min}} veya daha büyük bir sunucu portu kullanın.",
+    "DATABASE_PORT_TAKEN": "Bu sunucu portu zaten bir uygulama ya da başka bir veritabanı tarafından yayınlanıyor.",
+    "DATABASE_EXISTS": "Bu ortamda aynı adlı bir veritabanı zaten var.",
+    "DATABASE_NOT_FOUND": "Veritabanı bulunamadı.",
+    "VOLUME_IN_USE": "Veri volume'u hâlâ bir konteyner tarafından kullanılıyor."
   },
   "terminal": {
     "label": "{{name}} terminali",
@@ -132,5 +142,10 @@
     "failed": "Bağlantı beklenmedik şekilde kapandı.",
     "reconnect": "Yeniden bağlan",
     "close": "Terminali kapat (Ctrl+Esc)"
+  },
+  "logs": {
+    "waiting": "Çıktı bekleniyor…",
+    "closed": "Log akışı sona erdi. Konteyner durdu ya da yenisiyle değişti.",
+    "follow": "Canlıya dön"
   }
 }

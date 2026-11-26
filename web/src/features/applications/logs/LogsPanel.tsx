@@ -3,10 +3,11 @@ import { ScrollIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 
 import { useTranslation } from "@/shared/i18n";
+import { LogViewer } from "@/shared/logs";
 import { SelectField } from "@/shared/ui";
 
 import { containersQuery } from "../api";
-import { LogViewer } from "./LogViewer";
+import { logsUrl } from "./protocol";
 
 export function LogsPanel({ applicationId }: { applicationId: string }) {
   const { t } = useTranslation("applications");
@@ -38,7 +39,7 @@ export function LogsPanel({ applicationId }: { applicationId: string }) {
         ) : null}
       </header>
       {selected ? (
-        <LogViewer key={selected.id} applicationId={applicationId} container={selected.id} />
+        <LogViewer key={selected.id} url={logsUrl(applicationId, selected.id)} />
       ) : (
         <p className="rounded-panel border border-border bg-surface px-4 py-6 text-muted">{t("logs.empty")}</p>
       )}

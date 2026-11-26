@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use bollard::models::{HostConfig, Mount, MountType, PortBinding, VolumeCreateRequest};
 use ferrodock_core::AppResult;
 
-use super::workloads::APPLICATION_LABEL;
 use super::{DockerEngine, MANAGED_LABEL, docker_error};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -74,10 +73,11 @@ pub fn with_storage(
 }
 
 impl DockerEngine {
-    pub async fn ensure_volume(&self, name: &str, application_id: &str) -> AppResult<()> {
+    pub async fn ensure_volume(&self, name: &str, owner: (&str, &str)) -> AppResult<()> {
+        let (owner_label, owner_id) = owner;
         let labels = HashMap::from([
             (MANAGED_LABEL.to_owned(), "true".to_owned()),
-            (APPLICATION_LABEL.to_owned(), application_id.to_owned()),
+            (owner_label.to_owned(), owner_id.to_owned()),
         ]);
         let request = VolumeCreateRequest {
             name: Some(name.to_owned()),

@@ -28,7 +28,7 @@ use crate::routes::{
     __path_replace_runtime_config, __path_replace_variables, __path_reveal_variable, __path_revoke,
     __path_roll_back_update, __path_rollback_deployment, __path_rotate_deploy_key, __path_sign_in,
     __path_sign_out, __path_start_update, __path_status, __path_terminal,
-    __path_update_application, __path_update_overview, __path_update_project,
+    __path_update_application, __path_update_overview, __path_update_project, DatabaseApi,
 };
 
 #[derive(OpenApi)]
@@ -153,10 +153,14 @@ use crate::routes::{
 )]
 struct ApiDoc;
 
+fn document() -> utoipa::openapi::OpenApi {
+    ApiDoc::openapi().merge_from(DatabaseApi::openapi())
+}
+
 pub fn openapi_json() -> Result<String, serde_json::Error> {
-    ApiDoc::openapi().to_pretty_json()
+    document().to_pretty_json()
 }
 
 pub async fn serve() -> Json<utoipa::openapi::OpenApi> {
-    Json(ApiDoc::openapi())
+    Json(document())
 }

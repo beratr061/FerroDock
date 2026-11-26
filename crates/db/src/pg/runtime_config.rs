@@ -48,6 +48,16 @@ async fn insert_ports(
     ports: Vec<PortRecord>,
 ) -> AppResult<()> {
     for port in ports {
+        let held_by_database = sqlx::query_scalar!(
+            "SELECT EXISTS (SELECT 1 FROM databases WHERE external_port = $1) AS \"held!\"",
+            i32::from(port.published)
+        )
+        .fetch_one(&mut **tx)
+        .await
+        .map_err(db_error)?;
+        if held_by_database && port.protocol == "tcp" {
+            return Err(AppError::conflict("ALREADY_EXISTS"));
+        }
         sqlx::query!(
             "INSERT INTO application_ports (application_id, published_port, target_port, protocol)
              VALUES ($1, $2, $3, $4)",

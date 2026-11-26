@@ -120,9 +120,19 @@
     "RUNTIME_PORT_INVALID": "Enter ports between 1 and 65535.",
     "RUNTIME_PORT_RESERVED": "Ports 80 and 443 belong to the proxy. Add a domain instead.",
     "RUNTIME_PORT_DUPLICATE": "Each server port and protocol can be published only once.",
-    "RUNTIME_PORT_TAKEN": "Another application already publishes this server port.",
+    "RUNTIME_PORT_TAKEN": "This server port is already published by another application or a database.",
     "RUNTIME_TOO_MANY": "Use at most {{max}} mounts and {{max}} ports.",
-    "RUNTIME_COMPOSE_UNSUPPORTED": "Compose applications declare volumes and ports in their compose file."
+    "RUNTIME_COMPOSE_UNSUPPORTED": "Compose applications declare volumes and ports in their compose file.",
+    "DATABASE_ENGINE_INVALID": "Choose one of the supported database engines.",
+    "DATABASE_NAME_INVALID": "Enter a name up to {{max}} characters.",
+    "DATABASE_IDENTIFIER_INVALID": "Database names use lowercase letters, digits and underscores (up to {{max}}).",
+    "DATABASE_USERNAME_INVALID": "Usernames use lowercase letters, digits and underscores, and cannot be root.",
+    "DATABASE_VERSION_INVALID": "This version is not supported. Choose one of: {{supported}}.",
+    "DATABASE_PORT_INVALID": "Use a server port of {{min}} or higher.",
+    "DATABASE_PORT_TAKEN": "This server port is already published by an application or another database.",
+    "DATABASE_EXISTS": "A database with this name already exists in the environment.",
+    "DATABASE_NOT_FOUND": "The database was not found.",
+    "VOLUME_IN_USE": "The data volume is still in use by a container."
   },
   "terminal": {
     "label": "Terminal for {{name}}",
@@ -132,5 +142,10 @@
     "failed": "The connection closed unexpectedly.",
     "reconnect": "Reconnect",
     "close": "Close terminal (Ctrl+Esc)"
+  },
+  "logs": {
+    "waiting": "Waiting for output…",
+    "closed": "The log stream ended. The container stopped or was replaced.",
+    "follow": "Back to live"
   }
 }

@@ -26,8 +26,11 @@ pub async fn run(config: AppConfig) -> AppResult<()> {
     let background = CancellationToken::new();
     let runner = jobs::start(
         &wired.store,
-        wired.deploy.clone(),
-        wired.backup.clone(),
+        jobs::Contexts {
+            deploy: wired.deploy.clone(),
+            backup: wired.backup.clone(),
+            databases: wired.databases.clone(),
+        },
         config.job_concurrency,
         &background,
     );

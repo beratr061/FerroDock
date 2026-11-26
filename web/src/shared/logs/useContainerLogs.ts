@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
-import { appendCapped, logsUrl, parseLogLine, type LogEntry } from "./protocol";
+import { appendCapped, parseLogLine, type LogEntry } from "./protocol";
 
 export type LogConnection = "connecting" | "live" | "closed";
 
-export function useContainerLogs(applicationId: string, container: string) {
+export function useContainerLogs(url: string) {
   const [lines, setLines] = useState<LogEntry[]>([]);
   const [connection, setConnection] = useState<LogConnection>("connecting");
 
@@ -18,7 +18,7 @@ export function useContainerLogs(applicationId: string, container: string) {
       pending = [];
       setLines((current) => appendCapped(current, batch));
     };
-    const socket = new WebSocket(logsUrl(applicationId, container));
+    const socket = new WebSocket(url);
     socket.onopen = () => setConnection("live");
     socket.onclose = () => setConnection("closed");
     socket.onmessage = (event: MessageEvent) => {
@@ -32,7 +32,7 @@ export function useContainerLogs(applicationId: string, container: string) {
       cancelAnimationFrame(frame);
       socket.close();
     };
-  }, [applicationId, container]);
+  }, [url]);
 
   return { lines, connection };
 }

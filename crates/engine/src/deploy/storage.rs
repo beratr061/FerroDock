@@ -1,6 +1,6 @@
 use ferrodock_core::AppResult;
 use ferrodock_db::runtime_config::MountRecord;
-use ferrodock_infra::docker::{MountSource, WorkloadMount, WorkloadPort};
+use ferrodock_infra::docker::{APPLICATION_LABEL, MountSource, WorkloadMount, WorkloadPort};
 
 use super::artifact::Job;
 
@@ -39,7 +39,7 @@ impl Job<'_> {
             let application_id = self.application.id.to_string();
             self.ctx
                 .docker
-                .ensure_volume(&name, &application_id)
+                .ensure_volume(&name, (APPLICATION_LABEL, &application_id))
                 .await?;
             (MountSource::Volume, name)
         } else {

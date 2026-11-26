@@ -12,9 +12,10 @@ use ferrodock_domain::audit::AuditLog;
 use ferrodock_domain::auth::{AuthRepos, AuthService};
 use ferrodock_domain::backups::{BackupService, BackupServiceParts};
 use ferrodock_engine::backup::BackupContext;
+use ferrodock_engine::databases::DatabaseContext;
 use ferrodock_engine::updater::{ManifestClient, UpdateLauncher};
 
-use crate::backups;
+use crate::{backups, databases as database_wiring};
 use ferrodock_domain::deployments::{DeploymentRepos, DeploymentService};
 use ferrodock_domain::domains::{DomainService, DomainSettings};
 use ferrodock_domain::projects::ProjectService;
@@ -53,6 +54,7 @@ pub struct Wired {
     pub store: PgStore,
     pub deploy: DeployContext,
     pub backup: BackupContext,
+    pub databases: DatabaseContext,
 }
 
 pub async fn connect(config: &AppConfig) -> AppResult<PgStore> {
@@ -127,7 +129,7 @@ fn runtime(config: &AppConfig, deploy: &DeployContext) -> Runtime {
     }
 }
 
-fn panel_host(config: &AppConfig) -> Option<String> {
+pub(crate) fn panel_host(config: &AppConfig) -> Option<String> {
     let url = config.public_url.as_deref()?;
     let rest = url.split_once("://").map_or(url, |(_, rest)| rest);
     let host = rest.split(['/', ':']).next()?;
@@ -195,6 +197,7 @@ fn app_state(
     config: &AppConfig,
     store: &PgStore,
     deploy: &DeployContext,
+    databases: &DatabaseContext,
     updates: UpdateLauncher,
 ) -> AppState {
     let audit = AuditLog::new(Arc::new(store.clone()));
@@ -219,6 +222,7 @@ fn app_state(
             audit.clone(),
         ),
         runtime_configs: RuntimeConfigService::new((shared(), shared()), audit.clone()),
+        databases: database_wiring::service(config, store, databases, audit.clone()),
         deployments: deployment_service(store, deploy, audit.clone()),
         terminal: TerminalService::new(deploy.docker.clone(), shared(), audit.clone()),
         backups: backup_service(config, store, auth, audit),
@@ -234,11 +238,13 @@ pub async fn build(config: &AppConfig) -> AppResult<Wired> {
     let deploy = deploy_context(config, &store, secrets.clone())?;
     let backup = backups::context(config, deploy.docker.clone(), secrets)?;
     let updates = update_launcher(config, &store, &deploy, backup.clone())?;
-    let state = app_state(config, &store, &deploy, updates);
+    let databases = database_wiring::context(config, &store, &deploy);
+    let state = app_state(config, &store, &deploy, &databases, updates);
     Ok(Wired {
         state,
         store,
         deploy,
         backup,
+        databases,
     })
 }

@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE databases SET external_port = $2, updated_at = now()\n             WHERE id = $1 AND ($2::integer IS NULL OR NOT EXISTS (\n                 SELECT 1 FROM application_ports\n                 WHERE published_port = $2 AND protocol = 'tcp'))",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "6741655923673ca4138746a429c54deaa2ed4339cd078e0076483a7ae1871216"
+}

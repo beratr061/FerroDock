@@ -135,10 +135,7 @@
     "title": "Loglar",
     "description": "Çalışan konteynerin canlı çıktısı. Önce son 300 satır yüklenir, yeni satırlar yazıldıkça akar.",
     "container": "Konteyner",
-    "empty": "Henüz konteyner yok. Loglarını görmek için uygulamayı deploy edin.",
-    "waiting": "Çıktı bekleniyor…",
-    "closed": "Log akışı sona erdi. Konteyner durdu ya da yenisiyle değişti.",
-    "follow": "Canlıya dön"
+    "empty": "Henüz konteyner yok. Loglarını görmek için uygulamayı deploy edin."
   },
   "runtime": {
     "title": "Depolama ve portlar",

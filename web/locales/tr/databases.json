@@ -1,0 +1,72 @@
+{
+  "title": "Veritabanları",
+  "new": "Yeni veritabanı",
+  "create": "Veritabanı oluştur",
+  "empty": "Bu ortamda henüz veritabanı yok.",
+  "back": "Projeye dön",
+  "settings": "Veritabanı ayarları",
+  "passwordNote": "Parolalar sizin için üretilir ve şifreli saklanır. Veritabanı sayfasında görüntüleyebilirsiniz.",
+  "failed": "Son deploy başarısız oldu: {{reason}}",
+  "fields": {
+    "name": "Ad",
+    "namePlaceholder": "siparis-db",
+    "engine": "Motor",
+    "version": "Sürüm",
+    "latest": "{{version}} (önerilen)",
+    "databaseName": "Veritabanı adı",
+    "fromName": "Addan türetilir",
+    "username": "Kullanıcı adı"
+  },
+  "validation": {
+    "identifier": "Harfle başlayan; küçük harf, rakam ve alt çizgi kullanın."
+  },
+  "status": {
+    "deploying": "Deploy ediliyor",
+    "running": "Çalışıyor",
+    "stopped": "Durduruldu",
+    "failed": "Başarısız",
+    "down": "Çalışmıyor"
+  },
+  "actions": {
+    "start": "Başlat",
+    "stop": "Durdur",
+    "redeploy": "Yeniden deploy et"
+  },
+  "connection": {
+    "title": "Bağlantı",
+    "description": "FerroDock'taki uygulamalar veritabanına iç ağda bu adla ulaşır. Port yayınlamadığınız sürece internetten erişilemez.",
+    "internalHost": "İç adres",
+    "database": "Veritabanı",
+    "username": "Kullanıcı adı",
+    "password": "Parola",
+    "rootPassword": "Root parolası",
+    "internalUrl": "İç bağlantı adresi",
+    "externalUrl": "Dış bağlantı adresi",
+    "hidden": "Parolalar gizli. Görüntülemek denetim kaydına yazılır.",
+    "reveal": "Bilgileri göster"
+  },
+  "activity": {
+    "title": "Etkinlik",
+    "container": "Veritabanı çıktısı",
+    "deploy": "Son deploy",
+    "noDeployLog": "Henüz deploy logu yok.",
+    "notRunning": "Veritabanı çalışmıyor. Çıktısını görmek için başlatın ya da yeniden deploy edin."
+  },
+  "external": {
+    "title": "Dış erişim",
+    "description": "Bilgisayarınızdan ya da başka bir sunucudan bağlanmak için veritabanını bir sunucu portunda yayınlayın. Bu değişince konteyner yeniden oluşturulur.",
+    "port": "Sunucu portu",
+    "publish": "Yayınla",
+    "remove": "Yayını kaldır",
+    "invalid": "{{min}} ile 65535 arasında bir port girin.",
+    "exposed": "Bu sunucunun {{port}} portuna erişebilen herkes giriş denemesi yapabilir. Erişimi güvenlik duvarıyla sınırlayın."
+  },
+  "delete": {
+    "title": "Veritabanını sil",
+    "description": "Konteyneri kaldırır. Siz ayrıca seçmedikçe veri volume'u korunur.",
+    "action": "Sil",
+    "removeData": "Tüm verileri de sil",
+    "confirm": "Veritabanını sil",
+    "confirmWithData": "Veritabanını ve verileri sil"
+  }
+}

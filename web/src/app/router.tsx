@@ -85,6 +85,12 @@ const applicationRoute = createRoute({
   component: lazyRouteComponent(() => import("@/features/applications"), "ApplicationPage"),
 });
 
+const databaseRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: "/databases/$databaseId",
+  component: lazyRouteComponent(() => import("@/features/databases"), "DatabasePage"),
+});
+
 const serversRoute = createRoute({
   getParentRoute: () => appRoute,
   path: "/servers",
@@ -137,6 +143,7 @@ const routeTree = rootRoute.addChildren([
     projectsRoute,
     projectDetailRoute,
     applicationRoute,
+    databaseRoute,
     serversRoute,
     settingsRoute.addChildren([settingsIndexRoute, apiKeysRoute, appearanceRoute, backupsRoute, updatesRoute]),
   ]),

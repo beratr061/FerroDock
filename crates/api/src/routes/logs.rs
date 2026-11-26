@@ -62,7 +62,7 @@ async fn forward(socket: &mut WebSocket, line: Option<AppResult<LogLine>>) -> bo
     }
 }
 
-async fn relay(mut socket: WebSocket, mut stream: LogStream) {
+pub(super) async fn relay(mut socket: WebSocket, mut stream: LogStream) {
     let mut ping = tokio::time::interval(PING_INTERVAL);
     loop {
         let open = tokio::select! {

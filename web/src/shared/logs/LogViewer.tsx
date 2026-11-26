@@ -1,16 +1,16 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { ArrowDownIcon } from "@phosphor-icons/react";
 
-import { useTranslation } from "@/shared/i18n";
-import { cx } from "@/shared/lib/cx";
+import { useTranslation } from "../i18n";
+import { cx } from "../lib/cx";
 
 import { useContainerLogs } from "./useContainerLogs";
 
 const STICK_THRESHOLD_PX = 24;
 
-export function LogViewer({ applicationId, container }: { applicationId: string; container: string }) {
-  const { t } = useTranslation("applications");
-  const { lines, connection } = useContainerLogs(applicationId, container);
+export function LogViewer({ url }: { url: string }) {
+  const { t } = useTranslation("common");
+  const { lines, connection } = useContainerLogs(url);
   const viewport = useRef<HTMLPreElement>(null);
   const [following, setFollowing] = useState(true);
 

@@ -1,0 +1,72 @@
+{
+  "title": "Databases",
+  "new": "New database",
+  "create": "Create database",
+  "empty": "No databases in this environment yet.",
+  "back": "Back to project",
+  "settings": "Database settings",
+  "passwordNote": "Passwords are generated for you and stored encrypted. You can reveal them on the database page.",
+  "failed": "The last deployment failed: {{reason}}",
+  "fields": {
+    "name": "Name",
+    "namePlaceholder": "orders-db",
+    "engine": "Engine",
+    "version": "Version",
+    "latest": "{{version}} (recommended)",
+    "databaseName": "Database name",
+    "fromName": "Derived from the name",
+    "username": "Username"
+  },
+  "validation": {
+    "identifier": "Use lowercase letters, digits and underscores, starting with a letter."
+  },
+  "status": {
+    "deploying": "Deploying",
+    "running": "Running",
+    "stopped": "Stopped",
+    "failed": "Failed",
+    "down": "Not running"
+  },
+  "actions": {
+    "start": "Start",
+    "stop": "Stop",
+    "redeploy": "Redeploy"
+  },
+  "connection": {
+    "title": "Connection",
+    "description": "Applications in FerroDock reach the database by this host name on the internal network. It is not reachable from the internet unless you publish a port.",
+    "internalHost": "Internal host",
+    "database": "Database",
+    "username": "Username",
+    "password": "Password",
+    "rootPassword": "Root password",
+    "internalUrl": "Internal URL",
+    "externalUrl": "External URL",
+    "hidden": "Passwords are hidden. Revealing them is recorded in the audit log.",
+    "reveal": "Reveal credentials"
+  },
+  "activity": {
+    "title": "Activity",
+    "container": "Database output",
+    "deploy": "Last deployment",
+    "noDeployLog": "No deployment log yet.",
+    "notRunning": "The database is not running. Start or redeploy it to see its output."
+  },
+  "external": {
+    "title": "Public access",
+    "description": "Publish the database on a server port to connect from your computer or another server. The container is recreated when this changes.",
+    "port": "Server port",
+    "publish": "Publish",
+    "remove": "Stop publishing",
+    "invalid": "Enter a port between {{min}} and 65535.",
+    "exposed": "Anyone who can reach port {{port}} on this server can try to log in. Limit access with a firewall."
+  },
+  "delete": {
+    "title": "Delete database",
+    "description": "Removes the container. The data volume is kept unless you choose to delete it too.",
+    "action": "Delete",
+    "removeData": "Also delete all data",
+    "confirm": "Delete database",
+    "confirmWithData": "Delete database and data"
+  }
+}

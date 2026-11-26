@@ -2,6 +2,7 @@ mod api_keys;
 mod applications;
 mod auth;
 mod backups;
+mod databases;
 mod deployments;
 mod docker;
 mod domains;
@@ -37,6 +38,7 @@ pub(crate) use backups::{
     __path_create_backup, __path_delete_backup, __path_download_backup, __path_export_master_key,
     __path_list_backups,
 };
+pub(crate) use databases::DatabaseApi;
 pub(crate) use deployments::{
     __path_cancel_deployment, __path_create_deployment, __path_deployment_log,
     __path_get_deployment, __path_list_deployments, __path_rollback_deployment,
@@ -234,4 +236,5 @@ pub fn api_routes(trust_forwarded: bool) -> Router<AppState> {
         .merge(variable_routes())
         .merge(system_routes())
         .merge(docker_routes())
+        .merge(databases::database_routes())
 }

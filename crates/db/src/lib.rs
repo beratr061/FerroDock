@@ -1,4 +1,5 @@
 pub mod applications;
+pub mod databases;
 pub mod deployments;
 pub mod domains;
 pub mod jobs;
@@ -12,6 +13,7 @@ pub mod variables;
 pub mod pg;
 
 pub use applications::ApplicationRepo;
+pub use databases::DatabaseRepo;
 pub use deployments::DeploymentRepo;
 pub use domains::DomainRepo;
 pub use jobs::JobQueue;

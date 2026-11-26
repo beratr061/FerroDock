@@ -1,0 +1,24 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO databases (id, environment_id, name, slug, engine, version, database_name,\n             username, password_enc, root_password_enc)\n             SELECT $1, e.id, $3, $4, $5, $6, $7, $8, $9, $10\n             FROM environments e JOIN projects p ON p.id = e.project_id\n             WHERE e.id = $2 AND p.organization_id = $11",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "63a16dce95079d3a169e228af3daa643941e7b2b8cc6d205199fc3a84c0da2d0"
+}
