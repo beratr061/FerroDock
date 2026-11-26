@@ -2,7 +2,7 @@ import { useForm, useWatch } from "react-hook-form";
 
 import { useTranslation } from "../i18n";
 import { errorMessage } from "../lib/errors";
-import { Button, InlineAlert, SelectField, TextField } from "../ui";
+import { Button, Checkbox, InlineAlert, SelectField, TextField } from "../ui";
 
 import { useRemovePolicy, useSavePolicy, type BackupPolicy, type BackupTarget } from "./api";
 
@@ -84,10 +84,7 @@ export function PolicyForm({ target, policy, destinations }: PolicyFormProps) {
         <TextField label={t("backups.cron")} hint={t("backups.cronHint")} spellCheck={false} className="max-w-sm" {...form.register("schedule", { required: true })} />
       ) : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <label className="inline-flex items-center gap-2 text-text">
-          <input type="checkbox" className="size-4 accent-current" {...form.register("enabled")} />
-          {t("backups.enabled")}
-        </label>
+        <Checkbox label={t("backups.enabled")} {...form.register("enabled")} />
         <div className="flex flex-wrap items-center gap-2">
           {next && policy?.enabled ? <span className="text-[13px] text-subtle">{t("backups.nextRun", { time: next })}</span> : null}
           {policy ? (

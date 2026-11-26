@@ -2,7 +2,7 @@ import { useForm, useWatch } from "react-hook-form";
 
 import { useTranslation } from "@/shared/i18n";
 import { errorMessage } from "@/shared/lib/errors";
-import { Button, InlineAlert, SegmentedControl, TextField } from "@/shared/ui";
+import { Button, Checkbox, InlineAlert, SegmentedControl, TextField } from "@/shared/ui";
 
 import { useCreateDestination, type NewDestination } from "./api";
 
@@ -62,10 +62,7 @@ function S3Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
         <TextField label={t("storage.accessKeyId")} spellCheck={false} autoComplete="off" error={errors.accessKeyId ? required : undefined} {...form.register("accessKeyId", { required: true })} />
         <TextField label={t("storage.secretAccessKey")} type="password" autoComplete="new-password" error={errors.secretAccessKey ? required : undefined} {...form.register("secretAccessKey", { required: true })} />
       </div>
-      <label className="inline-flex items-center gap-2 text-text">
-        <input type="checkbox" className="size-4 accent-current" {...form.register("pathStyle")} />
-        {t("storage.pathStyle")}
-      </label>
+      <Checkbox label={t("storage.pathStyle")} {...form.register("pathStyle")} />
     </>
   );
 }

@@ -2,7 +2,7 @@ import { TrashIcon } from "@phosphor-icons/react";
 import { useWatch, type Control, type FieldErrors, type UseFormRegister } from "react-hook-form";
 
 import { useTranslation } from "@/shared/i18n";
-import { Button, SelectField, TextField } from "@/shared/ui";
+import { Button, Checkbox, SelectField, TextField } from "@/shared/ui";
 
 import type { RuntimeForm } from "./runtimeForm";
 
@@ -45,10 +45,7 @@ export function MountFields({ index, control, register, errors, onRemove }: Moun
         {...register(`mounts.${index}.target`, { required: true })}
       />
       <div className="flex items-center gap-3 md:h-10">
-        <label className="inline-flex items-center gap-2 text-text">
-          <input type="checkbox" className="size-4 accent-current" {...register(`mounts.${index}.readOnly`)} />
-          {t("runtime.readOnly")}
-        </label>
+        <Checkbox label={t("runtime.readOnly")} {...register(`mounts.${index}.readOnly`)} />
         <Button variant="ghost" aria-label={t("runtime.remove")} icon={<TrashIcon size={16} aria-hidden />} onClick={onRemove} />
       </div>
     </li>

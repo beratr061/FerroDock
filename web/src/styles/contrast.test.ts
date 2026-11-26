@@ -49,6 +49,8 @@ const RULES: Rule[] = [
   { foreground: "text", backgrounds: SURFACES, minimum: AAA },
   { foreground: "text-muted", backgrounds: SURFACES, minimum: AAA },
   { foreground: "text-subtle", backgrounds: SURFACES, minimum: AA },
+  { foreground: "text", backgrounds: ["surface-active"], minimum: AAA },
+  { foreground: "focus-ring", backgrounds: ["surface-active"], minimum: UI },
   { foreground: "border-strong", backgrounds: SURFACES, minimum: UI },
   { foreground: "focus-ring", backgrounds: SURFACES, minimum: UI },
   { foreground: "on-primary", backgrounds: ["primary"], minimum: AA },

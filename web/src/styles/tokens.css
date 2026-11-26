@@ -4,6 +4,7 @@
   --surface: #ffffff;
   --surface-raised: #f6f7f7;
   --surface-hover: #eeeff1;
+  --surface-active: #e4e5e9;
   --border: #e4e5e9;
   --border-strong: #7c818a;
   --text: #0f1011;
@@ -40,6 +41,7 @@
   --surface: #0f1011;
   --surface-raised: #141516;
   --surface-hover: #18191a;
+  --surface-active: #23252a;
   --border: #23252a;
   --border-strong: #62666d;
   --text: #f7f8f8;
@@ -65,6 +67,7 @@
   --color-surface: var(--surface);
   --color-surface-raised: var(--surface-raised);
   --color-surface-hover: var(--surface-hover);
+  --color-surface-active: var(--surface-active);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
   --color-text: var(--text);

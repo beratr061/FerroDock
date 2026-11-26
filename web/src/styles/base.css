@@ -48,6 +48,7 @@ kbd,
 }
 
 input:not([type="checkbox"], [type="radio"]):focus-visible,
+[role="combobox"]:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
   outline: none;

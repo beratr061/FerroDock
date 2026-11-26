@@ -73,7 +73,8 @@ test("a managed database starts", async ({ page }) => {
   await page.getByRole("button", { name: "New database" }).click();
   const database = formWith(page, "Create database");
   await database.getByLabel("Name", { exact: true }).fill("cache");
-  await database.getByLabel("Engine").selectOption("redis");
+  await database.getByRole("combobox", { name: "Engine" }).click();
+  await database.getByRole("option", { name: "Redis", exact: true }).click();
   await database.getByRole("button", { name: "Create database" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "cache" })).toBeVisible();
   await expect(page.getByText("Running", { exact: true }).first()).toBeVisible({ timeout: DEPLOY_TIMEOUT });

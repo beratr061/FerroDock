@@ -70,6 +70,8 @@ Inter stands in for Linear's proprietary families; JetBrains Mono for Linear Mon
 
 - **Buttons**: 36px high, 8px 14px padding, 8px radius, 14px/500 label. Primary is lavender with white text; secondary is surface-1 with a hairline; ghost is plain text that lifts to surface-2 on hover; danger is surface-1 with danger text and border.
 - **Inputs and selects**: 36px, surface-1, 8px radius, 12px side padding, 14px text (16px on phones so iOS does not zoom). Labels are 13px ink-muted at 500. Focus only changes the field's own border to the lavender focus colour, with no separate ring (WCAG 2.4.7 technique C15); hover lightens the border. Checkboxes, buttons and links keep the 2px focus outline.
+- **Selects**: custom select-only comboboxes (WAI-ARIA APG pattern) instead of the native control. The trigger looks like a text field with a caret that turns when open; the list is a surface-2 popover with 32px rows, the highlighted row on `--surface-active` and a lavender check on the chosen value. Keyboard: arrows, Home/End, PageUp/PageDown, typeahead, Enter/Space to choose, Escape to close, Tab to choose and move on. A hidden native select keeps forms working.
+- **Checkboxes**: 16px boxes with a 4px radius and the input border; checked fills lavender and the white check scales in. The real input stays underneath for forms and screen readers.
 - **Tabs and segmented controls**: pills. Unselected is subtle text on the canvas; selected lifts to surface-2.
 - **Status badges**: 22px surface-2 pills with ink-muted caption text and a 6px dot in the status colour.
 - **Alerts**: surface-2 with a status-coloured border and icon; the message stays in ink.

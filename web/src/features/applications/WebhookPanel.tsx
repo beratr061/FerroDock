@@ -52,7 +52,7 @@ function Actions({ enabled, rotate, disable }: ActionsProps) {
 
   if (!enabled) {
     return (
-      <Button busy={rotate.isPending} onClick={onRotate}>
+      <Button className="self-start" busy={rotate.isPending} onClick={onRotate}>
         {t("webhook.enable")}
       </Button>
     );

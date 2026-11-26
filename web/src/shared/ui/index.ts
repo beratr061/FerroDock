@@ -1,4 +1,5 @@
 export { Button } from "./Button";
+export { Checkbox } from "./Checkbox";
 export { CopyButton } from "./CopyButton";
 export { EmptyState } from "./EmptyState";
 export { InlineAlert } from "./InlineAlert";

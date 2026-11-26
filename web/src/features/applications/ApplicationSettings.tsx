@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 
 import { useTranslation } from "@/shared/i18n";
 import { errorMessage } from "@/shared/lib/errors";
-import { Button, InlineAlert, TextField } from "@/shared/ui";
+import { Button, Checkbox, InlineAlert, TextField } from "@/shared/ui";
 
 import { useDeleteApplication, useUpdateApplication, type Application } from "./api";
 import { sourceValues, toSourceRequest, type SourceFormValues } from "./sourceForm";
@@ -75,10 +75,7 @@ function DeleteApplication({ application }: { application: Application }) {
       </div>
       {confirming ? (
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
-          <label className="inline-flex items-center gap-2 text-text">
-            <input type="checkbox" className="size-4 accent-current" checked={removeData} onChange={(event) => setRemoveData(event.target.checked)} />
-            {t("delete.removeData")}
-          </label>
+          <Checkbox label={t("delete.removeData")} checked={removeData} onChange={(event) => setRemoveData(event.target.checked)} />
           <div className="flex gap-2">
             <Button variant="ghost" onClick={() => setConfirming(false)}>
               {t("actions.cancel", { ns: "common" })}

@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 
 import { useTranslation } from "@/shared/i18n";
 import { errorMessage } from "@/shared/lib/errors";
-import { Button, InlineAlert, TextField } from "@/shared/ui";
+import { Button, Checkbox, InlineAlert, TextField } from "@/shared/ui";
 
 import { useAddDomain } from "./api";
 import { BasicAuthFields } from "./BasicAuthFields";
@@ -66,14 +66,8 @@ export function AddDomainForm({ applicationId, compose, onDone }: AddDomainFormP
       <BasicAuthFields control={control} register={register} errors={formState.errors} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-x-5 gap-y-2">
-          <label className="inline-flex items-center gap-2 text-text">
-            <input type="checkbox" className="size-4 accent-current" {...register("https")} />
-            {t("domains.https")}
-          </label>
-          <label className="inline-flex items-center gap-2 text-text">
-            <input type="checkbox" className="size-4 accent-current" {...register("protect")} />
-            {t("domains.protect")}
-          </label>
+          <Checkbox label={t("domains.https")} {...register("https")} />
+          <Checkbox label={t("domains.protect")} {...register("protect")} />
         </div>
         <div className="flex gap-2">
           <Button variant="ghost" onClick={onDone}>

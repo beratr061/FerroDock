@@ -6,7 +6,7 @@ import { useTranslation } from "@/shared/i18n";
 import { ApiError } from "@/shared/api/client";
 import { errorMessage } from "@/shared/lib/errors";
 import { openTerminal } from "@/shared/terminal";
-import { EmptyState, InlineAlert } from "@/shared/ui";
+import { Checkbox, EmptyState, InlineAlert } from "@/shared/ui";
 
 import { containersQuery, engineInfoQuery } from "./api";
 import { ContainerRow } from "./ContainerRow";
@@ -44,15 +44,12 @@ export function ServersPage() {
                 : " "}
             </p>
           </div>
-          <label className="flex cursor-pointer items-center gap-2 text-muted select-none">
-            <input
-              type="checkbox"
-              checked={includeStopped}
-              onChange={(event) => setIncludeStopped(event.target.checked)}
-              className="size-4 accent-current"
-            />
-            {t("showStopped")}
-          </label>
+          <Checkbox
+            label={t("showStopped")}
+            className="text-muted"
+            checked={includeStopped}
+            onChange={(event) => setIncludeStopped(event.target.checked)}
+          />
         </div>
         {containers.isPending ? <ListSkeleton /> : null}
         {forbidden ? <InlineAlert tone="info">{t("adminOnly")}</InlineAlert> : null}
