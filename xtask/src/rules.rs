@@ -59,10 +59,16 @@ fn collect(dir: &Path, files: &mut Vec<PathBuf>) {
         return;
     };
     for entry in entries.flatten() {
+        let Ok(kind) = entry.file_type() else {
+            continue;
+        };
+        if kind.is_symlink() {
+            continue;
+        }
         let path = entry.path();
         let name = entry.file_name();
         let name = name.to_string_lossy();
-        if path.is_dir() {
+        if kind.is_dir() {
             if !SKIPPED_DIRS.contains(&name.as_ref()) {
                 collect(&path, files);
             }
