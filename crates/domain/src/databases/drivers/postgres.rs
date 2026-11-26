@@ -1,4 +1,4 @@
-use super::{Credentials, DatabaseDriver};
+use super::{Credentials, DatabaseDriver, RestoreMethod};
 
 pub struct Postgres;
 
@@ -42,6 +42,22 @@ impl DatabaseDriver for Postgres {
 
     fn scheme(&self) -> &'static str {
         "postgresql"
+    }
+
+    fn dump_script(&self) -> String {
+        "exec pg_dump -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\" --format=custom --no-owner"
+            .to_owned()
+    }
+
+    fn restore_method(&self) -> RestoreMethod {
+        RestoreMethod::Stream(
+            "exec pg_restore -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\" --clean --if-exists --no-owner --single-transaction"
+                .to_owned(),
+        )
+    }
+
+    fn dump_extension(&self) -> &'static str {
+        "pgdump"
     }
 }
 

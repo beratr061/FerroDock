@@ -10,6 +10,15 @@ use self::mongo::Mongo;
 use self::mysql::MySqlFamily;
 use self::postgres::Postgres;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RestoreMethod {
+    Stream(String),
+    ReplaceDataFile {
+        staging: &'static str,
+        prepare: String,
+    },
+}
+
 #[derive(Debug, Clone, Copy)]
 pub struct Credentials<'a> {
     pub database: &'a str,
@@ -27,6 +36,9 @@ pub trait DatabaseDriver: Send + Sync {
     fn env(&self, credentials: &Credentials<'_>) -> Vec<String>;
     fn healthcheck(&self) -> &'static str;
     fn scheme(&self) -> &'static str;
+    fn dump_script(&self) -> String;
+    fn restore_method(&self) -> RestoreMethod;
+    fn dump_extension(&self) -> &'static str;
 
     fn command(&self, _credentials: &Credentials<'_>) -> Option<Vec<String>> {
         None

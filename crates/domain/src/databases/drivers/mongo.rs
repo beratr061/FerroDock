@@ -1,4 +1,6 @@
-use super::{Credentials, DatabaseDriver};
+use super::{Credentials, DatabaseDriver, RestoreMethod};
+
+const AUTH: &str = "--username \"$MONGO_INITDB_ROOT_USERNAME\" --password \"$MONGO_INITDB_ROOT_PASSWORD\" --authenticationDatabase admin";
 
 pub struct Mongo;
 
@@ -37,6 +39,20 @@ impl DatabaseDriver for Mongo {
 
     fn scheme(&self) -> &'static str {
         "mongodb"
+    }
+
+    fn dump_script(&self) -> String {
+        format!("exec mongodump --archive --gzip --quiet {AUTH}")
+    }
+
+    fn restore_method(&self) -> RestoreMethod {
+        RestoreMethod::Stream(format!(
+            "exec mongorestore --archive --gzip --drop --quiet {AUTH}"
+        ))
+    }
+
+    fn dump_extension(&self) -> &'static str {
+        "archive.gz"
     }
 
     fn url_suffix(&self, database: &str) -> String {

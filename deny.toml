@@ -4,6 +4,9 @@ all-features = true
 [advisories]
 version = 2
 yanked = "deny"
+ignore = [
+    { id = "RUSTSEC-2026-0543", reason = "chrono is unmaintained but has no known vulnerability; it is only pulled in by object_store, which has no alternative time crate yet" },
+]
 
 [licenses]
 version = 2

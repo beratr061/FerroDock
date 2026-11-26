@@ -5,6 +5,7 @@ const SECTIONS = [
   { to: "/settings/api-keys", key: "apiKeys" },
   { to: "/settings/appearance", key: "appearance" },
   { to: "/settings/backups", key: "backups" },
+  { to: "/settings/storage", key: "storage" },
   { to: "/settings/updates", key: "updates" },
 ] as const;
 

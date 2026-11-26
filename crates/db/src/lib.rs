@@ -1,4 +1,5 @@
 pub mod applications;
+pub mod backups;
 pub mod databases;
 pub mod deployments;
 pub mod domains;
@@ -13,6 +14,7 @@ pub mod variables;
 pub mod pg;
 
 pub use applications::ApplicationRepo;
+pub use backups::{BackupDestinationRepo, BackupPolicyRepo, BackupRunRepo};
 pub use databases::DatabaseRepo;
 pub use deployments::DeploymentRepo;
 pub use domains::DomainRepo;

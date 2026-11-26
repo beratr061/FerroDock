@@ -1099,6 +1099,287 @@
         }
       }
     },
+    "/api/v1/backup-destinations": {
+      "get": {
+        "tags": [
+          "backups"
+        ],
+        "description": "Lists where database backups can be stored; secrets are never returned",
+        "operationId": "list_backup_destinations",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BackupDestinationDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "backups"
+        ],
+        "description": "Adds a local or S3-compatible destination after writing, reading and deleting a probe object; requires the admin role",
+        "operationId": "create_backup_destination",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBackupDestinationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupDestinationDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/backup-destinations/{id}": {
+      "delete": {
+        "tags": [
+          "backups"
+        ],
+        "description": "Removes a destination that no backup schedule uses; stored files are left in place. Requires the admin role",
+        "operationId": "delete_backup_destination",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Destination id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/backup-destinations/{id}/test": {
+      "post": {
+        "tags": [
+          "backups"
+        ],
+        "description": "Checks that the destination still accepts writes; requires the admin role",
+        "operationId": "test_backup_destination",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Destination id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/database-backups/{id}": {
+      "delete": {
+        "tags": [
+          "backups"
+        ],
+        "description": "Deletes a stored backup file and its record; requires the admin role",
+        "operationId": "delete_database_backup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Backup run id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/database-backups/{id}/restore": {
+      "post": {
+        "tags": [
+          "backups"
+        ],
+        "description": "Queues a restore that replaces the database contents with this backup; requires the admin role",
+        "operationId": "restore_database_backup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Backup run id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupRunDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/database-engines": {
       "get": {
         "tags": [
@@ -1331,6 +1612,263 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DatabaseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/databases/{id}/backup-policy": {
+      "get": {
+        "tags": [
+          "backups"
+        ],
+        "description": "Returns the backup schedule of a database, or null when it has none",
+        "operationId": "get_backup_policy",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Database id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/BackupPolicyDto"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "backups"
+        ],
+        "description": "Sets the backup schedule (five-field cron in UTC), destination and how many backups to keep; requires the developer role",
+        "operationId": "set_backup_policy",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Database id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BackupPolicyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupPolicyDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "backups"
+        ],
+        "description": "Stops scheduled backups; existing backups are kept",
+        "operationId": "delete_backup_policy",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Database id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/databases/{id}/backups": {
+      "get": {
+        "tags": [
+          "backups"
+        ],
+        "description": "Lists the latest backup and restore runs of a database",
+        "operationId": "list_database_backups",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Database id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BackupRunDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "backups"
+        ],
+        "description": "Queues an encrypted backup of the database to a destination; requires the developer role",
+        "operationId": "create_database_backup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Database id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBackupRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupRunDto"
                 }
               }
             }
@@ -3053,6 +3591,63 @@
           }
         }
       },
+      "BackupDestinationDto": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "path_prefix",
+          "path_style",
+          "created_at"
+        ],
+        "properties": {
+          "access_key_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "bucket": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endpoint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/DestinationKindDto"
+          },
+          "name": {
+            "type": "string"
+          },
+          "path_prefix": {
+            "type": "string"
+          },
+          "path_style": {
+            "type": "boolean"
+          },
+          "region": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
       "BackupDto": {
         "type": "object",
         "required": [
@@ -3075,6 +3670,63 @@
           }
         }
       },
+      "BackupPolicyDto": {
+        "type": "object",
+        "required": [
+          "destination_id",
+          "schedule",
+          "retention",
+          "enabled",
+          "next_run_at"
+        ],
+        "properties": {
+          "destination_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "next_run_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "retention": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "schedule": {
+            "type": "string"
+          }
+        }
+      },
+      "BackupPolicyRequest": {
+        "type": "object",
+        "required": [
+          "destination_id",
+          "schedule",
+          "retention",
+          "enabled"
+        ],
+        "properties": {
+          "destination_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "retention": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "schedule": {
+            "type": "string"
+          }
+        }
+      },
       "BackupRequestedDto": {
         "type": "object",
         "required": [
@@ -3084,6 +3736,72 @@
           "job_id": {
             "type": "string",
             "format": "uuid"
+          }
+        }
+      },
+      "BackupRunDto": {
+        "type": "object",
+        "required": [
+          "id",
+          "operation",
+          "trigger",
+          "status",
+          "created_at"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "destination_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "error_code": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "finished_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "operation": {
+            "type": "string",
+            "example": "backup"
+          },
+          "size_bytes": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "source_run_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "example": "succeeded"
+          },
+          "trigger": {
+            "type": "string",
+            "example": "manual"
           }
         }
       },
@@ -3230,6 +3948,45 @@
                 "type": "null"
               }
             ]
+          }
+        }
+      },
+      "CreateBackupDestinationRequest": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "path_prefix": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "s3": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/S3DestinationRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "CreateBackupRequest": {
+        "type": "object",
+        "required": [
+          "destination_id"
+        ],
+        "properties": {
+          "destination_id": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       },
@@ -3655,6 +4412,13 @@
           "succeeded",
           "failed",
           "cancelled"
+        ]
+      },
+      "DestinationKindDto": {
+        "type": "string",
+        "enum": [
+          "local",
+          "s3"
         ]
       },
       "DnsCheckDto": {
@@ -4086,6 +4850,39 @@
             "items": {
               "$ref": "#/components/schemas/PortDto"
             }
+          }
+        }
+      },
+      "S3DestinationRequest": {
+        "type": "object",
+        "required": [
+          "region",
+          "bucket",
+          "access_key_id",
+          "secret_access_key"
+        ],
+        "properties": {
+          "access_key_id": {
+            "type": "string"
+          },
+          "bucket": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "path_style": {
+            "type": "boolean"
+          },
+          "region": {
+            "type": "string"
+          },
+          "secret_access_key": {
+            "type": "string",
+            "format": "password"
           }
         }
       },

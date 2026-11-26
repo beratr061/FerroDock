@@ -4,11 +4,17 @@ use clap::Subcommand;
 use ferrodock_core::{AppError, AppResult};
 use std::path::{Path, PathBuf};
 
+use ferrodock_core::config::AppConfig;
+use ferrodock_db::pg::PgStore;
+use ferrodock_engine::backup::BackupContext;
+use ferrodock_engine::deploy::DeployContext;
+use ferrodock_engine::updater::UpdateLauncher;
 use ferrodock_engine::updater::{
     DEFAULT_MANIFEST_URL, ManifestClient, UpdateState, apply, check_for_update, layout,
     release_key, running_version,
 };
 use ferrodock_infra::docker::DockerEngine;
+use std::sync::Arc;
 
 #[derive(Debug, Subcommand)]
 pub enum UpdateCommand {
@@ -52,4 +58,21 @@ async fn check(manifest_url: &str) -> AppResult<()> {
     let rendered = serde_json::to_string_pretty(&status).map_err(AppError::internal)?;
     let mut stdout = std::io::stdout().lock();
     writeln!(stdout, "{rendered}").map_err(AppError::internal)
+}
+
+pub fn launcher(
+    config: &AppConfig,
+    store: &PgStore,
+    deploy: &DeployContext,
+    backup: BackupContext,
+) -> AppResult<UpdateLauncher> {
+    let user_agent = concat!("ferrodock/", env!("CARGO_PKG_VERSION"));
+    Ok(UpdateLauncher {
+        docker: deploy.docker.clone(),
+        jobs: Arc::new(store.clone()),
+        backup,
+        status_file: config.master_key_path.with_file_name("update-status.json"),
+        host_config_dir: config.host_config_dir.clone(),
+        manifest: ManifestClient::new(&config.update_manifest_url, user_agent)?,
+    })
 }

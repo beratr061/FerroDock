@@ -4,6 +4,7 @@ use std::time::Duration;
 use ferrodock_db::jobs::LOCAL_QUEUE;
 use ferrodock_db::pg::{JobSignals, PgStore};
 use ferrodock_engine::backup::{BackupContext, BackupHandler};
+use ferrodock_engine::database_backups::{BackupJobContext, DatabaseBackupHandler};
 use ferrodock_engine::databases::{DatabaseContext, DatabaseHandler};
 use ferrodock_engine::deploy::{DeployContext, DeployHandler};
 use ferrodock_engine::jobs::{JobRunner, JobSignal, RunnerConfig};
@@ -18,6 +19,7 @@ pub struct Contexts {
     pub deploy: DeployContext,
     pub backup: BackupContext,
     pub databases: DatabaseContext,
+    pub backup_jobs: BackupJobContext,
 }
 
 pub fn start(
@@ -36,10 +38,13 @@ pub fn start(
         cancel_grace: Duration::from_secs(15),
         drain_timeout: DRAIN_TIMEOUT,
     };
+    let backups = DatabaseBackupHandler::backups(contexts.backup_jobs);
     let runner = JobRunner::new(Arc::new(store.clone()), config, signal.clone())
         .register(Arc::new(DeployHandler::new(contexts.deploy)))
         .register(Arc::new(BackupHandler::new(contexts.backup)))
-        .register(Arc::new(DatabaseHandler::new(contexts.databases)));
+        .register(Arc::new(DatabaseHandler::new(contexts.databases)))
+        .register(Arc::new(backups.restores()))
+        .register(Arc::new(backups));
     tokio::spawn(forward_signals(store.clone(), signal, shutdown.clone()));
     let runner_shutdown = shutdown.clone();
     tokio::spawn(async move {

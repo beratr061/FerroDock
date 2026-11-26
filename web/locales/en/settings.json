@@ -87,5 +87,29 @@
       "rolled_back": "Rolled back",
       "failed": "Failed"
     }
+  },
+  "storage": {
+    "title": "Backup storage",
+    "description": "Where database backups are written. Files are encrypted with the master key before they leave the server.",
+    "new": "Add destination",
+    "add": "Add destination",
+    "empty": "No destinations yet. Add one to start backing up databases.",
+    "kind": "Type",
+    "local": "This server",
+    "s3": "S3-compatible",
+    "name": "Name",
+    "localPlaceholder": "Local disk",
+    "prefix": "Folder prefix",
+    "localNote": "Files are kept under /var/lib/ferrodock/database-backups. Use an S3 destination too, so a backup survives the loss of this server.",
+    "endpoint": "Endpoint",
+    "endpointHint": "Leave empty for AWS. Use the full URL for MinIO, Cloudflare R2 or others.",
+    "region": "Region",
+    "bucket": "Bucket",
+    "accessKeyId": "Access key ID",
+    "secretAccessKey": "Secret access key",
+    "pathStyle": "Use path-style addressing (needed by MinIO and some providers)",
+    "test": "Test",
+    "reachable": "Write, read and delete worked.",
+    "remove": "Remove"
   }
 }

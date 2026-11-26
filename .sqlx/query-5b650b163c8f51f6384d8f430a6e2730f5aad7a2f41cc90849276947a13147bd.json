@@ -1,0 +1,161 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, organization_id, name, kind, endpoint, region, bucket, path_prefix,\n             access_key_id, secret_access_key_enc, path_style, created_at\n             FROM backup_destinations WHERE organization_id = $1 AND id = $2",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "backup_destinations",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "organization_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "backup_destinations",
+            "name": "organization_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "backup_destinations",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "kind",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "backup_destinations",
+            "name": "kind"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "endpoint",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "backup_destinations",
+            "name": "endpoint"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "region",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "backup_destinations",
+            "name": "region"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "bucket",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "backup_destinations",
+            "name": "bucket"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "path_prefix",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "backup_destinations",
+            "name": "path_prefix"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "access_key_id",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "backup_destinations",
+            "name": "access_key_id"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "secret_access_key_enc",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "backup_destinations",
+            "name": "secret_access_key_enc"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "path_style",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "backup_destinations",
+            "name": "path_style"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "backup_destinations",
+            "name": "created_at"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      false,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "5b650b163c8f51f6384d8f430a6e2730f5aad7a2f41cc90849276947a13147bd"
+}

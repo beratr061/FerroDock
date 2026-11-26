@@ -1,7 +1,9 @@
-use super::{Credentials, DatabaseDriver};
+use super::{Credentials, DatabaseDriver, RestoreMethod};
 
 pub struct MySqlFamily {
     engine: &'static str,
+    dump: &'static str,
+    client: &'static str,
     prefix: &'static str,
     versions: &'static [&'static str],
     healthcheck: &'static str,
@@ -10,6 +12,8 @@ pub struct MySqlFamily {
 impl MySqlFamily {
     pub const MYSQL: Self = Self {
         engine: "mysql",
+        dump: "mysqldump",
+        client: "mysql",
         prefix: "MYSQL",
         versions: &["8.4", "9"],
         healthcheck: "mysqladmin ping -h 127.0.0.1 -uroot -p\"$MYSQL_ROOT_PASSWORD\" --silent",
@@ -17,6 +21,8 @@ impl MySqlFamily {
 
     pub const MARIADB: Self = Self {
         engine: "mariadb",
+        dump: "mariadb-dump",
+        client: "mariadb",
         prefix: "MARIADB",
         versions: &["11.8", "11.4", "10.11"],
         healthcheck: "healthcheck.sh --connect --innodb_initialized",
@@ -61,6 +67,22 @@ impl DatabaseDriver for MySqlFamily {
 
     fn scheme(&self) -> &'static str {
         "mysql"
+    }
+
+    fn dump_script(&self) -> String {
+        let (tool, prefix) = (self.dump, self.prefix);
+        format!(
+            "exec {tool} -uroot -p\"${prefix}_ROOT_PASSWORD\" --single-transaction --routines --triggers --events --databases \"${prefix}_DATABASE\""
+        )
+    }
+
+    fn restore_method(&self) -> RestoreMethod {
+        let (tool, prefix) = (self.client, self.prefix);
+        RestoreMethod::Stream(format!("exec {tool} -uroot -p\"${prefix}_ROOT_PASSWORD\""))
+    }
+
+    fn dump_extension(&self) -> &'static str {
+        "sql"
     }
 
     fn needs_root_password(&self) -> bool {

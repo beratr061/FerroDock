@@ -1,0 +1,18 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE backup_runs SET status = $2, object_key = COALESCE($3, object_key),\n             size_bytes = COALESCE($4, size_bytes), error_code = $5, finished_at = now()\n             WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Text",
+        "Int8",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "527cac3ab3b328518ebf360d1fbcd34894fd5df59a9c1517ab1e56cab1fc7fab"
+}

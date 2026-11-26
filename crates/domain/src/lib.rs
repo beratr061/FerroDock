@@ -2,6 +2,7 @@ pub mod applications;
 pub mod audit;
 pub mod auth;
 pub mod backups;
+pub mod database_backups;
 pub mod databases;
 pub mod deployments;
 pub mod domains;

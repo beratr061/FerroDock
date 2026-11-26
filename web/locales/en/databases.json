@@ -68,5 +68,46 @@
     "removeData": "Also delete all data",
     "confirm": "Delete database",
     "confirmWithData": "Delete database and data"
+  },
+  "backups": {
+    "title": "Backups",
+    "description": "Encrypted dumps on a schedule or on demand. Restoring replaces the current contents of the database.",
+    "now": "Back up now",
+    "noDestinations": "Add a backup destination before scheduling backups.",
+    "addDestination": "Add a destination",
+    "destination": "Destination",
+    "schedule": "Schedule",
+    "presets": {
+      "daily": "Every day at 03:00 UTC",
+      "sixHours": "Every 6 hours",
+      "hourly": "Every hour",
+      "weekly": "Every Sunday at 03:00 UTC",
+      "custom": "Custom (cron)"
+    },
+    "cron": "Cron expression",
+    "cronHint": "Five fields in UTC: minute hour day month weekday.",
+    "retention": "Backups to keep",
+    "retentionInvalid": "Keep between 1 and {{max}} backups.",
+    "enabled": "Scheduled backups on",
+    "nextRun": "Next run {{time}}",
+    "saveSchedule": "Save schedule",
+    "removeSchedule": "Remove schedule",
+    "restore": "Restore",
+    "confirmRestore": "Replace current data",
+    "delete": "Delete backup",
+    "operation": {
+      "backup": "Backup",
+      "restore": "Restore"
+    },
+    "trigger": {
+      "schedule": "Scheduled",
+      "manual": "Manual"
+    },
+    "status": {
+      "queued": "Queued",
+      "running": "Running",
+      "succeeded": "Done",
+      "failed": "Failed"
+    }
   }
 }

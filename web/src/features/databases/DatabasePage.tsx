@@ -8,6 +8,7 @@ import { Button, InlineAlert, StatusBadge } from "@/shared/ui";
 
 import { ActivityPanel } from "./ActivityPanel";
 import { databaseQuery, useDatabaseAction, type Database } from "./api";
+import { BackupsPanel } from "./backups/BackupsPanel";
 import { ConnectionPanel } from "./ConnectionPanel";
 import { DeleteDatabase } from "./DeleteDatabase";
 import { ExternalPortPanel } from "./ExternalPortPanel";
@@ -86,6 +87,7 @@ export function DatabasePage() {
           ) : null}
           <ConnectionPanel database={data} />
           <ActivityPanel database={data} />
+          <BackupsPanel databaseId={data.id} />
           <ExternalPortPanel key={data.external_port ?? "none"} database={data} />
           <DeleteDatabase database={data} />
         </>

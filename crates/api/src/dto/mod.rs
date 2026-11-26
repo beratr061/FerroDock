@@ -2,6 +2,7 @@ mod api_keys;
 mod applications;
 mod auth;
 mod backups;
+mod database_backups;
 mod databases;
 mod deployments;
 mod docker;
@@ -22,6 +23,10 @@ pub use auth::{
     HealthResponse, MeResponse, MembershipDto, RoleDto, SetupRequest, SetupStatus, SignInRequest,
 };
 pub use backups::{BackupDto, BackupRequestedDto, MasterKeyDto, MasterKeyRequest};
+pub use database_backups::{
+    BackupDestinationDto, BackupPolicyDto, BackupPolicyRequest, BackupRunDto,
+    CreateBackupDestinationRequest, CreateBackupRequest, DestinationKindDto, S3DestinationRequest,
+};
 pub use databases::{
     CreateDatabaseRequest, DatabaseActionDto, DatabaseActionRequest, DatabaseCredentialsDto,
     DatabaseDto, DatabaseEngineDto, DatabaseLogDto, DatabaseLogQuery, DatabaseLogsQuery,

@@ -137,6 +137,31 @@ impl DockerEngine {
         Ok(outcome)
     }
 
+    pub async fn dump_with(&self, container: &str, script: &str) -> AppResult<Vec<u8>> {
+        let command = vec!["sh".to_owned(), "-c".to_owned(), script.to_owned()];
+        let outcome = self.run_exec(container, command, None).await?;
+        if outcome.exit_code == 0 && !outcome.stdout.is_empty() {
+            Ok(outcome.stdout)
+        } else {
+            Err(failure("BACKUP_DUMP_FAILED", &outcome))
+        }
+    }
+
+    pub async fn restore_with(
+        &self,
+        container: &str,
+        script: &str,
+        input: Vec<u8>,
+    ) -> AppResult<()> {
+        let command = vec!["sh".to_owned(), "-c".to_owned(), script.to_owned()];
+        let outcome = self.run_exec(container, command, Some(input)).await?;
+        if outcome.exit_code == 0 {
+            Ok(())
+        } else {
+            Err(failure("BACKUP_RESTORE_FAILED", &outcome))
+        }
+    }
+
     pub async fn pg_dump(&self, target: &DatabaseTarget) -> AppResult<Vec<u8>> {
         let command = [
             "pg_dump",

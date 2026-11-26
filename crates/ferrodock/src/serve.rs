@@ -9,7 +9,7 @@ use ferrodock_domain::auth::AuthService;
 use tokio::net::TcpListener;
 use tokio_util::sync::CancellationToken;
 
-use crate::{backups, container_events, jobs, wiring};
+use crate::{backups, container_events, databases, jobs, wiring};
 
 const SESSION_PURGE_INTERVAL: Duration = Duration::from_secs(3600);
 const HTTP_DRAIN_TIMEOUT: Duration = Duration::from_secs(10);
@@ -30,11 +30,13 @@ pub async fn run(config: AppConfig) -> AppResult<()> {
             deploy: wired.deploy.clone(),
             backup: wired.backup.clone(),
             databases: wired.databases.clone(),
+            backup_jobs: wired.backup_jobs.clone(),
         },
         config.job_concurrency,
         &background,
     );
     backups::schedule(&config, Arc::new(wired.store.clone()), background.clone());
+    databases::schedule_backups(wired.state.database_backups.clone(), background.clone());
     container_events::forward(
         wired.state.docker.clone(),
         wired.state.hub.clone(),

@@ -12,8 +12,9 @@ use ferrodock_domain::audit::AuditLog;
 use ferrodock_domain::auth::{AuthRepos, AuthService};
 use ferrodock_domain::backups::{BackupService, BackupServiceParts};
 use ferrodock_engine::backup::BackupContext;
+use ferrodock_engine::database_backups::BackupJobContext;
 use ferrodock_engine::databases::DatabaseContext;
-use ferrodock_engine::updater::{ManifestClient, UpdateLauncher};
+use ferrodock_engine::updater::UpdateLauncher;
 
 use crate::{backups, databases as database_wiring};
 use ferrodock_domain::deployments::{DeploymentRepos, DeploymentService};
@@ -55,6 +56,7 @@ pub struct Wired {
     pub deploy: DeployContext,
     pub backup: BackupContext,
     pub databases: DatabaseContext,
+    pub backup_jobs: BackupJobContext,
 }
 
 pub async fn connect(config: &AppConfig) -> AppResult<PgStore> {
@@ -176,23 +178,6 @@ fn backup_service(
     })
 }
 
-fn update_launcher(
-    config: &AppConfig,
-    store: &PgStore,
-    deploy: &DeployContext,
-    backup: BackupContext,
-) -> AppResult<UpdateLauncher> {
-    let user_agent = concat!("ferrodock/", env!("CARGO_PKG_VERSION"));
-    Ok(UpdateLauncher {
-        docker: deploy.docker.clone(),
-        jobs: Arc::new(store.clone()),
-        backup,
-        status_file: config.master_key_path.with_file_name("update-status.json"),
-        host_config_dir: config.host_config_dir.clone(),
-        manifest: ManifestClient::new(&config.update_manifest_url, user_agent)?,
-    })
-}
-
 fn app_state(
     config: &AppConfig,
     store: &PgStore,
@@ -223,6 +208,7 @@ fn app_state(
         ),
         runtime_configs: RuntimeConfigService::new((shared(), shared()), audit.clone()),
         databases: database_wiring::service(config, store, databases, audit.clone()),
+        database_backups: database_wiring::backup_service(config, store, databases, audit.clone()),
         deployments: deployment_service(store, deploy, audit.clone()),
         terminal: TerminalService::new(deploy.docker.clone(), shared(), audit.clone()),
         backups: backup_service(config, store, auth, audit),
@@ -237,14 +223,16 @@ pub async fn build(config: &AppConfig) -> AppResult<Wired> {
     let store = connect(config).await?;
     let deploy = deploy_context(config, &store, secrets.clone())?;
     let backup = backups::context(config, deploy.docker.clone(), secrets)?;
-    let updates = update_launcher(config, &store, &deploy, backup.clone())?;
+    let updates = crate::update::launcher(config, &store, &deploy, backup.clone())?;
     let databases = database_wiring::context(config, &store, &deploy);
     let state = app_state(config, &store, &deploy, &databases, updates);
+    let backup_jobs = database_wiring::backup_jobs(config, &store, &databases);
     Ok(Wired {
         state,
         store,
         deploy,
         backup,
         databases,
+        backup_jobs,
     })
 }

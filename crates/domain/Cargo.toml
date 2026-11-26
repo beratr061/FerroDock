@@ -22,6 +22,8 @@ tokio = { workspace = true }
 tracing = { workspace = true }
 uuid = { workspace = true }
 zeroize = "1.8"
+croner = { version = "5.0.1", default-features = false, features = ["std", "jiff"] }
+jiff = { version = "1.0.3", default-features = false, features = ["std"] }
 
 [dev-dependencies]
 sqlx = { workspace = true }

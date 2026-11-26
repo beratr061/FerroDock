@@ -87,5 +87,29 @@
       "rolled_back": "Geri alındı",
       "failed": "Başarısız"
     }
+  },
+  "storage": {
+    "title": "Yedek depolama",
+    "description": "Veritabanı yedeklerinin yazıldığı yerler. Dosyalar sunucudan çıkmadan önce ana anahtarla şifrelenir.",
+    "new": "Hedef ekle",
+    "add": "Hedef ekle",
+    "empty": "Henüz hedef yok. Veritabanlarını yedeklemeye başlamak için bir hedef ekleyin.",
+    "kind": "Tür",
+    "local": "Bu sunucu",
+    "s3": "S3 uyumlu",
+    "name": "Ad",
+    "localPlaceholder": "Yerel disk",
+    "prefix": "Klasör öneki",
+    "localNote": "Dosyalar /var/lib/ferrodock/database-backups altında tutulur. Sunucu kaybolsa da yedek kalsın diye bir S3 hedefi de kullanın.",
+    "endpoint": "Uç nokta",
+    "endpointHint": "AWS için boş bırakın. MinIO, Cloudflare R2 ve diğerleri için tam adresi yazın.",
+    "region": "Bölge",
+    "bucket": "Bucket",
+    "accessKeyId": "Erişim anahtarı kimliği",
+    "secretAccessKey": "Gizli erişim anahtarı",
+    "pathStyle": "Yol tabanlı adresleme kullan (MinIO ve bazı sağlayıcılar için gerekir)",
+    "test": "Test et",
+    "reachable": "Yazma, okuma ve silme çalıştı.",
+    "remove": "Kaldır"
   }
 }
