@@ -35,6 +35,8 @@ pub struct DatabaseSpec {
     pub data_dir: String,
     pub port: u16,
     pub published: Option<u16>,
+    pub memory_bytes: Option<i64>,
+    pub nano_cpus: Option<i64>,
 }
 
 #[derive(Debug, Clone)]
@@ -82,6 +84,9 @@ fn container_body(spec: &DatabaseSpec) -> ContainerCreateBody {
             maximum_retry_count: None,
         }),
         network_mode: Some(WORKLOAD_NETWORK.to_owned()),
+        memory: spec.memory_bytes,
+        memory_swap: spec.memory_bytes,
+        nano_cpus: spec.nano_cpus,
         ..HostConfig::default()
     };
     let endpoint = EndpointSettings {
@@ -186,6 +191,8 @@ mod tests {
             data_dir: "/var/lib/postgresql/data".to_owned(),
             port: 5432,
             published: Some(15432),
+            memory_bytes: Some(256 * 1024 * 1024),
+            nano_cpus: Some(500_000_000),
         };
         let body = container_body(&spec);
         let test = body.healthcheck.and_then(|check| check.test);
@@ -194,6 +201,9 @@ mod tests {
             Some(vec!["CMD-SHELL".to_owned(), "pg_isready".to_owned()])
         );
         let host = body.host_config.unwrap_or_default();
+        assert_eq!(host.memory, Some(256 * 1024 * 1024));
+        assert_eq!(host.memory_swap, host.memory);
+        assert_eq!(host.nano_cpus, Some(500_000_000));
         assert_eq!(host.mounts.unwrap_or_default().len(), 1);
         assert!(
             host.port_bindings

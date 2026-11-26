@@ -151,7 +151,9 @@
     "DATABASE_NOT_RUNNING": "The database must be running.",
     "TERMINAL_SESSION_LIMIT": "You have {{max}} open shells. Close one before opening another.",
     "TERMINAL_SESSION_NOT_FOUND": "This shell is no longer running.",
-    "TERMINAL_TARGET_MISSING": "Choose a container to open a shell in."
+    "TERMINAL_TARGET_MISSING": "Choose a container to open a shell in.",
+    "DATABASE_MEMORY_INVALID": "Use between {{min}} and {{max}} MiB of memory.",
+    "DATABASE_CPU_INVALID": "Use between {{min}} and {{max}} thousandths of a CPU core."
   },
   "terminal": {
     "workspace": "Terminals",

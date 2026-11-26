@@ -2,7 +2,7 @@ mod crud;
 mod operations;
 
 use axum::Router;
-use axum::routing::{get, post};
+use axum::routing::{get, post, put};
 use utoipa::OpenApi;
 
 use self::crud::{
@@ -11,11 +11,12 @@ use self::crud::{
 };
 use self::operations::{
     __path_database_action, __path_database_container_logs, __path_database_deploy_log,
-    __path_reveal_database_credentials,
+    __path_reveal_database_credentials, __path_set_database_limits,
 };
 use crate::dto::{
     CreateDatabaseRequest, DatabaseActionDto, DatabaseActionRequest, DatabaseCredentialsDto,
-    DatabaseDto, DatabaseEngineDto, DatabaseLogDto, DatabaseStatusDto, UpdateDatabaseRequest,
+    DatabaseDto, DatabaseEngineDto, DatabaseLimitsRequest, DatabaseLogDto, DatabaseStatusDto,
+    UpdateDatabaseRequest,
 };
 use crate::state::AppState;
 
@@ -30,6 +31,7 @@ use crate::state::AppState;
         delete_database,
         database_action,
         reveal_database_credentials,
+        set_database_limits,
         database_deploy_log,
         database_container_logs
     ),
@@ -40,6 +42,7 @@ use crate::state::AppState;
         DatabaseCredentialsDto,
         DatabaseDto,
         DatabaseEngineDto,
+        DatabaseLimitsRequest,
         DatabaseLogDto,
         DatabaseStatusDto,
         UpdateDatabaseRequest
@@ -59,6 +62,10 @@ pub(crate) fn database_routes() -> Router<AppState> {
                 .delete(crud::delete_database),
         )
         .route("/databases/{id}/actions", post(operations::database_action))
+        .route(
+            "/databases/{id}/limits",
+            put(operations::set_database_limits),
+        )
         .route(
             "/databases/{id}/credentials",
             post(operations::reveal_database_credentials),

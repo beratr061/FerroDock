@@ -6,8 +6,8 @@ use uuid::Uuid;
 use super::super::actor;
 use super::super::logs::relay;
 use crate::dto::{
-    DatabaseActionRequest, DatabaseCredentialsDto, DatabaseDto, DatabaseLogDto, DatabaseLogQuery,
-    DatabaseLogsQuery,
+    DatabaseActionRequest, DatabaseCredentialsDto, DatabaseDto, DatabaseLimitsRequest,
+    DatabaseLogDto, DatabaseLogQuery, DatabaseLogsQuery,
 };
 use crate::error::{ApiResult, ErrorEnvelope};
 use crate::extract::{Auth, ClientMeta};
@@ -39,6 +39,34 @@ pub async fn database_action(
     let database = state
         .databases
         .act(actor(&principal, &client), id.into(), request.action.into())
+        .await?;
+    Ok(Json(database.into()))
+}
+
+#[utoipa::path(
+    put,
+    path = "/api/v1/databases/{id}/limits",
+    tag = "databases",
+    description = "Sets the memory limit in MiB (swap is disabled) and the CPU limit in thousandths of a core; null removes a limit. Redeploys the container when they change",
+    params(("id" = Uuid, Path, description = "Database id")),
+    request_body = DatabaseLimitsRequest,
+    responses(
+        (status = 200, body = DatabaseDto),
+        (status = 403, body = ErrorEnvelope),
+        (status = 404, body = ErrorEnvelope),
+        (status = 422, body = ErrorEnvelope)
+    )
+)]
+pub async fn set_database_limits(
+    State(state): State<AppState>,
+    Auth(principal): Auth,
+    client: ClientMeta,
+    Path(id): Path<Uuid>,
+    Json(request): Json<DatabaseLimitsRequest>,
+) -> ApiResult<Json<DatabaseDto>> {
+    let database = state
+        .databases
+        .set_limits(actor(&principal, &client), id.into(), request.into())
         .await?;
     Ok(Json(database.into()))
 }

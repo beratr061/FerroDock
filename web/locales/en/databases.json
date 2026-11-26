@@ -72,5 +72,15 @@
   "backups": {
     "title": "Backups",
     "description": "Encrypted dumps on a schedule or on demand. Restoring replaces the current contents of the database."
+  },
+  "limits": {
+    "title": "Resource limits",
+    "description": "Cap how much memory and CPU the database may use so it cannot starve other services. Leave a field empty for no limit. Swap is turned off when memory is limited, so a database that needs more memory is stopped instead of slowing the server down. The container is recreated when the limits change.",
+    "memory": "Memory (MiB)",
+    "cpus": "CPU cores",
+    "unlimited": "No limit",
+    "memoryInvalid": "Use at least {{min}} MiB, or leave it empty.",
+    "cpusInvalid": "Use between {{min}} and {{max}} cores, or leave it empty.",
+    "save": "Save limits"
   }
 }

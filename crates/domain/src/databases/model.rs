@@ -1,5 +1,5 @@
 use ferrodock_core::{AppResult, Id};
-use ferrodock_db::databases::DatabaseRecord;
+use ferrodock_db::databases::{DatabaseRecord, ResourceLimits};
 use time::OffsetDateTime;
 
 use super::drivers::driver;
@@ -47,6 +47,7 @@ pub struct Database {
     pub internal_host: String,
     pub internal_port: u16,
     pub external_port: Option<u16>,
+    pub limits: ResourceLimits,
     pub status: DatabaseStatus,
     pub error_code: Option<String>,
     pub running: bool,
@@ -71,6 +72,7 @@ impl Database {
             database_name: record.database_name,
             username: record.username,
             external_port: record.external_port,
+            limits: record.limits,
             error_code: record.error_code,
             running,
             created_at: record.created_at,

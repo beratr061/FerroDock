@@ -7,7 +7,7 @@ use ferrodock_db::pg::PgStore;
 use ferrodock_domain::audit::{Actor, AuditLog};
 use ferrodock_domain::auth::{Principal, Role};
 use ferrodock_domain::databases::{
-    DatabaseService, DatabaseServiceParts, DatabaseStatus, NewDatabaseInput,
+    DatabaseService, DatabaseServiceParts, DatabaseStatus, NewDatabaseInput, ResourceLimits,
 };
 use ferrodock_domain::projects::{NewProjectInput, ProjectService};
 use ferrodock_domain::runtime_config::{
@@ -86,6 +86,23 @@ async fn databases_get_secret_credentials_and_unique_host_ports(pool: PgPool) ->
             .external_url
             .is_some_and(|url| url.contains("@203.0.113.7:15432/"))
     );
+
+    let tiny = ResourceLimits {
+        memory_mb: Some(16),
+        cpu_millis: None,
+    };
+    let rejected = databases.set_limits(actor, orders.id, tiny).await;
+    assert_eq!(
+        rejected.err().map(|e| e.code()),
+        Some("DATABASE_MEMORY_INVALID")
+    );
+    let sized = ResourceLimits {
+        memory_mb: Some(512),
+        cpu_millis: Some(750),
+    };
+    let limited = databases.set_limits(actor, orders.id, sized).await?;
+    assert_eq!(limited.limits, sized);
+    assert_eq!(limited.status, DatabaseStatus::Deploying);
 
     let clash = databases
         .set_external_port(actor, cache.id, Some(15432))

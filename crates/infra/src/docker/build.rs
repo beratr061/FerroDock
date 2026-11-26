@@ -93,9 +93,12 @@ pub async fn compose_up(
     run_logged(command, log, cancel, "COMPOSE_UP_FAILED").await
 }
 
-pub async fn compose_down(project: &str) -> AppResult<()> {
+pub async fn compose_down(project: &str, remove_volumes: bool) -> AppResult<()> {
     let mut command = docker();
     command.args(["compose", "-p", project, "down", "--remove-orphans"]);
+    if remove_volumes {
+        command.arg("--volumes");
+    }
     capture(command, "COMPOSE_DOWN_FAILED").await.map(|_| ())
 }
 

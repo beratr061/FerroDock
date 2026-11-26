@@ -1,5 +1,6 @@
 use ferrodock_domain::databases::{
-    Database, DatabaseAction, DatabaseCredentials, DatabaseDriver, DatabaseStatus, NewDatabaseInput,
+    Database, DatabaseAction, DatabaseCredentials, DatabaseDriver, DatabaseStatus,
+    NewDatabaseInput, ResourceLimits,
 };
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
@@ -29,6 +30,8 @@ pub struct DatabaseDto {
     pub internal_host: String,
     pub internal_port: u16,
     pub external_port: Option<u16>,
+    pub memory_limit_mb: Option<u32>,
+    pub cpu_limit_millis: Option<u32>,
     pub status: DatabaseStatusDto,
     pub error_code: Option<String>,
     pub running: bool,
@@ -52,6 +55,21 @@ pub struct CreateDatabaseRequest {
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct UpdateDatabaseRequest {
     pub external_port: Option<u16>,
+}
+
+#[derive(Debug, Deserialize, ToSchema)]
+pub struct DatabaseLimitsRequest {
+    pub memory_mb: Option<u32>,
+    pub cpu_millis: Option<u32>,
+}
+
+impl From<DatabaseLimitsRequest> for ResourceLimits {
+    fn from(request: DatabaseLimitsRequest) -> Self {
+        Self {
+            memory_mb: request.memory_mb,
+            cpu_millis: request.cpu_millis,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, Deserialize, ToSchema)]
@@ -93,7 +111,7 @@ pub struct DatabaseLogDto {
 
 #[derive(Debug, Deserialize, IntoParams)]
 #[into_params(parameter_in = Query)]
-pub struct DeleteDatabaseQuery {
+pub struct RemoveDataQuery {
     pub remove_data: Option<bool>,
 }
 
@@ -135,6 +153,8 @@ impl From<Database> for DatabaseDto {
             internal_host: database.internal_host,
             internal_port: database.internal_port,
             external_port: database.external_port,
+            memory_limit_mb: database.limits.memory_mb,
+            cpu_limit_millis: database.limits.cpu_millis,
             status: database.status.into(),
             error_code: database.error_code,
             running: database.running,

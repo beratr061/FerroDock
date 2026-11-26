@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE databases SET memory_limit_mb = $2, cpu_limit_millis = $3, updated_at = now()\n             WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "bb4feb7d3dd8ec993a6335dbb4260b61bf0fd03d33d18a9270461efd46358603"
+}

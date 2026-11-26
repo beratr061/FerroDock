@@ -12,6 +12,7 @@ import { databaseQuery, useDatabaseAction, type Database } from "./api";
 import { ConnectionPanel } from "./ConnectionPanel";
 import { DeleteDatabase } from "./DeleteDatabase";
 import { ExternalPortPanel } from "./ExternalPortPanel";
+import { LimitsPanel } from "./LimitsPanel";
 import { engineSummary, statusKey, statusTone } from "./presentation";
 
 function Actions({ database }: { database: Database }) {
@@ -89,6 +90,7 @@ export function DatabasePage() {
           <ActivityPanel database={data} />
           <BackupsPanel target={{ kind: "database", id: data.id }} title={t("backups.title")} description={t("backups.description")} />
           <ExternalPortPanel key={data.external_port ?? "none"} database={data} />
+          <LimitsPanel key={`${data.memory_limit_mb ?? "-"}:${data.cpu_limit_millis ?? "-"}`} database={data} />
           <DeleteDatabase database={data} />
         </>
       ) : null}

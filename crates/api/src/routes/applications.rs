@@ -1,10 +1,13 @@
 use axum::Json;
-use axum::extract::{Path, State};
+use axum::extract::{Path, Query, State};
 use axum::http::StatusCode;
 use uuid::Uuid;
 
 use super::actor;
-use crate::dto::{ApplicationDto, CreateApplicationRequest, UpdateApplicationRequest, WorkloadDto};
+use crate::dto::{
+    ApplicationDto, CreateApplicationRequest, RemoveDataQuery, UpdateApplicationRequest,
+    WorkloadDto,
+};
 use crate::error::{ApiResult, ErrorEnvelope};
 use crate::extract::{Auth, ClientMeta};
 use crate::state::AppState;
@@ -130,8 +133,8 @@ pub async fn rotate_deploy_key(
     delete,
     path = "/api/v1/applications/{id}",
     tag = "applications",
-    description = "Deletes an application; requires the admin role",
-    params(("id" = Uuid, Path, description = "Application id")),
+    description = "Deletes an application and its containers; its volumes are kept unless remove_data is true. Requires the admin role",
+    params(("id" = Uuid, Path, description = "Application id"), RemoveDataQuery),
     responses(
         (status = 204),
         (status = 403, body = ErrorEnvelope),
@@ -143,10 +146,12 @@ pub async fn delete_application(
     Auth(principal): Auth,
     client: ClientMeta,
     Path(id): Path<Uuid>,
+    Query(query): Query<RemoveDataQuery>,
 ) -> ApiResult<StatusCode> {
+    let remove_data = query.remove_data.unwrap_or(false);
     state
         .applications
-        .delete(actor(&principal, &client), id.into())
+        .delete(actor(&principal, &client), id.into(), remove_data)
         .await?;
     Ok(StatusCode::NO_CONTENT)
 }

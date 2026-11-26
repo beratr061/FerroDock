@@ -25,8 +25,8 @@ pub use auth::{
 pub use backups::{BackupDto, BackupRequestedDto, MasterKeyDto, MasterKeyRequest};
 pub use databases::{
     CreateDatabaseRequest, DatabaseActionDto, DatabaseActionRequest, DatabaseCredentialsDto,
-    DatabaseDto, DatabaseEngineDto, DatabaseLogDto, DatabaseLogQuery, DatabaseLogsQuery,
-    DatabaseStatusDto, DeleteDatabaseQuery, UpdateDatabaseRequest,
+    DatabaseDto, DatabaseEngineDto, DatabaseLimitsRequest, DatabaseLogDto, DatabaseLogQuery,
+    DatabaseLogsQuery, DatabaseStatusDto, RemoveDataQuery, UpdateDatabaseRequest,
 };
 pub use deployments::{
     DeploymentDto, DeploymentKindDto, DeploymentLogDto, DeploymentLogQuery, DeploymentStatusDto,

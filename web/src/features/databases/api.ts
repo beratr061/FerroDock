@@ -78,6 +78,15 @@ export function useSetExternalPort(id: string) {
   });
 }
 
+export function useSetLimits(id: string) {
+  const invalidate = useInvalidateDatabases();
+  return useMutation({
+    mutationFn: (body: Schemas["DatabaseLimitsRequest"]) =>
+      unwrap(api.PUT("/api/v1/databases/{id}/limits", { params: { path: { id } }, body })),
+    onSuccess: invalidate,
+  });
+}
+
 export function useRevealCredentials(id: string) {
   return useMutation({
     mutationFn: () => unwrap(api.POST("/api/v1/databases/{id}/credentials", { params: { path: { id } } })),

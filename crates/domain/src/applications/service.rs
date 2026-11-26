@@ -170,10 +170,10 @@ impl ApplicationService {
         record.try_into()
     }
 
-    pub async fn delete(&self, actor: Actor<'_>, id: Id) -> AppResult<()> {
+    pub async fn delete(&self, actor: Actor<'_>, id: Id, remove_data: bool) -> AppResult<()> {
         actor.principal.require(Role::Admin)?;
         let current = self.owned(actor.principal, id).await?;
-        self.runtime.teardown(&current).await?;
+        self.runtime.teardown(&current, remove_data).await?;
         if !self.repo.delete(id).await? {
             return Err(AppError::not_found("APPLICATION_NOT_FOUND"));
         }

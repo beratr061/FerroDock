@@ -39,9 +39,11 @@
   },
   "delete": {
     "title": "Bu uygulamayı sil",
-    "description": "Uygulamayı ve ayarlarını kaldırır. Bu işlem geri alınamaz.",
+    "description": "Uygulamayı, konteynerlerini ve ayarlarını kaldırır. Siz ayrıca seçmedikçe volume'lar korunur.",
     "action": "Uygulamayı sil",
-    "confirm": "Evet, uygulamayı sil"
+    "confirm": "Evet, uygulamayı sil",
+    "removeData": "Tüm volume'ları ve verilerini de sil",
+    "confirmWithData": "Uygulamayı ve verileri sil"
   },
   "deployments": {
     "title": "Dağıtımlar",

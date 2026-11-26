@@ -39,9 +39,11 @@
   },
   "delete": {
     "title": "Delete this application",
-    "description": "Removes the application and its settings. This cannot be undone.",
+    "description": "Removes the application, its containers and its settings. Volumes are kept unless you choose to delete them too.",
     "action": "Delete application",
-    "confirm": "Yes, delete application"
+    "confirm": "Yes, delete application",
+    "removeData": "Also delete all volumes and their data",
+    "confirmWithData": "Delete application and data"
   },
   "deployments": {
     "title": "Deployments",

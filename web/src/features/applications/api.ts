@@ -73,7 +73,8 @@ export function useRotateDeployKey(id: string) {
 export function useDeleteApplication(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () => unwrapEmpty(api.DELETE("/api/v1/applications/{id}", { params: { path: { id } } })),
+    mutationFn: (removeData: boolean) =>
+      unwrapEmpty(api.DELETE("/api/v1/applications/{id}", { params: { path: { id }, query: { remove_data: removeData } } })),
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: [...APPLICATIONS_KEY, id] });
       return queryClient.invalidateQueries({ queryKey: [...APPLICATIONS_KEY, "project"] });

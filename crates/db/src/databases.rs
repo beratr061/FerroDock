@@ -18,10 +18,17 @@ pub struct DatabaseRecord {
     pub password_enc: String,
     pub root_password_enc: Option<String>,
     pub external_port: Option<u16>,
+    pub limits: ResourceLimits,
     pub status: String,
     pub error_code: Option<String>,
     pub created_at: OffsetDateTime,
     pub updated_at: OffsetDateTime,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct ResourceLimits {
+    pub memory_mb: Option<u32>,
+    pub cpu_millis: Option<u32>,
 }
 
 #[derive(Debug)]
@@ -49,6 +56,7 @@ pub trait DatabaseRepo: Send + Sync + 'static {
     ) -> AppResult<Vec<DatabaseRecord>>;
     async fn find(&self, organization_id: Id, id: Id) -> AppResult<Option<DatabaseRecord>>;
     async fn set_external_port(&self, id: Id, port: Option<u16>) -> AppResult<()>;
+    async fn set_limits(&self, id: Id, limits: ResourceLimits) -> AppResult<()>;
     async fn set_status(&self, id: Id, status: &str, error_code: Option<&str>) -> AppResult<()>;
     async fn delete(&self, id: Id) -> AppResult<bool>;
 }

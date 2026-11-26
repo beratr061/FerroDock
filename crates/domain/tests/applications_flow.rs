@@ -193,7 +193,7 @@ async fn applications_validate_and_stay_in_their_organization(pool: PgPool) -> A
         elsewhere.err().map(|e| e.code()),
         Some("ENVIRONMENT_NOT_FOUND")
     );
-    f.applications.delete(actor, app.id).await?;
+    f.applications.delete(actor, app.id, false).await?;
     assert!(f.applications.get(&f.owner, app.id).await.is_err());
     Ok(())
 }

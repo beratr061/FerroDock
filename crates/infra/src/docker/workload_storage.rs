@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use bollard::models::{HostConfig, Mount, MountType, PortBinding, VolumeCreateRequest};
+use bollard::query_parameters::ListVolumesOptionsBuilder;
 use ferrodock_core::AppResult;
 
 use super::{DockerEngine, MANAGED_LABEL, docker_error};
@@ -73,6 +74,25 @@ pub fn with_storage(
 }
 
 impl DockerEngine {
+    pub async fn labelled_volumes(&self, owner: (&str, &str)) -> AppResult<Vec<String>> {
+        let (owner_label, owner_id) = owner;
+        let filter = format!("{owner_label}={owner_id}");
+        let options = ListVolumesOptionsBuilder::new()
+            .filters(&HashMap::from([("label", vec![filter.as_str()])]))
+            .build();
+        let listed = self
+            .client
+            .list_volumes(Some(options))
+            .await
+            .map_err(docker_error)?;
+        Ok(listed
+            .volumes
+            .unwrap_or_default()
+            .into_iter()
+            .map(|volume| volume.name)
+            .collect())
+    }
+
     pub async fn ensure_volume(&self, name: &str, owner: (&str, &str)) -> AppResult<()> {
         let (owner_label, owner_id) = owner;
         let labels = HashMap::from([

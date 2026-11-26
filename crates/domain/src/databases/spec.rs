@@ -66,5 +66,13 @@ pub fn container_spec(record: &DatabaseRecord, secrets: &SecretBox) -> AppResult
         data_dir: engine.data_dir(&record.version).to_owned(),
         port: engine.port(),
         published: record.external_port,
+        memory_bytes: record
+            .limits
+            .memory_mb
+            .map(|mb| i64::from(mb) * 1024 * 1024),
+        nano_cpus: record
+            .limits
+            .cpu_millis
+            .map(|millis| i64::from(millis) * 1_000_000),
     })
 }

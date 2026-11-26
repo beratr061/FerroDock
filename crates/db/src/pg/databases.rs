@@ -4,7 +4,14 @@ use time::OffsetDateTime;
 use uuid::Uuid;
 
 use super::{PgStore, db_error};
-use crate::databases::{DatabaseRecord, DatabaseRepo, NewDatabase};
+use crate::databases::{DatabaseRecord, DatabaseRepo, NewDatabase, ResourceLimits};
+
+fn positive(value: Option<i32>) -> AppResult<Option<u32>> {
+    value
+        .map(u32::try_from)
+        .transpose()
+        .map_err(AppError::internal)
+}
 
 struct DatabaseRow {
     id: Uuid,
@@ -19,6 +26,8 @@ struct DatabaseRow {
     password_enc: String,
     root_password_enc: Option<String>,
     external_port: Option<i32>,
+    memory_limit_mb: Option<i32>,
+    cpu_limit_millis: Option<i32>,
     status: String,
     error_code: Option<String>,
     created_at: OffsetDateTime,
@@ -46,6 +55,10 @@ impl TryFrom<DatabaseRow> for DatabaseRecord {
                 .map(u16::try_from)
                 .transpose()
                 .map_err(AppError::internal)?,
+            limits: ResourceLimits {
+                memory_mb: positive(row.memory_limit_mb)?,
+                cpu_millis: positive(row.cpu_limit_millis)?,
+            },
             status: row.status,
             error_code: row.error_code,
             created_at: row.created_at,
@@ -93,7 +106,7 @@ impl DatabaseRepo for PgStore {
             DatabaseRow,
             "SELECT d.id, d.environment_id, e.project_id, d.name, d.slug, d.engine, d.version,
              d.database_name, d.username, d.password_enc, d.root_password_enc, d.external_port,
-             d.status, d.error_code, d.created_at, d.updated_at
+             d.memory_limit_mb, d.cpu_limit_millis, d.status, d.error_code, d.created_at, d.updated_at
              FROM databases d
              JOIN environments e ON e.id = d.environment_id
              JOIN projects p ON p.id = e.project_id
@@ -113,7 +126,7 @@ impl DatabaseRepo for PgStore {
             DatabaseRow,
             "SELECT d.id, d.environment_id, e.project_id, d.name, d.slug, d.engine, d.version,
              d.database_name, d.username, d.password_enc, d.root_password_enc, d.external_port,
-             d.status, d.error_code, d.created_at, d.updated_at
+             d.memory_limit_mb, d.cpu_limit_millis, d.status, d.error_code, d.created_at, d.updated_at
              FROM databases d
              JOIN environments e ON e.id = d.environment_id
              JOIN projects p ON p.id = e.project_id
@@ -143,6 +156,22 @@ impl DatabaseRepo for PgStore {
             return Err(AppError::conflict("ALREADY_EXISTS"));
         }
         Ok(())
+    }
+
+    async fn set_limits(&self, id: Id, limits: ResourceLimits) -> AppResult<()> {
+        let memory = limits.memory_mb.map(i32::try_from).transpose();
+        let cpu = limits.cpu_millis.map(i32::try_from).transpose();
+        sqlx::query!(
+            "UPDATE databases SET memory_limit_mb = $2, cpu_limit_millis = $3, updated_at = now()
+             WHERE id = $1",
+            id.as_uuid(),
+            memory.map_err(AppError::internal)?,
+            cpu.map_err(AppError::internal)?
+        )
+        .execute(&self.pool)
+        .await
+        .map(|_| ())
+        .map_err(db_error)
     }
 
     async fn set_status(&self, id: Id, status: &str, error_code: Option<&str>) -> AppResult<()> {

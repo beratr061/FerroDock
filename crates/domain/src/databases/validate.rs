@@ -1,6 +1,8 @@
 use ferrodock_core::crypto::random_bytes;
 use ferrodock_core::{AppError, AppResult};
 
+use ferrodock_db::databases::ResourceLimits;
+
 use super::drivers::DatabaseDriver;
 
 const MAX_IDENTIFIER_LEN: usize = 63;
@@ -8,6 +10,8 @@ const PASSWORD_LEN: usize = 32;
 const ALPHABET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 const DEFAULT_USERNAME: &str = "app";
 const MIN_EXTERNAL_PORT: u16 = 1024;
+const MEMORY_MB: std::ops::RangeInclusive<u32> = 64..=1_048_576;
+const CPU_MILLIS: std::ops::RangeInclusive<u32> = 50..=256_000;
 
 fn is_identifier(value: &str) -> bool {
     let mut characters = value.chars();
@@ -75,6 +79,23 @@ pub fn external_port(port: Option<u16>) -> AppResult<Option<u16>> {
     }
 }
 
+pub fn limits(limits: ResourceLimits) -> AppResult<ResourceLimits> {
+    if limits.memory_mb.is_some_and(|mb| !MEMORY_MB.contains(&mb)) {
+        return Err(AppError::validation("DATABASE_MEMORY_INVALID")
+            .with_param("min", *MEMORY_MB.start())
+            .with_param("max", *MEMORY_MB.end()));
+    }
+    if limits
+        .cpu_millis
+        .is_some_and(|millis| !CPU_MILLIS.contains(&millis))
+    {
+        return Err(AppError::validation("DATABASE_CPU_INVALID")
+            .with_param("min", *CPU_MILLIS.start())
+            .with_param("max", *CPU_MILLIS.end()));
+    }
+    Ok(limits)
+}
+
 pub fn random_password() -> String {
     let limit = u8::try_from(ALPHABET.len() * 4).unwrap_or(u8::MAX);
     let mut password = String::with_capacity(PASSWORD_LEN);
@@ -117,6 +138,16 @@ mod tests {
         assert!(version(mysql, Some("5.7")).is_err());
         assert!(external_port(Some(80)).is_err());
         assert_eq!(external_port(Some(15432))?, Some(15432));
+        let too_small = ResourceLimits {
+            memory_mb: Some(32),
+            cpu_millis: None,
+        };
+        assert!(limits(too_small).is_err());
+        let fine = ResourceLimits {
+            memory_mb: Some(512),
+            cpu_millis: Some(500),
+        };
+        assert_eq!(limits(fine)?, fine);
         Ok(())
     }
 

@@ -165,7 +165,7 @@
         "tags": [
           "applications"
         ],
-        "description": "Deletes an application; requires the admin role",
+        "description": "Deletes an application and its containers; its volumes are kept unless remove_data is true. Requires the admin role",
         "operationId": "delete_application",
         "parameters": [
           {
@@ -176,6 +176,14 @@
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "remove_data",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
             }
           }
         ],
@@ -2235,6 +2243,75 @@
             }
           },
           "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/databases/{id}/limits": {
+      "put": {
+        "tags": [
+          "databases"
+        ],
+        "description": "Sets the memory limit in MiB (swap is disabled) and the CPU limit in thousandths of a core; null removes a limit. Redeploys the container when they change",
+        "operationId": "set_database_limits",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Database id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatabaseLimitsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatabaseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
             "content": {
               "application/json": {
                 "schema": {
@@ -4491,6 +4568,14 @@
           "updated_at"
         ],
         "properties": {
+          "cpu_limit_millis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 0
+          },
           "created_at": {
             "type": "string",
             "format": "date-time"
@@ -4528,6 +4613,14 @@
           },
           "internal_port": {
             "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "memory_limit_mb": {
+            "type": [
+              "integer",
+              "null"
+            ],
             "format": "int32",
             "minimum": 0
           },
@@ -4584,6 +4677,27 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "DatabaseLimitsRequest": {
+        "type": "object",
+        "properties": {
+          "cpu_millis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 0
+          },
+          "memory_mb": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 0
           }
         }
       },

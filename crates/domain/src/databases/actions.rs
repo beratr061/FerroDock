@@ -1,4 +1,5 @@
 use ferrodock_core::{AppError, AppResult, Id};
+use ferrodock_db::databases::ResourceLimits;
 use ferrodock_infra::deploy_log::LogChunk;
 use ferrodock_infra::docker::{LogQuery, LogStream};
 use serde_json::json;
@@ -80,6 +81,24 @@ impl DatabaseService {
                 .await
                 .map_err(port_taken)?;
             self.changed(actor, "database.port_changed", &record).await;
+            self.enqueue_deploy(actor.principal, id).await?;
+        }
+        self.get(actor.principal, id).await
+    }
+
+    pub async fn set_limits(
+        &self,
+        actor: Actor<'_>,
+        id: Id,
+        limits: ResourceLimits,
+    ) -> AppResult<Database> {
+        actor.principal.require(Role::Developer)?;
+        let record = self.owned(actor.principal, id).await?;
+        let limits = validate::limits(limits)?;
+        if record.limits != limits {
+            self.parts.repo.set_limits(id, limits).await?;
+            self.changed(actor, "database.limits_changed", &record)
+                .await;
             self.enqueue_deploy(actor.principal, id).await?;
         }
         self.get(actor.principal, id).await

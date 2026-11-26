@@ -72,5 +72,15 @@
   "backups": {
     "title": "Yedekler",
     "description": "Zamanlanmış ya da isteğe bağlı şifreli dökümler. Geri yükleme, veritabanının mevcut içeriğini değiştirir."
+  },
+  "limits": {
+    "title": "Kaynak sınırları",
+    "description": "Veritabanının kullanabileceği belleği ve CPU'yu sınırlayın; böylece diğer servisleri aç bırakamaz. Sınır istemiyorsanız alanı boş bırakın. Bellek sınırlandığında swap kapatılır; daha fazla belleğe ihtiyaç duyan veritabanı sunucuyu yavaşlatmak yerine durdurulur. Sınırlar değişince konteyner yeniden oluşturulur.",
+    "memory": "Bellek (MiB)",
+    "cpus": "CPU çekirdeği",
+    "unlimited": "Sınırsız",
+    "memoryInvalid": "En az {{min}} MiB kullanın ya da boş bırakın.",
+    "cpusInvalid": "{{min}} ile {{max}} çekirdek arasında bir değer kullanın ya da boş bırakın.",
+    "save": "Sınırları kaydet"
   }
 }

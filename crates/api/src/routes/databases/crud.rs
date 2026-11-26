@@ -6,8 +6,7 @@ use uuid::Uuid;
 
 use super::super::actor;
 use crate::dto::{
-    CreateDatabaseRequest, DatabaseDto, DatabaseEngineDto, DeleteDatabaseQuery,
-    UpdateDatabaseRequest,
+    CreateDatabaseRequest, DatabaseDto, DatabaseEngineDto, RemoveDataQuery, UpdateDatabaseRequest,
 };
 use crate::error::{ApiResult, ErrorEnvelope};
 use crate::extract::{Auth, ClientMeta};
@@ -120,7 +119,7 @@ pub async fn update_database(
     path = "/api/v1/databases/{id}",
     tag = "databases",
     description = "Removes the database container; the data volume is kept unless remove_data is true. Requires the admin role",
-    params(("id" = Uuid, Path, description = "Database id"), DeleteDatabaseQuery),
+    params(("id" = Uuid, Path, description = "Database id"), RemoveDataQuery),
     responses(
         (status = 204),
         (status = 403, body = ErrorEnvelope),
@@ -133,7 +132,7 @@ pub async fn delete_database(
     Auth(principal): Auth,
     client: ClientMeta,
     Path(id): Path<Uuid>,
-    Query(query): Query<DeleteDatabaseQuery>,
+    Query(query): Query<RemoveDataQuery>,
 ) -> ApiResult<StatusCode> {
     let remove_data = query.remove_data.unwrap_or(false);
     state
