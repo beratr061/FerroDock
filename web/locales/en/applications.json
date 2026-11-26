@@ -176,5 +176,13 @@
     "domains": "Domains",
     "storage": "Storage",
     "settings": "Settings"
+  },
+  "composeTrust": {
+    "title": "Trusted stack",
+    "description": "Compose files are checked before every deploy. Options that reach the server itself are refused: privileged mode, added capabilities, devices, host namespaces, the Docker socket, files outside the repository, other projects' volumes and networks, and ports 80 and 443. Only the organization owner can mark a stack as trusted to skip these checks.",
+    "active": "This stack is trusted: its compose file can control the server as root. Anyone who can change its repository or branch can do the same. Changing the source as anyone but the owner removes the trust.",
+    "grant": "Mark as trusted",
+    "confirm": "Trust this stack with root access",
+    "revoke": "Remove trust"
   }
 }

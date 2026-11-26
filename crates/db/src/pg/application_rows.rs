@@ -22,6 +22,7 @@ pub(super) struct ApplicationRow {
     pub(super) deploy_key_private_enc: Option<String>,
     pub(super) strategy: String,
     pub(super) active_container: Option<String>,
+    pub(super) compose_trusted: bool,
     pub(super) created_at: OffsetDateTime,
     pub(super) updated_at: OffsetDateTime,
 }
@@ -98,6 +99,7 @@ impl TryFrom<ApplicationRow> for ApplicationRecord {
             deploy_key,
             strategy: row.strategy,
             active_container: row.active_container,
+            compose_trusted: row.compose_trusted,
             created_at: row.created_at,
             updated_at: row.updated_at,
         })

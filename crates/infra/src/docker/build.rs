@@ -4,7 +4,10 @@ use ferrodock_core::{AppError, AppResult, Id};
 use tokio::process::Command;
 use tokio_util::sync::CancellationToken;
 
+use super::DockerEngine;
 use super::compose_override::{OVERRIDE_FILE, render_override};
+use super::compose_policy::audit_compose;
+use super::compose_runner::ComposeRun;
 use crate::deploy_log::DeployLog;
 use crate::process::{capture, isolated, run_logged};
 
@@ -25,6 +28,7 @@ pub struct ComposeUp<'a> {
     pub file: &'a Path,
     pub directory: &'a Path,
     pub application_id: Id,
+    pub trusted: bool,
 }
 
 fn docker() -> Command {
@@ -53,44 +57,76 @@ pub async fn build_image(
     run_logged(command, log, cancel, "IMAGE_BUILD_FAILED").await
 }
 
-fn compose_command(compose: &ComposeUp<'_>, files: &[&Path]) -> Command {
-    let mut command = docker();
-    command.args(["compose", "-p", compose.project]);
+fn compose_run<'a>(
+    compose: &ComposeUp<'a>,
+    files: &[&Path],
+    action: &[&str],
+    with_daemon: bool,
+) -> ComposeRun<'a> {
+    let mut arguments = vec!["-p".to_owned(), compose.project.to_owned()];
     for file in files {
-        command.arg("-f").arg(file);
+        arguments.extend(["-f".to_owned(), file.to_string_lossy().into_owned()]);
     }
-    command
-        .arg("--project-directory")
-        .arg(compose.directory)
-        .envs(compose.variables.iter().map(|(key, value)| (key, value)));
-    command
+    arguments.extend([
+        "--project-directory".to_owned(),
+        compose.directory.to_string_lossy().into_owned(),
+    ]);
+    arguments.extend(action.iter().map(|part| (*part).to_owned()));
+    ComposeRun {
+        directory: compose.directory,
+        arguments,
+        variables: compose.variables,
+        with_daemon,
+    }
 }
 
-async fn write_override(compose: &ComposeUp<'_>) -> AppResult<std::path::PathBuf> {
-    let mut inspect = compose_command(compose, &[compose.file]);
-    inspect.args(["config", "--format", "json"]);
-    let rendered = capture(inspect, "COMPOSE_CONFIG_INVALID").await?;
-    let document = render_override(&rendered, compose.application_id)?;
-    let path = compose.directory.join(OVERRIDE_FILE);
-    tokio::fs::write(&path, document)
-        .await
-        .map_err(AppError::internal)?;
-    Ok(path)
+async fn checked_config(
+    docker: &DockerEngine,
+    compose: &ComposeUp<'_>,
+    log: &DeployLog,
+) -> AppResult<String> {
+    let inspect = compose_run(
+        compose,
+        &[compose.file],
+        &["config", "--format", "json"],
+        false,
+    );
+    let rendered = docker.compose_config(&inspect).await?;
+    if compose.trusted {
+        log.step("Trusted stack: compose security checks skipped")
+            .await;
+    } else {
+        audit_compose(&rendered, compose.directory)?;
+        log.step("Compose file passed the security checks").await;
+    }
+    Ok(rendered)
 }
 
 pub async fn compose_up(
+    docker: &DockerEngine,
     compose: ComposeUp<'_>,
     log: &DeployLog,
     cancel: &CancellationToken,
 ) -> AppResult<()> {
-    let override_file = write_override(&compose).await?;
-    let mut command = compose_command(&compose, &[compose.file, &override_file]);
-    command
-        .args(["up", "-d", "--build", "--remove-orphans", "--wait"])
-        .args(["--wait-timeout", COMPOSE_WAIT_SECONDS]);
+    let rendered = checked_config(docker, &compose, log).await?;
+    let document = render_override(&rendered, compose.application_id)?;
+    let override_file = compose.directory.join(OVERRIDE_FILE);
+    tokio::fs::write(&override_file, document)
+        .await
+        .map_err(AppError::internal)?;
+    let up = [
+        "up",
+        "-d",
+        "--build",
+        "--remove-orphans",
+        "--wait",
+        "--wait-timeout",
+        COMPOSE_WAIT_SECONDS,
+    ];
+    let run = compose_run(&compose, &[compose.file, &override_file], &up, true);
     log.step(&format!("Starting compose project {}", compose.project))
         .await;
-    run_logged(command, log, cancel, "COMPOSE_UP_FAILED").await
+    docker.compose_logged(&run, log, cancel).await
 }
 
 pub async fn compose_down(project: &str, remove_volumes: bool) -> AppResult<()> {

@@ -153,7 +153,9 @@
     "TERMINAL_SESSION_NOT_FOUND": "This shell is no longer running.",
     "TERMINAL_TARGET_MISSING": "Choose a container to open a shell in.",
     "DATABASE_MEMORY_INVALID": "Use between {{min}} and {{max}} MiB of memory.",
-    "DATABASE_CPU_INVALID": "Use between {{min}} and {{max}} thousandths of a CPU core."
+    "DATABASE_CPU_INVALID": "Use between {{min}} and {{max}} thousandths of a CPU core.",
+    "COMPOSE_OPTION_FORBIDDEN": "Service {{service}} uses {{option}}, which can reach the server outside its container. Remove it, or ask the owner to mark this stack as trusted.",
+    "COMPOSE_TRUST_NOT_APPLICABLE": "Only compose applications can be marked as trusted."
   },
   "terminal": {
     "workspace": "Terminals",

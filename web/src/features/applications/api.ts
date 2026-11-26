@@ -70,6 +70,15 @@ export function useRotateDeployKey(id: string) {
   });
 }
 
+export function useSetComposeTrust(id: string) {
+  const invalidate = useInvalidateApplications();
+  return useMutation({
+    mutationFn: (trusted: boolean) =>
+      unwrap(api.PUT("/api/v1/applications/{id}/compose-trust", { params: { path: { id } }, body: { trusted } })),
+    onSuccess: invalidate,
+  });
+}
+
 export function useDeleteApplication(id: string) {
   const queryClient = useQueryClient();
   return useMutation({

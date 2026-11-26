@@ -5,15 +5,16 @@ use utoipa::openapi::RefOr;
 
 use crate::dto::{
     ApiKeyDto, ApplicationDto, BackupDto, BackupRequestedDto, BasicAuthRequest, BuildKindDto,
-    ContainerActionDto, ContainerActionRequest, ContainerDto, CreateApiKeyRequest,
-    CreateApplicationRequest, CreateDomainRequest, CreateEnvironmentRequest, CreateProjectRequest,
-    CreatedApiKeyResponse, DeploymentDto, DeploymentKindDto, DeploymentLogDto, DeploymentStatusDto,
-    DnsCheckDto, DnsVerdictDto, DomainDto, DomainListDto, EngineInfoDto, EnvironmentDto,
-    HealthResponse, MasterKeyDto, MasterKeyRequest, MeResponse, MembershipDto, MountDto,
-    MountKindDto, PortDto, ProjectDto, ProtocolDto, ReplaceVariablesRequest, RevealedVariableDto,
-    RoleDto, RuntimeConfigDto, SetupRequest, SetupStatus, SignInRequest, SourceDto, SourceRequest,
-    StrategyDto, UpdateApplicationRequest, UpdateCheckDto, UpdateOverviewDto, UpdateProjectRequest,
-    UpdateRecordDto, UpdateStateDto, VariableDto, VariableInputDto, WorkloadDto,
+    ComposeTrustRequest, ContainerActionDto, ContainerActionRequest, ContainerDto,
+    CreateApiKeyRequest, CreateApplicationRequest, CreateDomainRequest, CreateEnvironmentRequest,
+    CreateProjectRequest, CreatedApiKeyResponse, DeploymentDto, DeploymentKindDto,
+    DeploymentLogDto, DeploymentStatusDto, DnsCheckDto, DnsVerdictDto, DomainDto, DomainListDto,
+    EngineInfoDto, EnvironmentDto, HealthResponse, MasterKeyDto, MasterKeyRequest, MeResponse,
+    MembershipDto, MountDto, MountKindDto, PortDto, ProjectDto, ProtocolDto,
+    ReplaceVariablesRequest, RevealedVariableDto, RoleDto, RuntimeConfigDto, SetupRequest,
+    SetupStatus, SignInRequest, SourceDto, SourceRequest, StrategyDto, UpdateApplicationRequest,
+    UpdateCheckDto, UpdateOverviewDto, UpdateProjectRequest, UpdateRecordDto, UpdateStateDto,
+    VariableDto, VariableInputDto, WorkloadDto,
 };
 use crate::error::{ErrorBody, ErrorEnvelope};
 use crate::routes::{
@@ -28,10 +29,10 @@ use crate::routes::{
     __path_list_applications, __path_list_backups, __path_list_containers, __path_list_deployments,
     __path_list_domains, __path_list_projects, __path_list_variables, __path_me, __path_realtime,
     __path_replace_runtime_config, __path_replace_variables, __path_reveal_variable, __path_revoke,
-    __path_roll_back_update, __path_rollback_deployment, __path_rotate_deploy_key, __path_sign_in,
-    __path_sign_out, __path_start_update, __path_status, __path_terminal,
-    __path_update_application, __path_update_overview, __path_update_project, DatabaseApi,
-    ScheduledBackupApi,
+    __path_roll_back_update, __path_rollback_deployment, __path_rotate_deploy_key,
+    __path_set_compose_trust, __path_sign_in, __path_sign_out, __path_start_update, __path_status,
+    __path_terminal, __path_update_application, __path_update_overview, __path_update_project,
+    DatabaseApi, ScheduledBackupApi,
 };
 
 #[derive(OpenApi)]
@@ -61,6 +62,7 @@ use crate::routes::{
         get_application,
         update_application,
         rotate_deploy_key,
+        set_compose_trust,
         delete_application,
         list_deployments,
         create_deployment,
@@ -127,6 +129,7 @@ use crate::routes::{
         DeploymentStatusDto,
         ApplicationDto,
         BuildKindDto,
+        ComposeTrustRequest,
         CreateApplicationRequest,
         SourceDto,
         SourceRequest,

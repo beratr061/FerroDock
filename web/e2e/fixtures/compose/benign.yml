@@ -1,0 +1,14 @@
+services:
+  web:
+    image: nginx:1.29-alpine
+    ports:
+      - "18081:80"
+    volumes:
+      - ./conf:/usr/share/nginx/html/conf:ro
+      - site:/data
+    cap_drop:
+      - NET_RAW
+    security_opt:
+      - no-new-privileges:true
+volumes:
+  site: {}

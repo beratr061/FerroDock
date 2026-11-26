@@ -176,5 +176,13 @@
     "domains": "Domainler",
     "storage": "Depolama",
     "settings": "Ayarlar"
+  },
+  "composeTrust": {
+    "title": "Güvenilir stack",
+    "description": "Compose dosyaları her deploy'dan önce denetlenir. Sunucunun kendisine erişen seçenekler reddedilir: privileged mod, eklenen yetkiler (capabilities), cihazlar, host namespace'leri, Docker soketi, repo dışındaki dosyalar, başka projelerin volume ve ağları, 80 ve 443 portları. Bu denetimleri atlamak için bir stack'i yalnızca organizasyon sahibi güvenilir olarak işaretleyebilir.",
+    "active": "Bu stack güvenilir: compose dosyası sunucuyu root olarak yönetebilir. Repo ya da branch'i değiştirebilen herkes de bunu yapabilir. Kaynağı sahip dışında biri değiştirirse güven kaldırılır.",
+    "grant": "Güvenilir olarak işaretle",
+    "confirm": "Bu stack'e root erişimi ver",
+    "revoke": "Güveni kaldır"
   }
 }

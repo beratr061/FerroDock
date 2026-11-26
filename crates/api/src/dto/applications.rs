@@ -62,6 +62,7 @@ pub struct ApplicationDto {
     pub source: SourceDto,
     pub deploy_key: Option<String>,
     pub strategy: StrategyDto,
+    pub compose_trusted: bool,
     #[serde(with = "time::serde::rfc3339")]
     #[schema(value_type = String, format = DateTime)]
     pub created_at: OffsetDateTime,
@@ -76,6 +77,11 @@ pub struct CreateApplicationRequest {
     pub description: Option<String>,
     pub source: SourceRequest,
     pub strategy: Option<StrategyDto>,
+}
+
+#[derive(Debug, Deserialize, ToSchema)]
+pub struct ComposeTrustRequest {
+    pub trusted: bool,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]
@@ -170,6 +176,7 @@ impl From<Application> for ApplicationDto {
             source: application.source.into(),
             deploy_key: application.deploy_key,
             strategy: application.strategy.into(),
+            compose_trusted: application.compose_trusted,
             created_at: application.created_at,
             updated_at: application.updated_at,
         }

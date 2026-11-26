@@ -1,0 +1,6 @@
+services:
+  web:
+    image: busybox:1.37
+    command: ["sleep", "3600"]
+    pid: host
+    network_mode: host

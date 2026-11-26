@@ -40,6 +40,7 @@ pub struct Application {
     pub source: Source,
     pub deploy_key: Option<String>,
     pub strategy: Strategy,
+    pub compose_trusted: bool,
     pub created_at: OffsetDateTime,
     pub updated_at: OffsetDateTime,
 }

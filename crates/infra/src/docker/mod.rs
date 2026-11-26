@@ -1,5 +1,7 @@
 mod build;
 mod compose_override;
+mod compose_policy;
+mod compose_runner;
 mod containers;
 mod database;
 mod databases;
@@ -23,6 +25,8 @@ use ferrodock_core::{AppError, AppResult, ErrorKind};
 use serde::Serialize;
 
 pub use build::{ComposeUp, ImageBuild, build_image, compose_down, compose_service_up, compose_up};
+pub use compose_policy::audit_compose;
+pub use compose_runner::{COMPOSE_IMAGE, ComposeRun};
 pub use containers::{ContainerAction, ContainerInfo};
 pub use database::DatabaseTarget;
 pub use databases::{DATABASE_LABEL, DatabaseContainer, DatabaseSpec};

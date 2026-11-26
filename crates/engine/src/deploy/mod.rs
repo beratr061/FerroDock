@@ -80,9 +80,30 @@ impl DeployHandler {
 }
 
 fn describe(error: &AppError) -> String {
-    match error.params().get("exit_code") {
-        Some(code) => format!("Failed: {} (exit code {code})", error.code()),
-        None => format!("Failed: {}", error.code()),
+    let details: Vec<String> = error
+        .params()
+        .iter()
+        .filter(|(key, _)| key.as_str() != "detail")
+        .map(|(key, value)| match value {
+            serde_json::Value::String(text) => format!("{key} {text}"),
+            other => format!("{key} {other}"),
+        })
+        .collect();
+    if details.is_empty() {
+        format!("Failed: {}", error.code())
+    } else {
+        format!("Failed: {} ({})", error.code(), details.join(", "))
+    }
+}
+
+async fn report_failure(log: &DeployLog, error: &AppError) {
+    log.step(&describe(error)).await;
+    let detail = error
+        .params()
+        .get("detail")
+        .and_then(serde_json::Value::as_str);
+    for line in detail.unwrap_or_default().lines() {
+        log.line(line).await;
     }
 }
 
@@ -100,7 +121,7 @@ impl JobHandler for DeployHandler {
         match &result {
             Ok(()) => log.step("Deployment finished").await,
             Err(_) if cancel.is_cancelled() => log.step("Deployment cancelled").await,
-            Err(error) => log.step(&describe(error)).await,
+            Err(error) => report_failure(&log, error).await,
         }
         log.flush().await;
         result

@@ -146,9 +146,10 @@ impl Job<'_> {
             file: &contained_path(&directory, &git.build_path)?,
             directory: &directory,
             application_id: self.application.id,
+            trusted: self.application.compose_trusted,
         };
         self.ctx.docker.ensure_network().await?;
-        compose_up(compose, self.log, self.cancel).await?;
+        compose_up(&self.ctx.docker, compose, self.log, self.cancel).await?;
         Ok(DeploymentArtifact {
             image_ref: format!("compose:{project}"),
             image_id: commit.clone(),

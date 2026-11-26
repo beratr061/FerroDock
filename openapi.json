@@ -295,6 +295,79 @@
         }
       }
     },
+    "/api/v1/applications/{id}/compose-trust": {
+      "put": {
+        "tags": [
+          "applications"
+        ],
+        "description": "Marks a compose application as trusted so its compose file skips the host-safety checks (privileged mode, host paths, devices and similar). Only the organization owner can turn it on; anyone who can edit the application can turn it off. Changing the source as a non-owner turns it off again",
+        "operationId": "set_compose_trust",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Application id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComposeTrustRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/applications/{id}/containers": {
       "get": {
         "tags": [
@@ -4175,10 +4248,14 @@
           "description",
           "source",
           "strategy",
+          "compose_trusted",
           "created_at",
           "updated_at"
         ],
         "properties": {
+          "compose_trusted": {
+            "type": "boolean"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time"
@@ -4458,6 +4535,17 @@
           "dockerfile",
           "compose"
         ]
+      },
+      "ComposeTrustRequest": {
+        "type": "object",
+        "required": [
+          "trusted"
+        ],
+        "properties": {
+          "trusted": {
+            "type": "boolean"
+          }
+        }
       },
       "ContainerActionDto": {
         "type": "string",

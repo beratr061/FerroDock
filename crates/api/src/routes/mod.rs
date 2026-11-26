@@ -2,6 +2,7 @@ mod api_keys;
 mod applications;
 mod auth;
 mod backups;
+mod compose_trust;
 mod databases;
 mod deployments;
 mod docker;
@@ -39,6 +40,7 @@ pub(crate) use backups::{
     __path_create_backup, __path_delete_backup, __path_download_backup, __path_export_master_key,
     __path_list_backups,
 };
+pub(crate) use compose_trust::__path_set_compose_trust;
 pub(crate) use databases::DatabaseApi;
 pub(crate) use deployments::{
     __path_cancel_deployment, __path_create_deployment, __path_deployment_log,
@@ -128,6 +130,10 @@ fn application_routes() -> Router<AppState> {
             get(applications::application_containers),
         )
         .route("/applications/{id}/logs", get(logs::container_logs))
+        .route(
+            "/applications/{id}/compose-trust",
+            axum::routing::put(compose_trust::set_compose_trust),
+        )
         .route(
             "/applications/{id}/deploy-key",
             post(applications::rotate_deploy_key),

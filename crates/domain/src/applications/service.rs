@@ -13,6 +13,7 @@ use super::runtime::Runtime;
 use super::source::{parse_strategy, to_record, validate_source};
 use crate::audit::{Actor, AuditLog};
 use crate::auth::{Principal, Role};
+use crate::domains::is_compose;
 use crate::text::{clean_description, clean_name, slugify};
 
 #[derive(Clone)]
@@ -145,9 +146,38 @@ impl ApplicationService {
                 None => parse_strategy(&current.strategy)?.as_str().to_owned(),
             },
         };
+        let source_changed = fields.source != current.source;
         let record = self.repo.update(id, fields).await?;
         self.changed(actor, "application.updated", &record).await;
+        if source_changed && record.compose_trusted && actor.principal.role != Role::Owner {
+            return self.set_compose_trusted(actor, id, false).await;
+        }
         record.try_into()
+    }
+
+    pub async fn set_compose_trusted(
+        &self,
+        actor: Actor<'_>,
+        id: Id,
+        trusted: bool,
+    ) -> AppResult<Application> {
+        actor.principal.require(if trusted {
+            Role::Owner
+        } else {
+            Role::Developer
+        })?;
+        let current = self.owned(actor.principal, id).await?;
+        if trusted && !is_compose(&current) {
+            return Err(AppError::validation("COMPOSE_TRUST_NOT_APPLICABLE"));
+        }
+        self.repo.set_compose_trusted(id, trusted).await?;
+        let action = if trusted {
+            "application.compose_trusted"
+        } else {
+            "application.compose_untrusted"
+        };
+        self.changed(actor, action, &current).await;
+        self.get(actor.principal, id).await
     }
 
     pub async fn rotate_deploy_key(&self, actor: Actor<'_>, id: Id) -> AppResult<Application> {

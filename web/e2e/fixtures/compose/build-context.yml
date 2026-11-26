@@ -1,0 +1,5 @@
+services:
+  web:
+    build:
+      context: /etc/ferrodock
+    command: ["sleep", "3600"]

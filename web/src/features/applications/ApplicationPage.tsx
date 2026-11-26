@@ -9,6 +9,7 @@ import { InlineAlert } from "@/shared/ui";
 import { applicationQuery, type Application } from "./api";
 import { ApplicationSettings } from "./ApplicationSettings";
 import { ApplicationTabs } from "./ApplicationTabs";
+import { ComposeTrustPanel } from "./ComposeTrustPanel";
 import { ContainerTerminal } from "./ContainerTerminal";
 import { DeploymentsPanel } from "./deployments/DeploymentsPanel";
 import { DeployKeyPanel } from "./DeployKeyPanel";
@@ -41,6 +42,7 @@ function TabContent({ tab, application }: { tab: ApplicationTab; application: Ap
       return (
         <>
           <ApplicationSettings application={application} />
+          {isCompose(application) ? <ComposeTrustPanel application={application} /> : null}
           <DeployKeyPanel application={application} />
         </>
       );

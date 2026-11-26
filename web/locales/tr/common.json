@@ -153,7 +153,9 @@
     "TERMINAL_SESSION_NOT_FOUND": "Bu kabuk artık çalışmıyor.",
     "TERMINAL_TARGET_MISSING": "Kabuk açmak için bir konteyner seçin.",
     "DATABASE_MEMORY_INVALID": "{{min}} ile {{max}} MiB arasında bellek kullanın.",
-    "DATABASE_CPU_INVALID": "{{min}} ile {{max}} binde bir CPU çekirdeği arasında bir değer kullanın."
+    "DATABASE_CPU_INVALID": "{{min}} ile {{max}} binde bir CPU çekirdeği arasında bir değer kullanın.",
+    "COMPOSE_OPTION_FORBIDDEN": "{{service}} servisi {{option}} kullanıyor; bu, konteynerin dışındaki sunucuya erişebilir. Kaldırın ya da sahibinden bu stack'i güvenilir olarak işaretlemesini isteyin.",
+    "COMPOSE_TRUST_NOT_APPLICABLE": "Yalnızca compose uygulamaları güvenilir olarak işaretlenebilir."
   },
   "terminal": {
     "workspace": "Terminaller",

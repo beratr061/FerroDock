@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT a.id, a.environment_id, e.project_id, a.name, a.slug, a.description,\n             a.source_kind, a.git_url, a.git_branch, a.build_kind, a.build_path, a.build_context,\n             a.image, a.deploy_key_public, a.deploy_key_private_enc, a.strategy,\n             a.active_container, a.created_at, a.updated_at\n             FROM applications a\n             JOIN environments e ON e.id = a.environment_id\n             JOIN projects p ON p.id = e.project_id\n             WHERE p.organization_id = $1 AND p.id = $2\n             ORDER BY lower(a.name), a.id",
+  "query": "SELECT a.id, a.environment_id, e.project_id, a.name, a.slug, a.description,\n             a.source_kind, a.git_url, a.git_branch, a.build_kind, a.build_path, a.build_context,\n             a.image, a.deploy_key_public, a.deploy_key_private_enc, a.strategy,\n             a.active_container, a.compose_trusted, a.created_at, a.updated_at\n             FROM applications a\n             JOIN environments e ON e.id = a.environment_id\n             JOIN projects p ON p.id = e.project_id\n             WHERE p.organization_id = $1 AND p.id = $2\n             ORDER BY lower(a.name), a.id",
   "describe": {
     "columns": [
       {
@@ -192,6 +192,17 @@
       },
       {
         "ordinal": 17,
+        "name": "compose_trusted",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "applications",
+            "name": "compose_trusted"
+          }
+        }
+      },
+      {
+        "ordinal": 18,
         "name": "created_at",
         "type_info": "Timestamptz",
         "origin": {
@@ -202,7 +213,7 @@
         }
       },
       {
-        "ordinal": 18,
+        "ordinal": 19,
         "name": "updated_at",
         "type_info": "Timestamptz",
         "origin": {
@@ -238,8 +249,9 @@
       false,
       true,
       false,
+      false,
       false
     ]
   },
-  "hash": "05fafcdf561e25e257f342ba6aaa222d47b7d9e907e544c3ada8e2c1f28cc79c"
+  "hash": "1bdd53335d70c2dd2aefd2871450c163e7e8665a03926ce4755cd1566fc76ffd"
 }

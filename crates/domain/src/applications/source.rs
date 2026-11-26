@@ -128,6 +128,7 @@ impl TryFrom<ApplicationRecord> for Application {
             name: record.name,
             slug: record.slug,
             description: record.description,
+            compose_trusted: record.compose_trusted,
             created_at: record.created_at,
             updated_at: record.updated_at,
         })

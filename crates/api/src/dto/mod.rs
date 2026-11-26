@@ -16,8 +16,8 @@ mod workloads;
 
 pub use api_keys::{ApiKeyDto, CreateApiKeyRequest, CreatedApiKeyResponse};
 pub use applications::{
-    ApplicationDto, BuildKindDto, CreateApplicationRequest, SourceDto, SourceRequest, StrategyDto,
-    UpdateApplicationRequest,
+    ApplicationDto, BuildKindDto, ComposeTrustRequest, CreateApplicationRequest, SourceDto,
+    SourceRequest, StrategyDto, UpdateApplicationRequest,
 };
 pub use auth::{
     HealthResponse, MeResponse, MembershipDto, RoleDto, SetupRequest, SetupStatus, SignInRequest,
