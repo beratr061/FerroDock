@@ -19,7 +19,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function T
   const message = error ?? hint;
   return (
     <div className={cx("flex flex-col gap-1.5", className)}>
-      <label htmlFor={inputId} className="font-medium text-text">
+      <label htmlFor={inputId} className="text-[13px] font-medium text-muted">
         {label}
       </label>
       <input
@@ -28,9 +28,9 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function T
         aria-invalid={error ? true : undefined}
         aria-describedby={message ? messageId : undefined}
         className={cx(
-          "h-10 rounded-control border bg-surface px-3 py-2 text-text placeholder:text-subtle",
-          "transition-colors duration-200 ease-out",
-          error ? "border-danger" : "border-border-strong hover:border-muted focus:border-focus",
+          "h-9 rounded-control border bg-surface px-3 text-base text-text caret-primary placeholder:text-subtle sm:text-sm",
+          "transition-colors duration-150 ease-out",
+          error ? "border-danger" : "border-border-strong hover:border-subtle focus:border-focus",
         )}
         {...rest}
       />

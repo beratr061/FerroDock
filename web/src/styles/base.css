@@ -47,6 +47,12 @@ kbd,
   outline-offset: 2px;
 }
 
+input:not([type="checkbox"], [type="radio"]):focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+}
+
 ::selection {
   background: var(--primary);
   color: var(--on-primary);

@@ -15,7 +15,7 @@ interface VariableRowProps {
 }
 
 const INPUT =
-  "h-9 w-full min-w-0 rounded-control border border-border-strong bg-surface px-2.5 font-mono text-[13px] text-text placeholder:text-subtle hover:border-text focus:border-text";
+  "h-9 w-full min-w-0 rounded-control border border-border-strong bg-surface px-2.5 font-mono text-[13px] text-text caret-primary placeholder:text-subtle hover:border-subtle focus:border-focus";
 const ICON_BUTTON =
   "press grid size-9 shrink-0 place-items-center rounded-control text-muted hover:bg-surface-hover hover:text-text";
 

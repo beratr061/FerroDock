@@ -18,7 +18,7 @@ export function SegmentedControl<T extends string>({ label, value, segments, onC
   const name = useId();
   return (
     <fieldset className="flex flex-col gap-1.5">
-      <legend className="mb-1.5 font-medium text-text">{label}</legend>
+      <legend className="mb-1.5 text-[13px] font-medium text-muted">{label}</legend>
       <div className="inline-flex w-fit flex-wrap gap-1 rounded-pill border border-border bg-bg p-1">
         {segments.map((segment) => (
           <label

@@ -23,7 +23,7 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(funct
   const selectId = id ?? generatedId;
   return (
     <div className={cx("flex flex-col gap-1.5", className)}>
-      <label htmlFor={selectId} className={cx("font-medium text-text", hideLabel && "sr-only")}>
+      <label htmlFor={selectId} className={cx("text-[13px] font-medium text-muted", hideLabel && "sr-only")}>
         {label}
       </label>
       <div className="relative">
@@ -31,8 +31,8 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(funct
           ref={ref}
           id={selectId}
           className={cx(
-            "h-10 w-full appearance-none rounded-control border border-border-strong",
-            "bg-surface pr-9 pl-3 text-text hover:border-muted focus:border-focus",
+            "h-9 w-full appearance-none rounded-control border border-border-strong text-base sm:text-sm",
+            "bg-surface pr-9 pl-3 text-text transition-colors duration-150 ease-out hover:border-subtle focus:border-focus",
           )}
           {...rest}
         >

@@ -69,7 +69,7 @@ Inter stands in for Linear's proprietary families; JetBrains Mono for Linear Mon
 ## Components
 
 - **Buttons**: 36px high, 8px 14px padding, 8px radius, 14px/500 label. Primary is lavender with white text; secondary is surface-1 with a hairline; ghost is plain text that lifts to surface-2 on hover; danger is surface-1 with danger text and border.
-- **Inputs and selects**: surface-1, 8px radius, 8px 12px padding; the focus border and 2px focus ring use the lavender focus colour.
+- **Inputs and selects**: 36px, surface-1, 8px radius, 12px side padding, 14px text (16px on phones so iOS does not zoom). Labels are 13px ink-muted at 500. Focus only changes the field's own border to the lavender focus colour, with no separate ring (WCAG 2.4.7 technique C15); hover lightens the border. Checkboxes, buttons and links keep the 2px focus outline.
 - **Tabs and segmented controls**: pills. Unselected is subtle text on the canvas; selected lifts to surface-2.
 - **Status badges**: 22px surface-2 pills with ink-muted caption text and a 6px dot in the status colour.
 - **Alerts**: surface-2 with a status-coloured border and icon; the message stays in ink.

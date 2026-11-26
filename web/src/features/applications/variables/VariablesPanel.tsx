@@ -60,7 +60,7 @@ function Editor({ applicationId, saved }: { applicationId: string; saved: Variab
             onChange={(event) => setText(event.target.value)}
             spellCheck={false}
             rows={12}
-            className="rounded-control border border-border-strong bg-surface p-3 font-mono text-[13px] text-text hover:border-text focus:border-text"
+            className="rounded-control border border-border-strong bg-surface p-3 font-mono text-[13px] text-text caret-primary hover:border-subtle focus:border-focus"
           />
           {draft.hiddenCount > 0 ? <p className="text-[13px] text-subtle">{t("variables.hiddenKept", { count: draft.hiddenCount })}</p> : null}
         </div>
