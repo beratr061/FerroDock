@@ -56,15 +56,12 @@ impl DatabaseDriver for KeyValue {
         vec![format!("FERRODOCK_PASSWORD={}", credentials.password)]
     }
 
-    fn command(&self, credentials: &Credentials<'_>) -> Option<Vec<String>> {
-        let args = [
-            self.server,
-            "--requirepass",
-            credentials.password,
-            "--appendonly",
-            "yes",
-        ];
-        Some(args.map(str::to_owned).to_vec())
+    fn command(&self) -> Option<Vec<String>> {
+        let server = self.server;
+        let launch = format!(
+            "exec docker-entrypoint.sh {server} --requirepass \"$FERRODOCK_PASSWORD\" --appendonly yes"
+        );
+        Some(vec!["sh".to_owned(), "-c".to_owned(), launch])
     }
 
     fn healthcheck(&self) -> &'static str {

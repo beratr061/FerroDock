@@ -40,7 +40,7 @@ pub trait DatabaseDriver: Send + Sync {
     fn restore_method(&self) -> RestoreMethod;
     fn dump_extension(&self) -> &'static str;
 
-    fn command(&self, _credentials: &Credentials<'_>) -> Option<Vec<String>> {
+    fn command(&self) -> Option<Vec<String>> {
         None
     }
 

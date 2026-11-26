@@ -13,6 +13,7 @@ use super::{
 };
 
 const SHELL_PROBE: &str = "if command -v bash >/dev/null 2>&1; then exec bash; \
+    elif command -v zsh >/dev/null 2>&1; then exec zsh; \
     elif command -v ash >/dev/null 2>&1; then exec ash; else exec sh; fi";
 
 pub type ShellOutput = Pin<Box<dyn Stream<Item = AppResult<Vec<u8>>> + Send>>;

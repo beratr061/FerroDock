@@ -60,7 +60,7 @@ pub fn container_spec(record: &DatabaseRecord, secrets: &SecretBox) -> AppResult
         database_id: record.id.to_string(),
         alias: alias(record.id),
         env: engine.env(&login),
-        command: engine.command(&login),
+        command: engine.command(),
         healthcheck: engine.healthcheck().to_owned(),
         volume: volume(record.id),
         data_dir: engine.data_dir(&record.version).to_owned(),

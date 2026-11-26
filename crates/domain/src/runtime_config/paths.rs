@@ -1,12 +1,13 @@
 use ferrodock_core::{AppError, AppResult};
 
 const MAX_PATH_CHARS: usize = 255;
-const FORBIDDEN_HOST_PATHS: [&str; 10] = [
+const FORBIDDEN_HOST_PATHS: [&str; 11] = [
     "/proc",
     "/sys",
     "/dev",
     "/boot",
     "/etc/ferrodock",
+    "/var/lib/ferrodock",
     "/var/lib/docker",
     "/var/lib/containerd",
     "/var/run/docker.sock",
@@ -72,6 +73,7 @@ mod tests {
         assert_eq!(host_path("/srv/app").ok().as_deref(), Some("/srv/app"));
         assert!(host_path("/var/run/docker.sock").is_err());
         assert!(host_path("/etc/ferrodock/panel").is_err());
+        assert!(host_path("/var/lib/ferrodock/database-backups").is_err());
         assert!(host_path("//").is_err());
         assert!(host_path("/var/lib/dockerish").is_ok());
     }
